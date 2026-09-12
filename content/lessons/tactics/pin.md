@@ -21,6 +21,7 @@ arrows: b5c6
 highlight: e8
 caption: After 3.Bb5 the knight on c6 is pinned to the king. It cannot move.
 image: morphy-1859.jpg
+tone: faded
 alt: Paul Morphy, photographed in 1859
 credit: Paul Morphy, 1859. Wikimedia Commons, public domain.
 ```

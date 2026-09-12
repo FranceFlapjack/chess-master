@@ -12,13 +12,14 @@
   --line: #e6e6e6;
   --line-2: #cccccc;
 
-  /* interactive: black, like metar-taf's buttons */
-  --accent: #111111;
+  /* theme: a dark green, the colour of a correct move. Used for everything selected, done, or primary. */
+  --accent: #1f5f45;
   --accent-ink: #ffffff;
-  --accent-soft: #f0f0f0;
+  --accent-soft: #e8f0eb;
+  --accent-deep: #17493a;
 
   /* semantic (used only on the board and puzzle states) */
-  --good: #2f7a4f;
+  --good: #1f5f45;
   --bad: #c00000;
   --warn: #7a5c00;
 
@@ -66,10 +67,10 @@
   --sidebar-w: 260px;
   --page-w: 900px;
 
-  /* activity grid levels: greys to black */
+  /* activity grid levels: paper to theme green */
   --act-0: #eeeeee;
-  --act-1: #cfcfcf;
-  --act-2: #9a9a9a;
-  --act-3: #555555;
-  --act-4: #111111;
+  --act-1: #c9dccf;
+  --act-2: #8fbaa2;
+  --act-3: #4f8a6c;
+  --act-4: #1f5f45;
 }
