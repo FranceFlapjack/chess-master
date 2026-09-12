@@ -75,7 +75,7 @@ export async function renderLesson(container, md, { lessonId, contentBase = 'con
     const p = parseParams(src)
     if (kind === 'board') {
       const fig = document.createElement('figure'); fig.className = 'board-figure' + (p.image ? ' with-aside' : '')
-      const aside = p.image ? `<div class="board-aside"><div class="photo${p.tone ? ' ' + esc(p.tone) : ''}"><img src="${esc(contentBase + 'images/' + p.image)}" alt="${esc(p.alt || '')}"></div>${p.credit ? `<div class="credit">${esc(p.credit)}</div>` : ''}</div>` : ''
+      const aside = p.image ? `<div class="board-aside"><div class="photo${p.tone ? ' ' + esc(p.tone) : ''}"><img src="${esc(contentBase + 'images/' + p.image)}" alt="${esc(p.alt || '')}"${p.focus ? ` style="object-position: ${esc(p.focus)}"` : ''}></div>${p.credit ? `<div class="credit">${esc(p.credit)}</div>` : ''}</div>` : ''
       fig.innerHTML = `<div class="board-wrap"><div class="board"></div></div>${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ''}${aside}`
       blk.replaceWith(fig)
       mounted.push(new Board(fig.querySelector('.board'), {

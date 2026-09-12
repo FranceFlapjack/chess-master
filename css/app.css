@@ -160,7 +160,7 @@ details.more > .more-body { padding-bottom: var(--s-4); }
 .board-figure.with-aside figcaption { grid-column: 1; }
 .board-aside { grid-column: 2; grid-row: 1; align-self: end; }
 .board-aside .photo { position: relative; max-width: 240px; background: #f4f1ea; padding: 6px; border: 1px solid var(--line); }
-.board-aside img { display: block; width: 100%; filter: contrast(1.4) url(#oldprint); }
+.board-aside img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: contrast(1.4) url(#oldprint); }
 .board-aside .photo.faded img { filter: contrast(2.4) brightness(0.82) url(#oldprint); }
 .board-aside .photo.dark img { filter: contrast(1.2) brightness(1.15) url(#oldprint); }
 .board-aside .credit { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-top: var(--s-2); max-width: 260px; }
