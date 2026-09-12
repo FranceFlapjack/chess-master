@@ -10,9 +10,11 @@ Status: **Phase 0 scaffold + design draft 2 + play page (Stockfish) delivered 20
 - One complete lesson: Tactics → The Greek Gift (Greco c.1620, Colle–O'Hanlon 1930, Markland–Klundt 1971, Lasker–Bauer 1889).
 - `scripts/check-content.mjs` validates all FENs, PGNs and solutions.
 
-## Phase 1 — Content (next)
-Write the tracks in this order, one branch each, running the checker on every commit:
-1. Tactics (10 more lessons) — puzzle sets per theme curated from the Lichess CC0 puzzle DB.
+## Phase 1 — Content (in progress)
+Progress 2026-09-13: Tactics 6/11 ready (Greek gift, pin, fork, skewer, discovered attack, back rank), 44 puzzle moves verified against Stockfish with `scripts/verify-puzzles.mjs`. Games added: Morphy Opera 1858, Réti–Tartakower 1910, Fischer–Reshevsky 1958. Bernstein–Capablanca 1914 is used as a position only (full record not obtainable from an open source yet).
+
+Write the tracks in this order, one branch each, running both checkers on every commit:
+1. Tactics — remaining: removing the defender, deflection & decoy, zwischenzug, double bishop sacrifice, clearance & interference. Puzzle sets per theme from the Lichess CC0 puzzle DB later.
 2. Checkmate patterns (6).
 3. Endgames (8) — lean on Capablanca ch. 1–2 (public domain).
 4. Openings (10) — Wikibooks lines + Lichess explorer stats (needs `js/explorer.js`).

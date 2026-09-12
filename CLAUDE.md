@@ -24,7 +24,9 @@ When testing in the in-app Browser pane, keep the pane visible: hidden tabs paus
 Validate content before committing:
 ```
 node scripts/check-content.mjs
+node scripts/verify-puzzles.mjs tactics/ 800
 ```
+The second asks Stockfish whether every reader move in every `try` block is its best (or a near-equal second). A composed puzzle that fails it is wrong, not the engine; fix the position. Historical sacrifices that engines dislike may stay, with an honesty note in the puzzle intro.
 
 ## Layout
 

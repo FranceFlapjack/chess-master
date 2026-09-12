@@ -1,0 +1,10 @@
+[Event "Vienna"]
+[Site "Vienna AUT"]
+[Date "1910.??.??"]
+[White "Richard Réti"]
+[Black "Savielly Tartakower"]
+[Result "1-0"]
+[ECO "B15"]
+
+{The most famous miniature in chess. Eleven moves, one queen sacrifice, and a double check that ends the game.}
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Qd3 e5 {Opening the centre while the king is still on e1 looks natural, but White's pieces are ready and Black's are not.} 6. dxe5 Qa5+ 7. Bd2 Qxe5 8. O-O-O {Réti puts his rook on the d-file, opposite the black queen and king, and offers the knight.} Nxe4 {Taking it loses at once.} 9. Qd8+ {The queen gives itself up to drag the king onto the d-file.} Kxd8 10. Bg5+ {Double check: the bishop from g5 and the rook from d1. The king must move, and it has two squares.} Kc7 {After 10...Ke8 11.Rd8 is mate.} 11. Bd8# 1-0

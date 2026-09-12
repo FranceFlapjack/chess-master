@@ -37,7 +37,7 @@ prompt: Find the three-move sequence that wins.
 success: Qh7 is unstoppable without giving up the queen.
 ```
 
-<p class="puzzle-intro">2 · The king walks out. Colle – O'Hanlon, Nice 1930. When the king goes to g6, the queen cannot check on h5.</p>
+<p class="puzzle-intro">2 · The king walks out. Colle – O'Hanlon, Nice 1930. When the king goes to g6, the queen cannot check on h5. (Honesty note: engines today rate the quiet 12.Bc2 a little higher than the sacrifice, and with best defence Black holds. It is still the practical choice, and the pattern is the point.)</p>
 
 ```try
 fen: r1bqr1k1/pp1n1ppp/3bp3/8/3pB3/2P2N2/PP3PPP/R1BQR1K1 w - - 0 12
