@@ -82,15 +82,18 @@
         },
         {
           "slug": "removing-the-defender",
-          "title": "Removing the defender"
+          "title": "Removing the defender",
+          "ready": true
         },
         {
           "slug": "deflection-and-decoy",
-          "title": "Deflection and decoy"
+          "title": "Deflection and decoy",
+          "ready": true
         },
         {
           "slug": "zwischenzug",
-          "title": "The in-between move"
+          "title": "The in-between move",
+          "ready": true
         },
         {
           "slug": "back-rank",
@@ -104,11 +107,13 @@
         },
         {
           "slug": "double-bishop-sacrifice",
-          "title": "The double bishop sacrifice"
+          "title": "The double bishop sacrifice",
+          "ready": true
         },
         {
           "slug": "clearance-and-interference",
-          "title": "Clearance and interference"
+          "title": "Clearance and interference",
+          "ready": true
         }
       ]
     },

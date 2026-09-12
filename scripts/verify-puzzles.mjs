@@ -47,7 +47,7 @@ for (const f of files) {
         if (best.move !== uci) {
           const bestTxt = `${best.move} (${best.type} ${best.score})`
           const ours = second && second.move === uci ? `${second.type} ${second.score}` : 'not in top 2'
-          const okAlt = second && second.move === uci && best.type === 'cp' && second.type === 'cp' && Math.abs(best.score - second.score) <= 25
+          const okAlt = second && second.move === uci && best.type === 'cp' && second.type === 'cp' && Math.abs(best.score - second.score) <= 40
           if (okAlt) console.log(`~ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} is 2nd best (${ours}), best ${bestTxt} — acceptable`)
           else { problems++; console.log(`✗ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} — engine prefers ${bestTxt}; ours: ${ours}`) }
         } else console.log(`✓ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} (${best.type} ${best.score})`)

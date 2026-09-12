@@ -94,16 +94,16 @@ button { font: inherit; color: inherit; }
 .sidebar-tools { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); margin-top: var(--s-3); }
 
 .main { padding: var(--s-8) var(--s-7); min-width: 0; }
-.page { max-width: var(--page-w); margin: 0 auto; }
+.page { max-width: var(--page-w); margin: 0; }
 .prose { max-width: var(--measure); }
 /* lesson body: text keeps the reading measure, boards and game viewers may use the full page width; everything centred */
 .lesson-body { max-width: none; }
-.lesson-body > :not(figure):not(.blk) { max-width: var(--measure); margin-left: auto; margin-right: auto; }
+.lesson-body > :not(figure):not(.blk) { max-width: var(--measure); }
 .topbar { display: none; }
 .scrim { display: none; }
 
 /* ---------- home ---------- */
-.hero { max-width: var(--measure); margin: 0 auto var(--s-7); }
+.hero { max-width: var(--measure); margin: 0 0 var(--s-7); }
 .hero h1 { margin: var(--s-3) 0 var(--s-4); }
 .hero p { font-size: var(--fs-2); color: var(--ink-2); }
 .card { border: 1px solid var(--line); padding: var(--s-5); background: var(--surface); }
@@ -122,7 +122,7 @@ button { font: inherit; color: inherit; }
 .switch[aria-checked="true"]::after { transform: translateX(16px); }
 
 /* ---------- lesson ---------- */
-.lesson-head { margin: 0 auto var(--s-6); max-width: var(--measure); padding-bottom: var(--s-5); border-bottom: 1px solid var(--line); }
+.lesson-head { margin: 0 0 var(--s-6); max-width: var(--measure); padding-bottom: var(--s-5); border-bottom: 1px solid var(--line); }
 .lesson-head h1 { margin: var(--s-3) 0 var(--s-3); }
 .lesson-head .lede { font-size: var(--fs-2); color: var(--ink-2); margin: 0; }
 .lesson-nav { display: flex; justify-content: space-between; gap: var(--s-4); margin-top: var(--s-8); padding-top: var(--s-5); border-top: 1px solid var(--line); font-size: var(--fs-1); }
@@ -134,12 +134,12 @@ button { font: inherit; color: inherit; }
 .complete-row .msg { color: var(--ink-2); }
 .complete-row.done .msg { color: var(--ink); font-weight: 600; }
 .complete-row .count { font-family: var(--font-mono); color: var(--ink-3); }
-.sources { margin: var(--s-7) auto 0; padding-top: var(--s-5); border-top: 1px solid var(--line); font-size: var(--fs-0); color: var(--ink-2); max-width: var(--measure); }
+.sources { margin: var(--s-7) 0 0; padding-top: var(--s-5); border-top: 1px solid var(--line); font-size: var(--fs-0); color: var(--ink-2); max-width: var(--measure); }
 .sources ul { padding-left: 1.2em; }
 .sources li { margin-bottom: var(--s-2); overflow-wrap: anywhere; }
-.callout { border-left: 1px solid var(--ink); padding: var(--s-2) var(--s-4); margin: var(--s-5) auto; max-width: var(--measure); }
+.callout { border-left: 1px solid var(--ink); padding: var(--s-2) var(--s-4); margin: var(--s-5) 0; max-width: var(--measure); }
 .callout p:last-child { margin: 0; }
-details.more { border-top: 1px solid var(--line); margin: var(--s-5) auto; }
+details.more { border-top: 1px solid var(--line); margin: var(--s-5) 0; }
 details.more:last-of-type { border-bottom: 1px solid var(--line); }
 details.more > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: var(--s-3); padding: var(--s-4) 0; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
 details.more > summary::-webkit-details-marker { display: none; }
@@ -147,13 +147,13 @@ details.more > summary::before { content: "+"; width: 18px; height: 18px; border
 details.more[open] > summary::before { content: "–"; }
 details.more > summary:hover { color: var(--ink); }
 details.more > .more-body { padding-bottom: var(--s-4); }
-.puzzle-intro { font-size: var(--fs-1); color: var(--ink-2); margin: var(--s-6) auto var(--s-3); }
+.puzzle-intro { font-size: var(--fs-1); color: var(--ink-2); margin: var(--s-6) 0 var(--s-3); }
 
 /* ---------- board: full square, centred, no decoration ---------- */
-.board-wrap { width: 100%; max-width: var(--board-max); aspect-ratio: 1; position: relative; min-width: 0; margin: 0 auto; }
+.board-wrap { width: 100%; max-width: var(--board-max); aspect-ratio: 1; position: relative; min-width: 0; margin: 0; }
 .board-wrap svg.cm-chessboard { max-width: 100%; }
-.board-figure { margin: var(--s-5) auto var(--s-6); }
-.board-figure figcaption { font-size: var(--fs-1); color: var(--ink-2); margin: var(--s-3) auto 0; max-width: var(--board-max); }
+.board-figure { margin: var(--s-5) 0 var(--s-6); }
+.board-figure figcaption { font-size: var(--fs-1); color: var(--ink-2); margin: var(--s-3) 0 0; max-width: var(--board-max); }
 /* wrong answer: only the piece shakes (CSS `translate` composes with the SVG transform attribute) */
 .cm-chessboard .pieces-layer .piece-shake { animation: piece-shake 380ms ease-in-out; }
 @keyframes piece-shake { 0%,100% { translate: 0 0 } 20% { translate: -5px 0 } 40% { translate: 5px 0 } 60% { translate: -4px 0 } 80% { translate: 4px 0 } }
@@ -184,7 +184,7 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 /* ---------- game viewer / exercise ---------- */
 .game, .exercise {
   display: grid; grid-template-columns: min(var(--board-max), 58%) minmax(0, 1fr);
-  gap: var(--s-5); margin: var(--s-5) auto var(--s-7); outline: none;
+  gap: var(--s-5); margin: var(--s-5) 0 var(--s-7); outline: none;
 }
 .game > *, .exercise > * { min-width: 0; }
 .game:focus-visible .board-wrap, .exercise:focus-visible .board-wrap { outline: 1px solid var(--ink); outline-offset: 2px; }
@@ -225,7 +225,7 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .nav-play .num { font-size: 9px; color: var(--ink-3); width: 1.4em; }
 .nav-play .name { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
 .nav-play:hover .name, .nav-play.current .name { color: var(--ink); }
-.play { display: grid; grid-template-columns: min(var(--board-max), 58%) minmax(0, 1fr); gap: var(--s-6); margin: var(--s-5) auto var(--s-7); }
+.play { display: grid; grid-template-columns: min(var(--board-max), 58%) minmax(0, 1fr); gap: var(--s-6); margin: var(--s-5) 0 var(--s-7); }
 .play > * { min-width: 0; }
 .play-side { display: flex; flex-direction: column; gap: var(--s-4); }
 .field { display: flex; flex-direction: column; gap: 6px; }
