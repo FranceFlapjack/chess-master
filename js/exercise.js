@@ -58,7 +58,8 @@ export function mountExercise(container, o, ctx = {}) {
       sound.play('fail')
       board.mark(m.to, MARK.bad)
       board.shakePiece(m.to)
-      setStatus(wrong === 1 ? 'Not that one. Try again.' : 'Still not it. The hint may help.', 'bad')
+      const line = o.type === 'line'
+      setStatus(wrong === 1 ? (line ? 'Not the book move. Try again.' : 'Not that one. Try again.') : (line ? 'Still not the line. The hint gives it away.' : 'Still not it. The hint may help.'), 'bad')
       await wait(600)
       board.clearMarks(MARK.bad)
       await board.undo({ silent: true })

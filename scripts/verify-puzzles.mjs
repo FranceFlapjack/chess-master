@@ -34,6 +34,7 @@ for (const f of files) {
     n++
     const p = {}; for (const line of m[1].split(/\r?\n/)) { const kv = line.match(/^([\w-]+):\s*(.*)$/); if (kv) p[kv[1]] = kv[2].trim() }
     const moves = (p.solution || '').split(/\s+/).filter(t => t && !/^\d+\.+$/.test(t))
+    const tol = p.type === 'line' ? (+p.tolerance || 50) : 0 // opening lines: any move within `tol` cp of best is fine
     const c = new Chess(p.fen)
     for (let i = 0; i < moves.length; i++) {
       const san = moves[i]
@@ -44,6 +45,16 @@ for (const f of files) {
         const r = await analyse(fen); checked++
         const best = r['1'], second = r['2']
         if (!best) continue
+        if (best.move !== uci && tol) {
+          // tolerant mode: evaluate the position after our move and compare with the best line
+          const after = await analyse(c.fen())
+          const ob = after['1']
+          const toCp = x => x.type === 'mate' ? Math.sign(x.score) * 10000 : x.score
+          const ours = ob ? -toCp(ob) : -99999
+          const diff = toCp(best) - ours
+          if (diff <= tol) { console.log(`✓ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} (book, ${diff} cp behind best ${best.move})`); continue }
+          problems++; console.log(`✗ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} is ${diff} cp behind ${best.move} (${best.type} ${best.score})`); continue
+        }
         if (best.move !== uci) {
           const bestTxt = `${best.move} (${best.type} ${best.score})`
           const ours = second && second.move === uci ? `${second.type} ${second.score}` : 'not in top 2'

@@ -124,43 +124,53 @@
       "lessons": [
         {
           "slug": "opening-principles",
-          "title": "Opening principles"
+          "title": "Opening principles",
+          "ready": true
         },
         {
           "slug": "italian-game",
-          "title": "The Italian Game"
+          "title": "The Italian Game",
+          "ready": true
         },
         {
           "slug": "ruy-lopez",
-          "title": "The Ruy Lopez, an introduction"
+          "title": "The Ruy Lopez, an introduction",
+          "ready": true
         },
         {
           "slug": "london-system",
-          "title": "The London System"
+          "title": "The London System",
+          "ready": true
         },
         {
           "slug": "caro-kann",
-          "title": "Caro-Kann against 1.e4"
+          "title": "Caro-Kann against 1.e4",
+          "ready": true
         },
         {
           "slug": "open-games-as-black",
-          "title": "1…e5 against 1.e4"
+          "title": "1…e5 against 1.e4",
+          "ready": true
         },
         {
           "slug": "queens-gambit-declined",
-          "title": "Queen's Gambit Declined"
+          "title": "Queen's Gambit Declined",
+          "ready": true
         },
         {
           "slug": "kings-indian",
-          "title": "King's Indian, an introduction"
+          "title": "King's Indian, an introduction",
+          "ready": true
         },
         {
           "slug": "opening-traps",
-          "title": "Traps worth knowing"
+          "title": "Traps worth knowing",
+          "ready": true
         },
         {
           "slug": "leaving-the-book",
-          "title": "What to do when you leave the book"
+          "title": "What to do when you leave the book",
+          "ready": true
         }
       ]
     },

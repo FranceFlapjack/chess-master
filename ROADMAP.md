@@ -1,6 +1,6 @@
 # Roadmap
 
-Status: **Tactics track complete 2026-09-13** (11 lessons, engine-verified puzzles). Bot 0.2 and the play page are live. Next: Checkmate patterns track, then Endgames.
+Status: **Tactics (11) and Openings (10) tracks complete 2026-09-13**, 21 lessons, every puzzle move engine-verified. Bot 0.2 and the play page are live. Next: Checkmate patterns, then Endgames.
 
 ## Phase 0 — Scaffold (done 2026-09-12)
 - Shell, sidebar curriculum with progress, hash router, home page.
@@ -14,7 +14,8 @@ Status: **Tactics track complete 2026-09-13** (11 lessons, engine-verified puzzl
 Progress 2026-09-13: **Tactics track complete, 11/11 lessons**, every reader move in every puzzle verified against Stockfish with `scripts/verify-puzzles.mjs` (historical moves engines dislike carry an honesty note). Games: Morphy Opera 1858, Réti–Tartakower 1910, Fischer–Reshevsky 1958, Lasker–Bauer 1889, Greco c.1620, Colle–O'Hanlon 1930. Bernstein–Capablanca 1914 and Adams–Torre 1920 appear as positions only (full records not obtainable from an open source).
 
 Write the tracks in this order, one branch each, running both checkers on every commit:
-1. Tactics — done. Puzzle sets per theme from the Lichess CC0 puzzle DB later (daily review).
+1. Tactics — done.
+1b. Openings — **done 2026-09-13** (owner's priority): principles, Italian, Ruy Lopez, London, Caro-Kann, 1…e5 as Black, QGD, King's Indian, traps, leaving the book. Each has a "play the main line" drill (`type: line` puzzles accept any move within ~50 cp of best), a trap, and where available a verified model game (Evergreen 1852, Deep Blue–Kasparov 1997 g6, Byrne–Fischer 1956, Fischer–Spassky 1972 g6). Live master statistics still blocked by the Lichess explorer API needing a token.
 2. Checkmate patterns (6).
 3. Endgames (8) — lean on Capablanca ch. 1–2 (public domain).
 4. Openings (10) — Wikibooks lines + Lichess explorer stats (needs `js/explorer.js`).
