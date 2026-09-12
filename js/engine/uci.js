@@ -1,9 +1,9 @@
 // Minimal UCI client over a Web Worker. Works for Stockfish and, later, for our own engine,
 // as long as the worker speaks UCI lines over postMessage.
 export class UciEngine {
-  constructor(workerUrl, { name = 'engine' } = {}) {
+  constructor(workerUrl, { name = 'engine', type = 'classic' } = {}) {
     this.name = name
-    this.worker = new Worker(workerUrl)
+    this.worker = new Worker(workerUrl, { type })
     this.listeners = new Set()
     this.lastInfo = null
     this.worker.onmessage = e => this._line(typeof e.data === 'string' ? e.data : String(e.data))

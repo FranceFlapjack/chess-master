@@ -30,6 +30,7 @@ node scripts/check-content.mjs
 - `js/board.js` is the single board component (cm-chessboard rendering + chess.js rules + sounds). Every board in the app goes through it.
 - `js/pgn-viewer.js` annotated game viewer; `js/exercise.js` "try it" blocks; `js/progress.js` localStorage progress/points/streak; `js/activity-grid.js` the 12-week grid.
 - `js/play.js` play-vs-computer page; `js/engine/uci.js` is the UCI-over-Worker client every engine (Stockfish now, our own later) goes through; `js/engine/stockfish.js` loads `vendor/stockfish/` (GPL-3, ~7 MB) and defines the strength ladder.
+- `js/engine/bot/` is our own engine (board → eval → search → uci → worker). Before touching `board.js` run `node scripts/perft.mjs`; after any search/eval change run `node scripts/match.mjs 4 1500` and record the score in ROADMAP.md.
 - `content/curriculum.json` fixes track and lesson order; a lesson shows only when `"ready": true` and `content/lessons/<track>/<slug>.md` exists.
 - `content/games/*.pgn` full games with `{comments}`; shared between lessons.
 

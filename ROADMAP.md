@@ -42,12 +42,14 @@ The owner wants their **own AI chess bot**: it plays against people, against bot
 
 It is not "a whole other program". The engine is a separate module in this repo (`js/engine/…`) that runs in a Web Worker so the page never freezes. Friends' bots plug in through the standard engine protocol, UCI (Universal Chess Interface): a text protocol every chess engine speaks (`position …`, `go depth 6`, `bestmove e2e4`). If a friend writes their bot in Python, it runs as its own process and a tiny bridge (Node or Python WebSocket) relays UCI lines to the arena page.
 
-### Bot phase 1 — a real engine, simple version (~1 week of evenings)
-- Move generation: start with chess.js (correct, slow), replace later with our own 0x88 or bitboard generator for speed.
-- Search: negamax with alpha-beta pruning, iterative deepening, quiescence search (so it never stops mid-capture), move ordering (captures first, MVV-LVA, killer moves).
-- Evaluation: material + piece-square tables (the public PeSTO tables), tapered between middlegame and endgame.
-- Interface: UCI over `postMessage` in a Worker. Time control: fixed depth or milliseconds per move.
-- Expected strength: ~1500–1800. Already a "boss" for most club players.
+### Bot phase 1 — a real engine, simple version — **done 2026-09-12** (`js/engine/bot/`)
+- `board.js`: own 0x88 move generator with make/unmake and Zobrist hashing; perft matches all six standard positions (`node scripts/perft.mjs`, ~7M nodes/s).
+- `search.js`: iterative deepening, negamax alpha-beta, quiescence with delta pruning, transposition table (1M entries), killers, history, null-move pruning, check extension, late-move reductions, PVS. ~1.5M nodes/s, depth 9–10 in under a second.
+- `eval.js`: material + Michniewski piece-square tables, tapered king table, bishop pair.
+- `uci.js` speaks UCI; `worker.js` runs it in the site (`js/engine/bot.js`), `scripts/bot-uci.mjs` runs it standalone on stdin/stdout for any GUI or match runner.
+- `scripts/match.mjs [games] [elo] [botMs] [sfMs]` plays it against Stockfish (Elo-limited) under Node and prints the score. This is the yardstick for every improvement.
+- On the play page as the "Chess Learn Bot" opponent, 0.8 s per move.
+- Known limits: `stop` cannot interrupt a running search (searches are time-bounded instead); no opening book; no pawn-structure or king-safety terms yet.
 
 ### Bot phase 2 — make it strong (~2–4 weeks)
 - Transposition table with Zobrist hashing; null-move pruning; late-move reductions; check extensions; aspiration windows.
