@@ -7,6 +7,7 @@ import { sound } from './sound.js'
 const $ = s => document.querySelector(s)
 let curriculum = null
 let current = null // {track, slug}
+let unsubLesson = null
 
 const ICON_SOUND_ON = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v4h3l4 3V5L6 8zM13 7a4 4 0 010 6M15.5 4.5a7.5 7.5 0 010 11"/></svg>'
 const ICON_SOUND_OFF = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v4h3l4 3V5L6 8zM13 8l4 4M17 8l-4 4"/></svg>'
@@ -47,7 +48,8 @@ function renderSidebar() {
       </button>
       <ul class="lessons">${t.lessons.map(l => {
         const id = lessonId(t.id, l.slug)
-        const cls = ['lesson-link', l.ready ? '' : 'planned', progress.isLessonDone(id) ? 'done' : '', current && current.track === t.id && current.slug === l.slug ? 'current' : ''].filter(Boolean).join(' ')
+        const done = progress.isLessonDone(id)
+        const cls = ['lesson-link', l.ready ? '' : 'planned', done ? 'done' : (progress.triesFor(id) ? 'started' : ''), current && current.track === t.id && current.slug === l.slug ? 'current' : ''].filter(Boolean).join(' ')
         return `<li><a class="${cls}" href="#/lesson/${t.id}/${l.slug}"${l.ready ? '' : ' aria-disabled="true"'}><span class="tick"></span><span>${esc(l.title)}</span>${l.ready ? '' : '<span class="soon">soon</span>'}</a></li>`
       }).join('')}</ul>
     </div>`
@@ -114,16 +116,29 @@ async function showLesson(main, track, slug) {
   try { md = await (await fetch(`content/lessons/${track}/${slug}.md`)).text() } catch (e) { main.innerHTML = '<div class="page"><p>Could not load this lesson.</p></div>'; return }
   const page = document.createElement('div'); page.className = 'page'
   main.innerHTML = ''; main.appendChild(page)
-  const { meta } = await renderLesson(page, md, { lessonId: id })
+  if (unsubLesson) { unsubLesson(); unsubLesson = null }
+  const { meta, tryIds } = await renderLesson(page, md, { lessonId: id, onSolved: () => checkAuto() })
   document.title = `${meta.title || slug} · Chess Learn`
   progress.setLastLesson(id)
 
-  // complete row + prev/next
+  // complete row + prev/next. A lesson with puzzles completes itself when all of them are solved.
   const lessons = allLessons(); const idx = lessons.findIndex(x => x.track === track && x.slug === slug)
   const prev = lessons.slice(0, idx).reverse().find(x => x.ready), next = lessons.slice(idx + 1).find(x => x.ready)
-  const row = document.createElement('div'); row.className = 'complete-row' + (progress.isLessonDone(id) ? ' done' : '')
-  const paintRow = () => { const done = progress.isLessonDone(id); row.classList.toggle('done', done); row.innerHTML = done ? `<span class="msg">Lesson complete.</span>` : `<button class="btn primary" id="complete">Mark lesson complete</button><span class="msg">+10 points, and it counts toward today's streak.</span>`; const b = row.querySelector('#complete'); if (b) b.addEventListener('click', () => { progress.completeLesson(id); sound.play('success'); paintRow() }) }
+  const row = document.createElement('div'); row.className = 'complete-row'
+  const solvedCount = () => tryIds.filter(t => progress.isTryDone(t)).length
+  const paintRow = () => {
+    const done = progress.isLessonDone(id); row.classList.toggle('done', done)
+    if (done) row.innerHTML = `<span class="msg">Lesson complete.</span>${tryIds.length ? `<span class="count">${solvedCount()}/${tryIds.length} puzzles</span>` : ''}`
+    else if (tryIds.length) row.innerHTML = `<span class="msg">Solve the puzzles to complete this lesson.</span><span class="count">${solvedCount()}/${tryIds.length}</span><button class="btn quiet" id="complete">Mark as read instead</button>`
+    else row.innerHTML = `<button class="btn primary" id="complete">Mark as read</button><span class="msg">+10 points, and it counts toward today's streak.</span>`
+    const b = row.querySelector('#complete'); if (b) b.addEventListener('click', () => { progress.completeLesson(id); sound.play('success'); paintRow() })
+  }
+  function checkAuto() {
+    if (!progress.isLessonDone(id) && tryIds.length && solvedCount() === tryIds.length) { progress.completeLesson(id); sound.play('success') }
+    paintRow()
+  }
   paintRow(); page.appendChild(row)
+  unsubLesson = progress.onChange(paintRow)
   const nav = document.createElement('nav'); nav.className = 'lesson-nav'
   nav.innerHTML = `<div>${prev ? `<a href="#/lesson/${prev.track}/${prev.slug}"><span class="eyebrow">Previous</span>${esc(prev.title)}</a>` : ''}</div><div class="next">${next ? `<a href="#/lesson/${next.track}/${next.slug}"><span class="eyebrow">Next</span>${esc(next.title)}</a>` : '<a href="#/"><span class="eyebrow">Next</span>Back to the course</a>'}</div>`
   page.appendChild(nav)

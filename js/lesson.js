@@ -45,9 +45,15 @@ export function parseParams(text) {
 }
 const list = s => s ? s.split(/[,\s]+/).filter(Boolean) : []
 
-export async function renderLesson(container, md, { lessonId, contentBase = 'content/' } = {}) {
+/** `+++ Title` opens a collapsible "read more" section, a bare `+++` closes it. */
+function expandSections(md) {
+  return md.replace(/^\+\+\+[ \t]+(.+)$/gm, (_, t) => `<details class="more"><summary>${esc(t.trim())}</summary><div class="more-body">\n\n`)
+           .replace(/^\+\+\+[ \t]*$/gm, '\n\n</div></details>')
+}
+
+export async function renderLesson(container, md, { lessonId, contentBase = 'content/', onSolved = null } = {}) {
   const { meta, body } = parseFrontmatter(md)
-  const html = marked.parse(body)
+  const html = marked.parse(expandSections(body))
   const sources = Array.isArray(meta.sources) ? meta.sources : []
   container.innerHTML = `
     <article class="lesson">
@@ -61,6 +67,7 @@ export async function renderLesson(container, md, { lessonId, contentBase = 'con
     </article>`
 
   const mounted = []
+  const tryIds = []
   let tryIndex = 0
   for (const blk of container.querySelectorAll('.blk')) {
     const kind = blk.dataset.kind
@@ -82,10 +89,12 @@ export async function renderLesson(container, md, { lessonId, contentBase = 'con
       mounted.push(mountPgnViewer(fig, pgn, { orientation: p.orientation, start: +p.start || 0, id: gameId, onEnd: id => progress.recordGame(id) }))
     } else if (kind === 'try') {
       const fig = document.createElement('figure'); blk.replaceWith(fig)
-      mounted.push(mountExercise(fig, p, { lessonId, index: tryIndex++ }))
+      const ex = mountExercise(fig, p, { lessonId, index: tryIndex++, onSolved })
+      tryIds.push(ex.id)
+      mounted.push(ex)
     }
   }
-  return { meta, mounted }
+  return { meta, mounted, tryIds }
 }
 
 function linkify(s) { return s.replace(/(https?:\/\/[^\s)]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>') }

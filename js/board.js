@@ -3,7 +3,7 @@
 import { Chess } from '../vendor/chess.js/chess.js'
 import { Chessboard, COLOR, INPUT_EVENT_TYPE, BORDER_TYPE } from '../vendor/cm-chessboard/src/Chessboard.js'
 import { Markers } from '../vendor/cm-chessboard/src/extensions/markers/Markers.js'
-import { Arrows } from '../vendor/cm-chessboard/src/extensions/arrows/Arrows.js'
+import { LearnArrows } from './arrows.js'
 import { PromotionDialog, PROMOTION_DIALOG_RESULT_TYPE } from '../vendor/cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js'
 import { sound } from './sound.js'
 
@@ -49,7 +49,7 @@ export class Board {
       },
       extensions: [
         { class: Markers, props: { autoMarkers: null } },
-        { class: Arrows },
+        { class: LearnArrows },
         { class: PromotionDialog },
       ],
     })

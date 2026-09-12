@@ -43,7 +43,9 @@ Markdown with frontmatter (`id`, `track`, `title`, `lede`, `level`, `sources:` l
     caption: …
     ```
 
-Arrow types: `main` (default), `alt`, `bad`. `try` solutions alternate reader move / auto reply, starting with the reader.
+Arrow types: `main` (default), `alt`, `bad`; knight moves draw as an L. `try` solutions alternate reader move / auto reply, starting with the reader.
+
+**Lesson shape (owner's rule):** short core idea → puzzles (`try` blocks, the main body) → a short "Remember" list → long explanations and full games collapsed behind `+++ Read more: title` … `+++` sections. A lesson ticks itself in the sidebar when all its puzzles are solved; "Mark as read" is the fallback for lessons without puzzles.
 
 ## Content rules — non-negotiable
 

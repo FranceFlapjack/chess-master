@@ -70,8 +70,9 @@ export function mountExercise(container, o, ctx = {}) {
     sound.play('success')
     setStatus(o.success || 'Solved.', 'good')
     const first = wrong === 0
-    if (progress.recordTry(id, first)) { /* points added */ }
+    progress.recordTry(id, first)
     board.disableInput()
+    if (ctx.onSolved) ctx.onSolved(id)
   }
   function showHint() { if (o.hint) { hintEl.textContent = o.hint; hintEl.hidden = false } }
   async function reset() {
@@ -103,7 +104,7 @@ export function mountExercise(container, o, ctx = {}) {
 
   if (solved) { container.classList.add('solved'); setStatus('Solved earlier. Reset to play it again.', 'good') }
   arm()
-  return { board, reset }
+  return { id, board, reset }
 }
 
 const wait = ms => new Promise(r => setTimeout(r, ms))

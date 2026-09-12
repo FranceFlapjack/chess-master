@@ -34,6 +34,7 @@ class Progress {
 
   // --- exercises ---
   isTryDone(id) { return !!this.state.tries[id] }
+  triesFor(lessonId) { return Object.keys(this.state.tries).filter(k => k.startsWith(lessonId + '#')).length }
   recordTry(id, firstAttempt) {
     if (this.state.tries[id]) return false
     this.state.tries[id] = { solved: Date.now(), first: !!firstAttempt }
