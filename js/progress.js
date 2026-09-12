@@ -2,9 +2,9 @@
 // Everything lives in one localStorage key; export/import as JSON.
 
 const KEY = 'chess-learn.progress.v1'
-export const POINTS = { lesson: 10, tryFirst: 5, tryLater: 2, puzzle: 3, game: 5 }
+export const POINTS = { lesson: 10, tryFirst: 5, tryLater: 2, puzzle: 3, game: 5, win: 15, draw: 5, loss: 2 }
 
-const empty = () => ({ v: 1, lessons: {}, tries: {}, games: {}, days: {}, total: 0, beginner: false, lastLesson: null })
+const empty = () => ({ v: 1, lessons: {}, tries: {}, games: {}, plays: [], days: {}, total: 0, beginner: false, lastLesson: null })
 
 class Progress {
   constructor() {
@@ -40,6 +40,10 @@ class Progress {
     this.state.tries[id] = { solved: Date.now(), first: !!firstAttempt }
     this.addPoints(firstAttempt ? POINTS.tryFirst : POINTS.tryLater)
     return true
+  }
+  recordPlay({ level, color, result }) {
+    this.state.plays.push({ t: Date.now(), level, color, result })
+    this.addPoints(POINTS[result] || 0)
   }
   recordGame(id) {
     if (this.state.games[id]) return false

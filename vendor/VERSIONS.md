@@ -7,3 +7,4 @@
 | marked | 18.0.12 | MIT | marked/marked.esm.js |
 
 Update by `npm pack <lib>@<ver>` in a scratch folder and copying the same files.
+| stockfish (stockfish.js by nmrugg, lite single-threaded WASM) | 18.0.8 | GPL-3.0 (Copying.txt) | stockfish/stockfish-18-lite-single.{js,wasm} |

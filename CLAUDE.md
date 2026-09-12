@@ -10,7 +10,7 @@ Static site, **no build step, no framework** — deliberate. Plain HTML/CSS/ES m
 
 - Former architect, now a student pilot. Comfortable with HTML/JS and Python. Club-level chess player (~1200+); the beginner track exists for their friends.
 - Wants explanations before implementation, additive development, and no claims that something works without running it.
-- Design is iterated by comment: keep visual decisions in `css/tokens.css` so each comment is a small diff. Minimal, editorial, one accent colour.
+- Design is iterated by comment: keep visual decisions in `css/tokens.css` so each comment is a small diff. Draft 2 follows the owner's metar-taf app: white ground, Helvetica Neue, small uppercase letter-spaced labels, hairline borders, square corners, black filled primary buttons, outlined uppercase secondary buttons, boards centred and full-square. The owner will supply piece and board art; do not redesign those.
 
 ## Run
 
@@ -29,6 +29,7 @@ node scripts/check-content.mjs
 - `index.html` shell; `js/app.js` router + sidebar + home; `js/lesson.js` Markdown → components.
 - `js/board.js` is the single board component (cm-chessboard rendering + chess.js rules + sounds). Every board in the app goes through it.
 - `js/pgn-viewer.js` annotated game viewer; `js/exercise.js` "try it" blocks; `js/progress.js` localStorage progress/points/streak; `js/activity-grid.js` the 12-week grid.
+- `js/play.js` play-vs-computer page; `js/engine/uci.js` is the UCI-over-Worker client every engine (Stockfish now, our own later) goes through; `js/engine/stockfish.js` loads `vendor/stockfish/` (GPL-3, ~7 MB) and defines the strength ladder.
 - `content/curriculum.json` fixes track and lesson order; a lesson shows only when `"ready": true` and `content/lessons/<track>/<slug>.md` exists.
 - `content/games/*.pgn` full games with `{comments}`; shared between lessons.
 

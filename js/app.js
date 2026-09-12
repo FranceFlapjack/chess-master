@@ -3,11 +3,13 @@ import { renderLesson } from './lesson.js'
 import { progress } from './progress.js'
 import { mountActivity } from './activity-grid.js'
 import { sound } from './sound.js'
+import { mountPlay } from './play.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
 let current = null // {track, slug}
 let unsubLesson = null
+let unmountPage = null
 
 const ICON_SOUND_ON = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v4h3l4 3V5L6 8zM13 7a4 4 0 010 6M15.5 4.5a7.5 7.5 0 010 11"/></svg>'
 const ICON_SOUND_OFF = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v4h3l4 3V5L6 8zM13 8l4 4M17 8l-4 4"/></svg>'
@@ -37,7 +39,8 @@ function renderSidebar() {
   const nav = $('#curriculum')
   const open = new Set([...nav.querySelectorAll('.track.open')].map(t => t.dataset.track))
   if (current) open.add(current.track)
-  nav.innerHTML = visibleTracks().map((t, i) => {
+  const playLink = `<a class="nav-play${location.hash.startsWith('#/play') ? ' current' : ''}" href="#/play"><span class="num">▶</span><span class="name">Play vs computer</span></a>`
+  nav.innerHTML = playLink + visibleTracks().map((t, i) => {
     const ready = t.lessons.filter(l => l.ready)
     const done = ready.filter(l => progress.isLessonDone(lessonId(t.id, l.slug))).length
     const pct = ready.length ? Math.round(100 * done / ready.length) : 0
@@ -66,10 +69,12 @@ async function route() {
   const hash = location.hash || '#/'
   const main = $('#main')
   toggleSidebar(false)
+  if (unmountPage) { unmountPage(); unmountPage = null }
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
   if (m) return showLesson(main, m[1], m[2])
   current = null
   renderSidebar()
+  if (hash.startsWith('#/play')) { document.title = 'Play · Chess Learn'; unmountPage = mountPlay(main); window.scrollTo({ top: 0 }); return }
   showHome(main)
 }
 
@@ -86,6 +91,7 @@ function showHome(main) {
         <h1>Learn chess from the games that taught everyone else.</h1>
         <p>Every lesson is built on a real game or a real book, with the board right there in the text so you can play through it and then try it yourself.</p>
       </section>
+      <div class="card continue play-card"><div><span class="eyebrow">Play</span><h3>Against the computer</h3><div class="small">Stockfish 18, seven strengths, from beginner to the Boss.</div></div><a class="btn" href="#/play">Play</a></div>
       ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.trackTitle)}</div></div><a class="btn primary" href="#/lesson/${cont.track}/${cont.slug}">Open lesson</a></div>` : ''}
       <div class="track-grid">
         ${visibleTracks().map((t, i) => {
