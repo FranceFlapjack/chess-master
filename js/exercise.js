@@ -34,14 +34,15 @@ export function mountExercise(container, o, ctx = {}) {
   const hintEl = container.querySelector('.hint')
   const board = new Board(container.querySelector('.board'), { fen: o.fen, orientation })
   let idx = 0, wrong = 0, solved = progress.isTryDone(id), showing = false
+  const isExpected = m => !!solution[idx] && norm(m.san) === norm(solution[idx])
+  board.judge = m => isExpected(m)
 
   function setStatus(text, cls = '') { statusEl.textContent = text; statusEl.className = 'status ' + cls }
   function arm() { if (!solved && !showing) board.enableInput(side, onMove) }
 
   async function onMove(m) {
     board.disableInput()
-    const expected = solution[idx]
-    if (expected && norm(m.san) === norm(expected)) {
+    if (isExpected(m)) {
       idx++
       board.mark(m.to, MARK.good)
       if (idx >= solution.length) return finish()
@@ -56,8 +57,9 @@ export function mountExercise(container, o, ctx = {}) {
       wrong++
       sound.play('fail')
       board.mark(m.to, MARK.bad)
+      board.shakePiece(m.to)
       setStatus(wrong === 1 ? 'Not that one. Try again.' : 'Still not it. The hint may help.', 'bad')
-      await wait(500)
+      await wait(600)
       board.clearMarks(MARK.bad)
       await board.undo({ silent: true })
       if (wrong >= 2) showHint()

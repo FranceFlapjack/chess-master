@@ -35,6 +35,7 @@ export class Board {
     this.el = el
     this.chess = new Chess(o.fen || undefined)
     this.onMove = o.onMove || null
+    this.judge = null // optional (move) => false to suppress the move sound (exercise plays its own)
     this.inputWho = null
     this.cb = new Chessboard(el, {
       position: this.chess.fen(),
@@ -152,7 +153,7 @@ export class Board {
       case INPUT_EVENT_TYPE.validateMoveInput: {
         this._clearInputMarks()
         const legal = this.chess.moves({ square: e.squareFrom, verbose: true }).filter(m => m.to === e.squareTo)
-        if (!legal.length) { this._illegal(); return false }
+        if (!legal.length) return false // illegal square or re-selecting a piece: just snap back, no fuss
         if (legal[0].promotion) {
           const color = this.chess.turn() === 'w' ? COLOR.white : COLOR.black
           this.cb.showPromotionDialog(e.squareTo, color, r => {
@@ -179,17 +180,19 @@ export class Board {
     await this.cb.state.moveInputProcess // let the library finish its own drop animation
     const m = this.chess.move(mv)
     if (!m) return
-    this._sound(m)
+    const ok = this.judge ? this.judge(m) !== false : true // an exercise can veto the move sound
+    if (ok) this._sound(m)
     this._markLast(m)
     await this.cb.setPosition(this.chess.fen(), true)
     this._paintCheck()
     if (this.onMove) this.onMove(m, this)
   }
-  _illegal() {
-    sound.play('illegal')
-    const w = this.el.closest('.board-wrap') || this.el
-    w.classList.remove('shake'); void w.offsetWidth; w.classList.add('shake')
-    setTimeout(() => w.classList.remove('shake'), 300)
+  /** Brief shake of the piece on a square (used for a wrong answer). */
+  shakePiece(square) {
+    const el = this.el.querySelector(`.pieces-layer [data-square="${square}"]`)
+    if (!el) return
+    el.classList.remove('piece-shake'); void el.getBBox(); el.classList.add('piece-shake')
+    setTimeout(() => el.classList.remove('piece-shake'), 450)
   }
 
   // ---- internals ----

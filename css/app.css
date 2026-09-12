@@ -159,8 +159,9 @@ details.more > .more-body { padding-bottom: var(--s-4); }
 
 /* ---------- board ---------- */
 .board-wrap { width: 100%; max-width: var(--board-max); aspect-ratio: 1; position: relative; }
-.board-wrap.shake { animation: shake 260ms ease-in-out; }
-@keyframes shake { 0%,100% { transform: translateX(0) } 25% { transform: translateX(-4px) } 75% { transform: translateX(4px) } }
+/* wrong answer: only the piece shakes (CSS `translate` composes with the SVG transform attribute) */
+.cm-chessboard .pieces-layer .piece-shake { animation: piece-shake 380ms ease-in-out; }
+@keyframes piece-shake { 0%,100% { translate: 0 0 } 20% { translate: -5px 0 } 40% { translate: 5px 0 } 60% { translate: -4px 0 } 80% { translate: 4px 0 } }
 .board-figure { margin: var(--s-5) 0 var(--s-6); }
 .board-figure .board-wrap { border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 8px 24px -12px rgba(50,40,20,0.25); }
 .board-figure figcaption { font-family: var(--font-sans); font-size: var(--fs-1); color: var(--ink-2); margin-top: var(--s-3); max-width: var(--board-max); }
@@ -258,6 +259,6 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
   .lesson-head h1 { font-size: var(--fs-3); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .board-wrap.shake { animation: none; }
+  .cm-chessboard .pieces-layer .piece-shake { animation: none; }
   .switch::after, .track-head .bar i { transition: none; }
 }
