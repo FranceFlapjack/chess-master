@@ -1,71 +1,75 @@
-/* Design tokens — the one file to tweak between design drafts. */
+/* Design tokens — the one file to tweak between design drafts.
+   Draft 2 (2026-09-12): metar-taf language. White ground, near-black ink, Helvetica Neue,
+   small uppercase letter-spaced labels, hairline borders, square corners. */
 :root {
   /* ground & ink */
-  --bg: #f6f2ea;
-  --surface: #fffdf8;
-  --surface-2: #f0eadf;
-  --ink: #1e1c18;
-  --ink-2: #625c52;
-  --ink-3: #9a9285;
-  --line: #e4dccf;
-  --line-2: #d3c9b8;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f5f5;
+  --ink: #111111;
+  --ink-2: #555555;
+  --ink-3: #aaaaaa;
+  --line: #e6e6e6;
+  --line-2: #cccccc;
 
-  /* single accent, used for interactive state only */
-  --accent: #3f6b5b;
+  /* interactive: black, like metar-taf's buttons */
+  --accent: #111111;
   --accent-ink: #ffffff;
-  --accent-soft: #e2ece6;
+  --accent-soft: #f0f0f0;
 
-  /* semantic */
-  --good: #3f6b5b;
-  --bad: #b04a3a;
-  --warn: #c48a2c;
+  /* semantic (used only on the board and puzzle states) */
+  --good: #2f7a4f;
+  --bad: #c00000;
+  --warn: #7a5c00;
 
-  /* board */
+  /* board — colours the owner approved; piece and board art to come from the owner later */
   --sq-light: #efe5d1;
   --sq-dark: #b39877;
   --sq-coord-light: #b39877;
   --sq-coord-dark: #efe5d1;
   --sq-last: rgba(214, 170, 68, 0.55);
-  --sq-from: rgba(63, 107, 91, 0.35);
-  --sq-check: rgba(176, 74, 58, 0.65);
-  --sq-hint: rgba(63, 107, 91, 0.30);
-  --sq-dot: rgba(30, 28, 24, 0.22);
-  --arrow-main: #3f6b5b;
+  --sq-from: rgba(17, 17, 17, 0.18);
+  --sq-check: rgba(192, 0, 0, 0.6);
+  --sq-hint: rgba(17, 17, 17, 0.16);
+  --sq-dot: rgba(17, 17, 17, 0.22);
+  --arrow-main: #2f7a4f;
   --arrow-alt: #c48a2c;
-  --arrow-bad: #b04a3a;
+  --arrow-bad: #c00000;
   --board-anim: 220ms;
   --board-max: 520px;
 
   /* type */
-  --font-serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --fs-0: 0.8125rem;
-  --fs-1: 0.9375rem;
-  --fs-2: 1.0625rem;   /* body */
-  --fs-3: 1.375rem;
-  --fs-4: 1.875rem;
-  --fs-5: 2.5rem;
+  --font-sans: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: var(--font-sans);
+  --font-mono: "Courier New", Courier, monospace;
+  --fs-0: 11px;
+  --fs-1: 13px;
+  --fs-2: 15px;   /* body */
+  --fs-3: 18px;
+  --fs-4: 22px;
+  --fs-5: 28px;
   --lh: 1.6;
-  --measure: 66ch;
+  --measure: 640px;
+  --track: 0.1em;   /* letter-spacing for uppercase labels */
 
   /* space & shape */
-  --s-1: 0.25rem;
-  --s-2: 0.5rem;
-  --s-3: 0.75rem;
-  --s-4: 1rem;
-  --s-5: 1.5rem;
-  --s-6: 2rem;
-  --s-7: 3rem;
-  --s-8: 4.5rem;
-  --radius: 6px;
-  --radius-lg: 10px;
-  --sidebar-w: 280px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --radius: 0;
+  --radius-lg: 0;
+  --sidebar-w: 260px;
+  --page-w: 760px;
 
-  /* activity grid levels */
-  --act-0: #ebe5d9;
-  --act-1: #c9dccf;
-  --act-2: #9dbfab;
-  --act-3: #6d9c86;
-  --act-4: #3f6b5b;
+  /* activity grid levels: greys to black */
+  --act-0: #eeeeee;
+  --act-1: #cfcfcf;
+  --act-2: #9a9a9a;
+  --act-3: #555555;
+  --act-4: #111111;
 }
