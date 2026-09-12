@@ -2,7 +2,7 @@
 // as long as the worker speaks UCI lines over postMessage.
 export class UciEngine {
   constructor(workerUrl, { name = 'engine', type = 'classic' } = {}) {
-    this.name = name
+    this.name = name; this.url = workerUrl; this.type = type
     this.worker = new Worker(workerUrl, { type })
     this.listeners = new Set()
     this.lastInfo = null
@@ -40,6 +40,15 @@ export class UciEngine {
     return mv && mv !== '(none)' ? mv : null
   }
   stop() { this.send('stop') }
+  /** Hard stop: kill the worker and start a fresh one (for engines that cannot interrupt a search). */
+  restart() {
+    this.worker.terminate()
+    for (const fn of this.listeners) fn('bestmove (none)') // release anyone awaiting a move
+    this.listeners.clear()
+    this.worker = new Worker(this.url, { type: this.type })
+    this.worker.onmessage = e => this._line(typeof e.data === 'string' ? e.data : String(e.data))
+    this.readyPromise = this._init()
+  }
   destroy() { this.worker.terminate(); this.listeners.clear() }
 }
 

@@ -32,6 +32,10 @@
   </div>
 </div>
 <div class="scrim" id="scrim"></div>
+<script>
+// Test hook: `?noraf=1` swaps animation frames for timers so board animations complete in hidden tabs (automated checks only).
+if (/[?&]noraf=1/.test(location.search)) { window.requestAnimationFrame = cb => setTimeout(() => cb(performance.now()), 16); window.cancelAnimationFrame = id => clearTimeout(id) }
+</script>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

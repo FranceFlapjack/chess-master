@@ -31,9 +31,14 @@ export class Search {
     for (const k of this.killers) { k[0] = 0; k[1] = 0 }
     let best = 0, bestScore = 0, bestDepth = 0, pv = []
     const start = Date.now()
+    let prev = 0
     for (let d = 1; d <= maxDepth; d++) {
-      const score = this.negamax(board, d, -MATE - 1, MATE + 1, 0)
+      // aspiration window around the previous score, widened on failure
+      let alpha = d >= 4 ? prev - 40 : -MATE - 1, beta = d >= 4 ? prev + 40 : MATE + 1
+      let score = this.negamax(board, d, alpha, beta, 0)
+      if (!this.stopped && (score <= alpha || score >= beta)) score = this.negamax(board, d, -MATE - 1, MATE + 1, 0)
       if (this.stopped && d > 1) break
+      prev = score
       const m = this.ttMove[board.lo & TT_MASK]
       if (m) { best = m; bestScore = score; bestDepth = d; pv = this.extractPv(board, d) }
       if (this.onInfo) this.onInfo({ depth: d, score, nodes: this.nodes, time: Date.now() - start, pv: pv.map(x => board.moveToUci(x)) })
@@ -88,15 +93,19 @@ export class Search {
       if (s >= beta) return beta
     }
 
+    // futility: at low depth, quiet moves from a clearly lost static position rarely rescue it
+    const futile = !inCheck && depth <= 2 && Math.abs(alpha) < MATE - MAX_PLY && evaluate(b) + 120 * depth <= alpha
     const moves = b.generate()
     this.order(b, moves, ttMove, ply)
     let bestMove = 0, flag = TT_ALPHA, legal = 0
     const origAlpha = alpha
     for (let i = 0; i < moves.length; i++) {
       const m = moves[i]
+      const quiet = !(mFlags(m) & (F_CAPTURE | F_PROMO))
+      if (futile && quiet && legal > 0 && m !== ttMove && m !== this.killers[ply][0]) continue
       if (!b.make(m)) continue
       legal++
-      const quiet = !(mFlags(m) & (F_CAPTURE | F_PROMO))
+      if (futile && quiet && !b.inCheck()) { b.unmake(m); continue }
       let score
       if (legal === 1) score = -this.negamax(b, depth - 1, -beta, -alpha, ply + 1)
       else {

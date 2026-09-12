@@ -5,7 +5,7 @@ A chess course as a website. Every lesson is built on a real game or a real book
 Static site, no build. Run locally:
 
 ```
-python3 -m http.server 8000
+python3 scripts/serve.py
 ```
 
 Open http://localhost:8000. Validate content with `node scripts/check-content.mjs`.

@@ -52,12 +52,22 @@ It is not "a whole other program". The engine is a separate module in this repo 
 - **Ladder so far (2026-09-12, 300 ms per move each side):** vs Stockfish@1500 +2 =0 −0; @1800 +3 =0 −1; @2000 +3 =0 −1. Caveat: Stockfish's Elo limiter is calibrated for longer thinking times, so at 300 ms the limited engine is probably weaker than its label; treat these as a relative yardstick, and rerun with `botMs=sfMs=1000` before quoting a number.
 - Known limits: `stop` cannot interrupt a running search (searches are time-bounded instead); no opening book; no pawn-structure or king-safety terms yet.
 
-### Bot phase 2 — make it strong (~2–4 weeks)
-- Transposition table with Zobrist hashing; null-move pruning; late-move reductions; check extensions; aspiration windows.
-- Own move generator (bitboards) for 10–50× more nodes per second.
-- Evaluation terms: pawn structure, king safety, mobility, passed pawns, rook on open file.
-- Opening book from the Lichess masters database (CC0) and an endgame safety net (basic mates).
-- Expected strength: ~2000–2200.
+### Bot phase 2 — make it strong — **version 0.2 delivered 2026-09-12**
+- Evaluation v2: doubled/isolated/passed pawns, king pawn shelter and open files near the king, mobility for all pieces, rooks on open/semi-open files and the seventh, bishop pair, insufficient-material draws, mop-up bonus to finish won endgames, tempo.
+- Search: aspiration windows and futility pruning added to the phase-1 set.
+- Opening book: `scripts/build-book.mjs` compiles 84 curated mainline openings (mainstream theory, as in Wikibooks' Chess Opening Theory) into `js/engine/bot/book.js`; the bot follows it for the first 12 moves and picks randomly among book moves, so games vary. The Lichess explorer API now requires authorisation, so the CC0 masters database could not be used directly; revisit with a token if a bigger book is wanted.
+- Stop: the search cannot be interrupted, so the site restarts the bot's worker on take-back / new game (`UciEngine.restart`).
+- Yardstick changed: Stockfish at a **fixed node count** (`node scripts/match.mjs 6 nodes:50000`) instead of UCI_Elo, which is not calibrated for 300 ms moves. `BOT_DIR=<dir>` plays an older build for before/after comparisons.
+- **Ladder, fixed-node Stockfish, 300 ms per bot move (2026-09-12):**
+
+  | Stockfish nodes/move | v0.1 | v0.2 |
+  |---|---|---|
+  | 2 000 | +3 =0 −3 | +5 =1 −0 |
+  | 8 000 | +0 =0 −6 | +0 =0 −6 |
+  | 20 000 | +0 =0 −6 | +0 =0 −6 |
+
+  So v0.2 is clearly stronger than v0.1, and the bot at 300 ms sits between Stockfish at 2k and 8k nodes. Next rungs to add: 3k and 5k nodes, and longer bot times.
+- Still to do here: bitboard move generator for speed; pawn hash; a learned evaluation (phase 3).
 
 ### Bot phase 3 — a learned evaluation (optional, the "smartest" part)
 - Train a small NNUE-style network offline in Python on Lichess evaluations (CC0), export weights to JSON, run inference in JS.

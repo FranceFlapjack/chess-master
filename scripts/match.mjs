@@ -1,17 +1,24 @@
 #!/usr/bin/env node
 // Match runner: Chess Learn Bot vs Stockfish (Elo-limited) under Node.
-// Usage: node scripts/match.mjs [games=4] [elo=1500] [botMs=300] [sfMs=300]
+// Usage: node scripts/match.mjs [games=4] [opponent=nodes:50000|elo:1800] [botMs=300] [sfMs=300]
+//   BOT_DIR=/path/to/other/bot node scripts/match.mjs …   plays a different build of the bot (for before/after tests)
 import { Chess } from '../vendor/chess.js/chess.js'
-import { BotUci } from '../js/engine/bot/uci.js'
 import { loadStockfish } from './stockfish-node.mjs'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
-const [games = 4, elo = 1500, botMs = 300, sfMs = 300] = process.argv.slice(2).map(Number)
+const argv = process.argv.slice(2)
+const games = +argv[0] || 4, spec = argv[1] || 'nodes:50000', botMs = +argv[2] || 300, sfMs = +argv[3] || 300
+const [mode, amount] = spec.includes(':') ? spec.split(':') : ['elo', spec]
+const botDir = process.env.BOT_DIR ? path.resolve(process.env.BOT_DIR) : path.resolve('js/engine/bot')
+const { BotUci } = await import(pathToFileURL(path.join(botDir, 'uci.js')).href)
 const sf = await loadStockfish()
-sf.send('setoption name UCI_LimitStrength value true'); sf.send(`setoption name UCI_Elo value ${elo}`)
+if (mode === 'elo') { sf.send('setoption name UCI_LimitStrength value true'); sf.send(`setoption name UCI_Elo value ${amount}`) }
+const sfGo = mode === 'nodes' ? `go nodes ${amount}` : `go movetime ${sfMs}`
 let botOut = []
 const bot = new BotUci(l => botOut.push(l))
 const botMove = moves => { botOut = []; bot.handle(`position startpos${moves.length ? ' moves ' + moves.join(' ') : ''}`); bot.handle(`go movetime ${botMs}`); return botOut.find(l => l.startsWith('bestmove')).split(' ')[1] }
-const sfMove = async moves => { sf.send(`position startpos${moves.length ? ' moves ' + moves.join(' ') : ''}`); const p = sf.waitFor(l => l.startsWith('bestmove')); sf.send(`go movetime ${sfMs}`); return (await p).split(' ')[1] }
+const sfMove = async moves => { sf.send(`position startpos${moves.length ? ' moves ' + moves.join(' ') : ''}`); const p = sf.waitFor(l => l.startsWith('bestmove')); sf.send(sfGo); return (await p).split(' ')[1] }
 
 const tally = { win: 0, draw: 0, loss: 0 }
 for (let g = 0; g < games; g++) {
@@ -33,5 +40,5 @@ for (let g = 0; g < games; g++) {
   console.log(`game ${g + 1}: bot as ${botWhite ? 'White' : 'Black'} — ${result} (${botResult}) in ${Math.ceil(moves.length / 2)} moves`)
   console.log('  ' + chess.pgn().replace(/\[[^\]]*\]\n?/g, '').trim().slice(0, 400))
 }
-console.log(`\nBot vs Stockfish@${elo} (${botMs}ms / ${sfMs}ms): +${tally.win} =${tally.draw} -${tally.loss}`)
+console.log(`\n${path.basename(botDir)} vs Stockfish@${spec} (bot ${botMs}ms${mode === 'nodes' ? '' : ` / sf ${sfMs}ms`}): +${tally.win} =${tally.draw} -${tally.loss}`)
 process.exit(0)

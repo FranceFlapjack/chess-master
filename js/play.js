@@ -171,7 +171,7 @@ export function mountPlay(main) {
     getEngine().then(() => { if (!playing) setStatus('Engine ready. Press New game.') })
   })
   $('#level').addEventListener('change', e => { level = LEVELS.find(l => l.id === +e.target.value); prefs.level = level.id; save(prefs); if (engine) applyLevel(engine, level) })
-  $('.seg').addEventListener('click', e => {
+  main.querySelector('.play-side').addEventListener('click', e => {
     const b = e.target.closest('[data-color]'); if (!b) return
     userColor = b.dataset.color; prefs.color = userColor; save(prefs)
     main.querySelectorAll('[data-color]').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-checked', x === b) })

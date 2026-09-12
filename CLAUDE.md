@@ -15,9 +15,11 @@ Static site, **no build step, no framework** — deliberate. Plain HTML/CSS/ES m
 ## Run
 
 ```
-python3 -m http.server 8000
+python3 scripts/serve.py
 ```
 then open http://localhost:8000. ES modules and `fetch` do not work over `file://`.
+
+When testing in the in-app Browser pane, keep the pane visible: hidden tabs pause `requestAnimationFrame`, so board animations (and anything awaiting them, like the play page's engine reply) stall until the tab is shown again. The dev server (`scripts/serve.py`) sends `Cache-Control: no-store`; if the browser still runs stale modules, fetch them with `{cache: 'reload'}` once.
 
 Validate content before committing:
 ```
