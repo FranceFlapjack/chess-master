@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
-  <!-- variant B: knight silhouette on one light square, nothing else -->
-  <rect x="1" y="1" width="30" height="30"/>
-  <rect x="1" y="1" width="15" height="15" fill="currentColor" stroke="none"/>
-  <rect x="16" y="16" width="15" height="15" fill="currentColor" stroke="none"/>
-  <path fill="currentColor" stroke="none" d="M20.2 13.6 C20.2 11.2 21.4 9.4 23 8.3 L22.6 6.4 L24.2 7.2 C24.6 7 25.1 6.9 25.6 7 L26.4 5.8 L26.8 7.4 C28.2 8.2 29 9.7 29 11.6 V13.6 Z"/>
-</svg>

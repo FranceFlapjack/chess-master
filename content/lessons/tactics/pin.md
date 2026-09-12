@@ -8,6 +8,7 @@ sources:
   - Morphy – Duke of Brunswick and Count Isouard, Paris 1858 ("the Opera Game"). Move list checked against Wikipedia, https://en.wikipedia.org/wiki/Opera_Game
   - Légal's mate (Kermur de Légal, Paris, c. 1750), the standard illustration that a pinned piece may still move.
   - Composed positions for this lesson, checked with Stockfish 18.
+  - Photograph of Paul Morphy (1859), public domain, via Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Paul_Morphy_1859_photo_portrait.jpg
 ---
 
 ## The idea
@@ -19,6 +20,9 @@ fen: r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3
 arrows: b5c6
 highlight: e8
 caption: After 3.Bb5 the knight on c6 is pinned to the king. It cannot move.
+image: morphy-1859.jpg
+alt: Paul Morphy, photographed in 1859
+credit: Paul Morphy, 1859. Wikimedia Commons, public domain.
 ```
 
 **A pinned piece is a target.** It cannot run, so attack it again: with a pawn, a rook, or another piece. That is the whole technique. Morphy's Opera Game is nothing but pins and piling on.

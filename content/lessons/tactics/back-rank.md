@@ -7,6 +7,7 @@ level: 1
 sources:
   - Bernstein – Capablanca, Moscow 1914 (exhibition game), final position as given in the Wikipedia article "Back-rank checkmate" (CC BY-SA), https://en.wikipedia.org/wiki/Back-rank_checkmate
   - Composed positions for this lesson, checked with Stockfish 18.
+  - Photograph of Capablanca (1920), public domain, via Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Jos%C3%A9_Ra%C3%BAl_Capablanca_1920.jpg
 ---
 
 ## The idea
@@ -18,6 +19,9 @@ fen: 6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1
 arrows: a1a8
 highlight: g8
 caption: The shape to remember. Ra8 is mate: the king has no square, and nothing can block or capture.
+image: capablanca-1920.jpg
+alt: José Raúl Capablanca in 1920
+credit: José Raúl Capablanca, 1920. Wikimedia Commons, public domain.
 ```
 
 **Two questions to ask every move.** How many of my pieces guard my back rank, and could one of them be pulled away? The same for the opponent. A piece that guards the back rank and also does another job is **overloaded**, and overloaded pieces are the target.

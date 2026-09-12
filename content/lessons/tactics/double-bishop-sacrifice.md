@@ -7,6 +7,7 @@ level: 3
 sources:
   - Lasker – Bauer, Amsterdam 1889. Move list checked against Wikipedia, https://en.wikipedia.org/wiki/Lasker_versus_Bauer,_Amsterdam,_1889
   - Puzzle positions taken from the game itself, checked with Stockfish 18.
+  - Photograph of Emanuel Lasker, Bundesarchiv Bild 102-00457, CC BY-SA 3.0 DE, via Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_102-00457,_Emanuel_Lasker.jpg
 ---
 
 ## The idea
@@ -18,6 +19,9 @@ fen: r4rk1/1b2bppp/ppq1p3/2ppB2n/5P2/1P1BP3/P1PPQ1PP/R4RK1 w - - 0 15
 arrows: d3h7, e5g7:alt, e2h5:alt
 highlight: h7, g7
 caption: Lasker – Bauer after 14…Nxh5. Both bishops point at the king, the queen can reach h5 with check, and the rook on f1 can lift to f3.
+image: lasker-bundesarchiv.jpg
+alt: Emanuel Lasker
+credit: Emanuel Lasker. Bundesarchiv, Bild 102-00457, CC BY-SA 3.0 DE, via Wikimedia Commons.
 ```
 
 **The check before you start.** After both sacrifices the king stands on g7 or h7 with no pawns. Your queen must give check at once, and your rook must be able to join within two moves. If either is missing, you have given two bishops for two pawns.
