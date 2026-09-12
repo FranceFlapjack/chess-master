@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+  <!-- 2×2 board -->
+  <rect x="1" y="1" width="30" height="30"/>
+  <rect x="1" y="1" width="15" height="15" fill="currentColor" stroke="none"/>
+  <rect x="16" y="16" width="15" height="15" fill="currentColor" stroke="none"/>
+  <!-- dark pawn on the light square (top right) -->
+  <g transform="translate(23.5 8.5)">
+    <circle cx="0" cy="-3.2" r="2.1" fill="currentColor" stroke="none"/>
+    <path d="M-2.6 3.6 L-1.5 -0.4 L1.5 -0.4 L2.6 3.6 Z M-3.4 4.6 H3.4" fill="currentColor" stroke="none"/>
+    <path d="M-3.4 4.6 H3.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+  <!-- light pawn on the dark square (bottom right) -->
+  <g transform="translate(23.5 23.5)" stroke="#fff" stroke-width="1.2">
+    <circle cx="0" cy="-3.2" r="2.1" fill="none"/>
+    <path d="M-2.6 3.6 L-1.5 -0.4 L1.5 -0.4 L2.6 3.6 Z" fill="none"/>
+    <path d="M-3.4 4.6 H3.4" stroke-linecap="round"/>
+  </g>
+</svg>

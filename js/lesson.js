@@ -74,8 +74,9 @@ export async function renderLesson(container, md, { lessonId, contentBase = 'con
     const src = decodeURIComponent(blk.dataset.src)
     const p = parseParams(src)
     if (kind === 'board') {
-      const fig = document.createElement('figure'); fig.className = 'board-figure'
-      fig.innerHTML = `<div class="board-wrap"><div class="board"></div></div>${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ''}`
+      const fig = document.createElement('figure'); fig.className = 'board-figure' + (p.image ? ' with-aside' : '')
+      const aside = p.image ? `<div class="board-aside"><img src="${esc(contentBase + 'images/' + p.image)}" alt="${esc(p.alt || '')}">${p.credit ? `<div class="credit">${esc(p.credit)}</div>` : ''}</div>` : ''
+      fig.innerHTML = `<div class="board-wrap"><div class="board"></div></div>${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ''}${aside}`
       blk.replaceWith(fig)
       mounted.push(new Board(fig.querySelector('.board'), {
         fen: p.fen, orientation: p.orientation, arrows: list(p.arrows), highlight: list(p.highlight),

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+  <!-- 2×2 grid of lines (nine intersections), same footprint as the chess board -->
+  <path d="M5 5 H27 M5 16 H27 M5 27 H27 M5 5 V27 M16 5 V27 M27 5 V27"/>
+  <!-- black stone at the centre, white stone on a corner intersection -->
+  <circle cx="16" cy="16" r="4.4" fill="currentColor" stroke="none"/>
+  <circle cx="27" cy="5" r="4.4" fill="#fff"/>
+</svg>
