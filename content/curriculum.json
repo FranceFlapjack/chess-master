@@ -1,0 +1,110 @@
+{
+  "tracks": [
+    {
+      "id": "first-steps", "title": "First steps", "beginner": true,
+      "blurb": "For someone who has never played. The board, the pieces, checkmate, notation and the first mating technique.",
+      "lessons": [
+        { "slug": "the-board-and-the-pieces", "title": "The board and how the pieces move" },
+        { "slug": "check-checkmate-stalemate", "title": "Check, checkmate and stalemate" },
+        { "slug": "castling-and-en-passant", "title": "Castling, en passant and promotion" },
+        { "slug": "reading-notation", "title": "Reading chess notation" },
+        { "slug": "value-of-the-pieces", "title": "What the pieces are worth" },
+        { "slug": "three-opening-rules", "title": "The three opening rules" },
+        { "slug": "mate-with-the-queen", "title": "Mating with the queen" }
+      ]
+    },
+    {
+      "id": "thinking", "title": "How to think",
+      "blurb": "The habits that separate a 1200 from a 1600: a fixed routine before every move, and an honest look at the position.",
+      "lessons": [
+        { "slug": "checks-captures-attacks", "title": "Checks, captures, attacks" },
+        { "slug": "evaluating-a-position", "title": "Evaluating a position" },
+        { "slug": "blunder-check", "title": "The blunder check" }
+      ]
+    },
+    {
+      "id": "tactics", "title": "Tactics",
+      "blurb": "The named patterns that decide most games under 2000, each shown in the game that made it famous.",
+      "lessons": [
+        { "slug": "pin", "title": "The pin" },
+        { "slug": "fork", "title": "The fork" },
+        { "slug": "skewer", "title": "The skewer" },
+        { "slug": "discovered-attack", "title": "Discovered attack and discovered check" },
+        { "slug": "removing-the-defender", "title": "Removing the defender" },
+        { "slug": "deflection-and-decoy", "title": "Deflection and decoy" },
+        { "slug": "zwischenzug", "title": "The in-between move" },
+        { "slug": "back-rank", "title": "Back-rank weakness" },
+        { "slug": "greek-gift", "title": "The Greek Gift", "ready": true },
+        { "slug": "double-bishop-sacrifice", "title": "The double bishop sacrifice" },
+        { "slug": "clearance-and-interference", "title": "Clearance and interference" }
+      ]
+    },
+    {
+      "id": "openings", "title": "Openings",
+      "blurb": "Principles first, then a compact repertoire you can actually remember, with master statistics for every line.",
+      "lessons": [
+        { "slug": "opening-principles", "title": "Opening principles" },
+        { "slug": "italian-game", "title": "The Italian Game" },
+        { "slug": "ruy-lopez", "title": "The Ruy Lopez, an introduction" },
+        { "slug": "london-system", "title": "The London System" },
+        { "slug": "caro-kann", "title": "Caro-Kann against 1.e4" },
+        { "slug": "open-games-as-black", "title": "1…e5 against 1.e4" },
+        { "slug": "queens-gambit-declined", "title": "Queen's Gambit Declined" },
+        { "slug": "kings-indian", "title": "King's Indian, an introduction" },
+        { "slug": "opening-traps", "title": "Traps worth knowing" },
+        { "slug": "leaving-the-book", "title": "What to do when you leave the book" }
+      ]
+    },
+    {
+      "id": "strategy", "title": "Middlegame strategy",
+      "blurb": "Pawn structures, good and bad pieces, and how to make a plan when there is no tactic.",
+      "lessons": [
+        { "slug": "pawn-structure", "title": "Pawn structure: the skeleton of the game" },
+        { "slug": "isolated-pawn", "title": "The isolated queen's pawn" },
+        { "slug": "outposts", "title": "Outposts and weak squares" },
+        { "slug": "open-files", "title": "Open files and the seventh rank" },
+        { "slug": "bishops", "title": "Good bishop, bad bishop, bishop pair" },
+        { "slug": "attacking-the-king", "title": "Attacking the castled king" },
+        { "slug": "opposite-castling", "title": "Opposite-side castling" },
+        { "slug": "prophylaxis", "title": "Prophylaxis and overprotection" },
+        { "slug": "making-a-plan", "title": "Making a plan" },
+        { "slug": "converting", "title": "Converting an advantage" }
+      ]
+    },
+    {
+      "id": "endgames", "title": "Endgames",
+      "blurb": "The handful of positions every club player must know cold, taught the way Capablanca taught them.",
+      "lessons": [
+        { "slug": "king-and-pawn", "title": "King and pawn: opposition and the square" },
+        { "slug": "lucena", "title": "The Lucena position" },
+        { "slug": "philidor", "title": "The Philidor position" },
+        { "slug": "rook-activity", "title": "Rook activity and the seventh rank" },
+        { "slug": "minor-pieces", "title": "Minor-piece endings" },
+        { "slug": "queen-vs-pawn", "title": "Queen against pawn" },
+        { "slug": "converting-a-piece", "title": "Converting an extra piece" },
+        { "slug": "basic-mates", "title": "Basic mates, a refresher" }
+      ]
+    },
+    {
+      "id": "mates", "title": "Checkmate patterns",
+      "blurb": "The named mates, each with the game it comes from. Recognise the shape and the calculation does itself.",
+      "lessons": [
+        { "slug": "back-rank-mate", "title": "Back-rank mate" },
+        { "slug": "smothered-mate", "title": "Smothered mate and Philidor's legacy" },
+        { "slug": "anastasia-arabian", "title": "Anastasia's and the Arabian mate" },
+        { "slug": "boden-and-greco", "title": "Boden's and Greco's mate" },
+        { "slug": "epaulette-dovetail", "title": "Epaulette and dovetail mates" },
+        { "slug": "immortal-games", "title": "The Immortal and the Evergreen" }
+      ]
+    },
+    {
+      "id": "games", "title": "Study a whole game",
+      "blurb": "Classic games played through move by move, with a pause at each turning point to ask what you would play.",
+      "lessons": [
+        { "slug": "morphy-opera-game", "title": "Morphy – Duke of Brunswick and Count Isouard, Paris 1858" },
+        { "slug": "fischer-byrne-1956", "title": "Byrne – Fischer, New York 1956" },
+        { "slug": "kasparov-topalov-1999", "title": "Kasparov – Topalov, Wijk aan Zee 1999" }
+      ]
+    }
+  ]
+}
