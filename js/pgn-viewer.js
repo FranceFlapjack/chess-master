@@ -36,7 +36,7 @@ const ICONS = {
 export function mountPgnViewer(container, pgnText, { orientation = 'w', start = 0, onEnd = null, id = null } = {}) {
   const game = parsePgn(pgnText)
   const h = game.headers
-  const players = `${h.White || 'White'} – ${h.Black || 'Black'}`
+  const players = h.Black ? `${h.White || 'White'} – ${h.Black}` : (h.White || 'White')
   const meta = [h.Event, h.Site, h.Date ? h.Date.replace(/\.\?\?/g, '').replace(/\./g, '-') : null].filter(x => x && x !== '?').join(', ')
 
   container.className = 'game'

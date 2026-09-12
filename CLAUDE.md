@@ -10,6 +10,7 @@ Static site, **no build step, no framework** — deliberate. Plain HTML/CSS/ES m
 
 - Former architect, now a student pilot. Comfortable with HTML/JS and Python. Club-level chess player (~1200+); the beginner track exists for their friends.
 - Wants explanations before implementation, additive development, and no claims that something works without running it.
+- Likes the "Read more" game viewers (moves + description). Openings are the top priority. Does not want progress export/import in the UI (removed 2026-09-13).
 - Design is iterated by comment: keep visual decisions in `css/tokens.css` so each comment is a small diff. Draft 2 follows the owner's metar-taf app: white ground, Helvetica Neue, small uppercase letter-spaced labels, hairline borders, square corners, black filled primary buttons, outlined uppercase secondary buttons, boards centred and full-square. The owner will supply piece and board art; do not redesign those.
 
 ## Run
@@ -33,6 +34,7 @@ The second asks Stockfish whether every reader move in every `try` block is its 
 - `index.html` shell; `js/app.js` router + sidebar + home; `js/lesson.js` Markdown → components.
 - `js/board.js` is the single board component (cm-chessboard rendering + chess.js rules + sounds). Every board in the app goes through it.
 - `js/pgn-viewer.js` annotated game viewer; `js/exercise.js` "try it" blocks; `js/progress.js` localStorage progress/points/streak; `js/activity-grid.js` the 12-week grid.
+- `js/openings.js` the Openings book page (`#/openings/<id>`): every line from `scripts/build-book.mjs` (which also emits `content/openings/lines.json` with family, name and note) shown in the game viewer with drills from either side. Add or rename lines in the builder, never in the JSON.
 - `js/play.js` play-vs-computer page; `js/engine/uci.js` is the UCI-over-Worker client every engine (Stockfish now, our own later) goes through; `js/engine/stockfish.js` loads `vendor/stockfish/` (GPL-3, ~7 MB) and defines the strength ladder.
 - `js/engine/bot/` is our own engine (board → eval → search → uci → worker). Before touching `board.js` run `node scripts/perft.mjs`; after any search/eval change run `node scripts/match.mjs 4 1500` and record the score in ROADMAP.md.
 - `content/curriculum.json` fixes track and lesson order; a lesson shows only when `"ready": true` and `content/lessons/<track>/<slug>.md` exists.

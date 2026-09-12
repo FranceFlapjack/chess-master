@@ -15,7 +15,7 @@ Progress 2026-09-13: **Tactics track complete, 11/11 lessons**, every reader mov
 
 Write the tracks in this order, one branch each, running both checkers on every commit:
 1. Tactics — done.
-1b. Openings — **done 2026-09-13** (owner's priority): principles, Italian, Ruy Lopez, London, Caro-Kann, 1…e5 as Black, QGD, King's Indian, traps, leaving the book. Each has a "play the main line" drill (`type: line` puzzles accept any move within ~50 cp of best), a trap, and where available a verified model game (Evergreen 1852, Deep Blue–Kasparov 1997 g6, Byrne–Fischer 1956, Fischer–Spassky 1972 g6). Live master statistics still blocked by the Lichess explorer API needing a token.
+1b. Openings — **done 2026-09-13** (owner's priority): principles, Italian, Ruy Lopez, London, Caro-Kann, 1…e5 as Black, QGD, King's Indian, traps, leaving the book. Each has a "play the main line" drill (`type: line` puzzles accept any move within ~50 cp of best), a trap, and where available a verified model game (Evergreen 1852, Deep Blue–Kasparov 1997 g6, Byrne–Fischer 1956, Fischer–Spassky 1972 g6). Live master statistics still blocked by the Lichess explorer API needing a token. **Openings book page** (2026-09-13): all 84 book lines with family, name and idea, playable in the viewer and drillable from either side.
 2. Checkmate patterns (6).
 3. Endgames (8) — lean on Capablanca ch. 1–2 (public domain).
 4. Openings (10) — Wikibooks lines + Lichess explorer stats (needs `js/explorer.js`).

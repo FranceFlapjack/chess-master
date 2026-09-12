@@ -32,8 +32,8 @@
   --sq-check: rgba(192, 0, 0, 0.6);
   --sq-hint: rgba(17, 17, 17, 0.16);
   --sq-dot: rgba(17, 17, 17, 0.22);
-  --arrow-main: #2f7a4f;
-  --arrow-alt: #c48a2c;
+  --arrow-main: #2a7d4f;
+  --arrow-alt: #e8780a;
   --arrow-bad: #c00000;
   --board-anim: 220ms;
   --board-max: 520px;

@@ -4,6 +4,7 @@ import { progress } from './progress.js'
 import { mountActivity } from './activity-grid.js'
 import { sound } from './sound.js'
 import { mountPlay } from './play.js'
+import { mountOpenings } from './openings.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -21,8 +22,6 @@ async function boot() {
   const mute = $('#mute')
   const paintMute = () => { mute.innerHTML = sound.muted ? ICON_SOUND_OFF : ICON_SOUND_ON; mute.setAttribute('aria-pressed', String(sound.muted)); mute.title = sound.muted ? 'Sound off' : 'Sound on' }
   paintMute(); mute.addEventListener('click', () => { sound.toggle(); paintMute() })
-  $('#export').addEventListener('click', exportProgress)
-  $('#import').addEventListener('change', importProgress)
   $('#menu').addEventListener('click', () => toggleSidebar())
   $('#scrim').addEventListener('click', () => toggleSidebar(false))
   document.addEventListener('pointerdown', () => sound.unlock(), { once: true })
@@ -39,7 +38,7 @@ function renderSidebar() {
   const nav = $('#curriculum')
   const open = new Set([...nav.querySelectorAll('.track.open')].map(t => t.dataset.track))
   if (current) open.add(current.track)
-  const playLink = `<a class="nav-play${location.hash.startsWith('#/play') ? ' current' : ''}" href="#/play"><span class="num">▶</span><span class="name">Play vs computer</span></a>`
+  const playLink = `<a class="nav-play${location.hash.startsWith('#/play') ? ' current' : ''}" href="#/play"><span class="num">▶</span><span class="name">Play vs computer</span></a><a class="nav-play${location.hash.startsWith('#/openings') ? ' current' : ''}" href="#/openings"><span class="num">≡</span><span class="name">Openings book</span></a>`
   nav.innerHTML = playLink + visibleTracks().map((t, i) => {
     const ready = t.lessons.filter(l => l.ready)
     const done = ready.filter(l => progress.isLessonDone(lessonId(t.id, l.slug))).length
@@ -75,6 +74,8 @@ async function route() {
   current = null
   renderSidebar()
   if (hash.startsWith('#/play')) { document.title = 'Play · Chess Learn'; unmountPage = mountPlay(main); window.scrollTo({ top: 0 }); return }
+  const om = hash.match(/^#\/openings(?:\/(\d+))?/)
+  if (om) { document.title = 'Openings book · Chess Learn'; unmountPage = mountOpenings(main, om[1]); return }
   showHome(main)
 }
 
@@ -91,7 +92,8 @@ function showHome(main) {
         <h1>Learn chess from the games that taught everyone else.</h1>
         <p>Every lesson is built on a real game or a real book, with the board right there in the text so you can play through it and then try it yourself.</p>
       </section>
-      <div class="card continue play-card"><div><span class="eyebrow">Play</span><h3>Against the computer</h3><div class="small">Stockfish 18, seven strengths, from beginner to the Boss.</div></div><a class="btn" href="#/play">Play</a></div>
+      <div class="card continue play-card"><div><span class="eyebrow">Play</span><h3>Against the computer</h3><div class="small">Stockfish 18, seven strengths, from beginner to the Boss, or the Chess Learn Bot.</div></div><a class="btn" href="#/play">Play</a></div>
+      <div class="card continue play-card"><div><span class="eyebrow">Reference</span><h3>Openings book</h3><div class="small">All 84 lines the bot plays, each with its idea, playable and drillable from either side.</div></div><a class="btn" href="#/openings">Open</a></div>
       ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.trackTitle)}</div></div><a class="btn primary" href="#/lesson/${cont.track}/${cont.slug}">Open lesson</a></div>` : ''}
       <div class="track-grid">
         ${visibleTracks().map((t, i) => {
@@ -151,16 +153,6 @@ async function showLesson(main, track, slug) {
   window.scrollTo({ top: 0 })
 }
 
-function exportProgress() {
-  const blob = new Blob([progress.exportJSON()], { type: 'application/json' })
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `chess-learn-progress-${new Date().toISOString().slice(0, 10)}.json`; a.click()
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000)
-}
-async function importProgress(e) {
-  const f = e.target.files[0]; if (!f) return
-  try { progress.importJSON(await f.text()); renderSidebar(); route() } catch (err) { alert(err.message) }
-  e.target.value = ''
-}
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])) }
 
 boot()
