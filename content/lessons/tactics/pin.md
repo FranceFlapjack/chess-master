@@ -21,7 +21,7 @@ arrows: b5c6
 highlight: e8
 caption: After 3.Bb5 the knight on c6 is pinned to the king. It cannot move.
 image: morphy-loc.jpg
-focus: 50% 72%
+focus: 50% 90%
 alt: Engraving of Paul Morphy seated at a chess board, 1859
 credit: Paul Morphy, engraving, 1859. Library of Congress via Wikimedia Commons, public domain.
 ```

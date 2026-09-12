@@ -11,20 +11,6 @@
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <!-- Old-print treatment: grayscale → halftone dots (tile + threshold) → duotone in the theme green on paper -->
-    <filter id="oldprint" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
-      <feColorMatrix type="saturate" values="0" result="gray"/>
-      <feComponentTransfer in="gray" result="tone"><feFuncR type="gamma" amplitude="1" exponent="0.85" offset="0"/><feFuncG type="gamma" amplitude="1" exponent="0.85" offset="0"/><feFuncB type="gamma" amplitude="1" exponent="0.85" offset="0"/></feComponentTransfer>
-      <feImage href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0' stop-color='%23000'/%3E%3Cstop offset='1' stop-color='%23fff'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='6' height='6' fill='url(%23g)'/%3E%3C/svg%3E" width="6" height="6" result="dot"/>
-      <feTile in="dot" result="dots"/>
-      <feComposite in="tone" in2="dots" operator="arithmetic" k1="0" k2="1" k3="1" k4="-0.5" result="sum"/>
-      <feComponentTransfer in="sum" result="ink"><feFuncR type="discrete" tableValues="0 1"/><feFuncG type="discrete" tableValues="0 1"/><feFuncB type="discrete" tableValues="0 1"/></feComponentTransfer>
-      <feComponentTransfer in="ink"><feFuncR type="table" tableValues="0.12 0.96"/><feFuncG type="table" tableValues="0.37 0.95"/><feFuncB type="table" tableValues="0.27 0.92"/><feFuncA type="table" tableValues="1 1"/></feComponentTransfer>
-    </filter>
-  </defs>
-</svg>
 <div class="app">
   <aside class="sidebar" id="sidebar">
     <a class="brand" href="#/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -4 40 40" class="logo" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">  <rect x="1" y="1" width="30" height="30"/>  <rect x="1" y="1" width="15" height="15" fill="currentColor" stroke="none"/>  <rect x="16" y="16" width="15" height="15" fill="currentColor" stroke="none"/>  <g transform="translate(23.5 8.5)" fill="currentColor" stroke="none">    <circle cx="0" cy="-3.6" r="2.9"/>    <path d="M-2.1 -1.2 H2.1 L3.6 3.4 H-3.6 Z"/>    <rect x="-5" y="3.4" width="10" height="2.2" rx="0.6"/>  </g>  <g transform="translate(23.5 23.5)" fill="#fff" stroke="none">    <circle cx="0" cy="-3.6" r="2.9"/>    <path d="M-2.1 -1.2 H2.1 L3.6 3.4 H-3.6 Z"/>    <rect x="-5" y="3.4" width="10" height="2.2" rx="0.6"/>  </g></svg><span class="brand-text">Chess Learn<small>lessons from real games</small></span></a>
