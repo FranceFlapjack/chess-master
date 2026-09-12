@@ -12,14 +12,14 @@
   --line: #e6e6e6;
   --line-2: #cccccc;
 
-  /* theme: a dark green, the colour of a correct move. Used for everything selected, done, or primary. */
-  --accent: #1f5f45;
+  /* theme: a deep bottle green, club baize and leather. Used for everything selected, done, or primary. */
+  --accent: #0f4c3a;
   --accent-ink: #ffffff;
-  --accent-soft: #e8f0eb;
-  --accent-deep: #17493a;
+  --accent-soft: #e4ede8;
+  --accent-deep: #0a3629;
 
   /* semantic (used only on the board and puzzle states) */
-  --good: #1f5f45;
+  --good: #0f4c3a;
   --bad: #c00000;
   --warn: #7a5c00;
 
@@ -33,7 +33,7 @@
   --sq-check: rgba(192, 0, 0, 0.6);
   --sq-hint: rgba(17, 17, 17, 0.16);
   --sq-dot: rgba(17, 17, 17, 0.22);
-  --arrow-main: #2a7d4f;
+  --arrow-main: #1f6b50;
   --arrow-alt: #e8780a;
   --arrow-bad: #c00000;
   --board-anim: 220ms;
@@ -69,8 +69,8 @@
 
   /* activity grid levels: paper to theme green */
   --act-0: #eeeeee;
-  --act-1: #c9dccf;
-  --act-2: #8fbaa2;
-  --act-3: #4f8a6c;
-  --act-4: #1f5f45;
+  --act-1: #cfdfd6;
+  --act-2: #8fb8a5;
+  --act-3: #4a856c;
+  --act-4: #0f4c3a;
 }
