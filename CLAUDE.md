@@ -25,7 +25,7 @@ When testing in the in-app Browser pane, keep the pane visible: hidden tabs paus
 Validate content before committing:
 ```
 node scripts/check-content.mjs
-node scripts/verify-puzzles.mjs tactics/ 800
+node scripts/verify-puzzles.mjs "" 800        # or a track: tactics/
 ```
 The second asks Stockfish whether every reader move in every `try` block is its best (or a near-equal second). A composed puzzle that fails it is wrong, not the engine; fix the position. Historical sacrifices that engines dislike may stay, with an honesty note in the puzzle intro.
 
@@ -37,7 +37,7 @@ The second asks Stockfish whether every reader move in every `try` block is its 
 - `js/openings.js` the Openings book page (`#/openings/<id>`): every line from `scripts/build-book.mjs` (which also emits `content/openings/lines.json` with family, name and note) shown in the game viewer with drills from either side. Add or rename lines in the builder, never in the JSON.
 - `js/play.js` play-vs-computer page with the evaluation bar and post-game review; `js/engine/uci.js` is the UCI-over-Worker client every engine goes through (`bestMove` for playing, `analyse` for scores); `js/engine/stockfish.js` loads `vendor/stockfish/` (GPL-3, ~7 MB) and defines the strength ladder; `js/engine/analyst.js` is a *second* full-strength Stockfish that only judges positions (the opponent instance may be strength-limited, never reuse it as the judge); `js/analysis.js` holds the pure grading maths (scores are stored from White's point of view, converted once at the engine boundary).
 - `js/engine/bot/` is our own engine (board → eval → search → uci → worker). Before touching `board.js` run `node scripts/perft.mjs`; after any search/eval change run `node scripts/match.mjs 4 1500` and record the score in ROADMAP.md.
-- `content/curriculum.json` fixes track and lesson order; a lesson shows only when `"ready": true` and `content/lessons/<track>/<slug>.md` exists.
+- `content/curriculum.json` fixes track and lesson order; a lesson shows only when `"ready": true` and `content/lessons/<track>/<slug>.md` exists. All 58 lessons in 8 tracks are ready (2026-09-13).
 - `content/games/*.pgn` full games with `{comments}`; shared between lessons.
 
 ## Lesson format

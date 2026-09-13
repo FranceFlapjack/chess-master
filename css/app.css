@@ -236,6 +236,12 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .exercise-side .actions { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-top: auto; }
 .exercise.solved .board-wrap { outline: 2px solid var(--good); outline-offset: 0; }
 
+/* ---------- prose tables ---------- */
+.lesson-body table { border-collapse: collapse; margin: var(--s-4) 0; font-size: var(--fs-1); }
+.lesson-body th, .lesson-body td { text-align: left; padding: 6px 18px 6px 0; border-bottom: 1px solid var(--line); }
+.lesson-body th { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+.lesson-body td:last-child, .lesson-body th:last-child { font-family: var(--font-mono); }
+
 /* ---------- play page ---------- */
 .nav-play { display: flex; align-items: center; gap: var(--s-2); padding: var(--s-2); margin-bottom: var(--s-3); text-decoration: none; border-bottom: 1px solid var(--line); }
 .nav-play .num { font-size: 9px; color: var(--ink-3); width: 1.4em; }

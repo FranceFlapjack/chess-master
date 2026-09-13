@@ -41,6 +41,7 @@ success: Black waited for the bishop to come to d3, then took on c4 so the bisho
 ```try
 fen: r1bqkb1r/pppn1ppp/5n2/3N2B1/3P4/8/PP2PPPP/R2QKBNR b KQkq - 0 6
 solution: Nxd5 Bxd8 Bb4+ Qd2 Bxd2+ Kxd2 Kxd8
+tolerance: 80
 hint: Take the knight even though the queen hangs. A bishop check regains the queen, and Black ends a piece up.
 prompt: Black to play. Spring the trap.
 success: The pinned knight was never pinned: the queen was bait. A piece for nothing on move nine.

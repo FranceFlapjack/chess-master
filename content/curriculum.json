@@ -8,31 +8,38 @@
       "lessons": [
         {
           "slug": "the-board-and-the-pieces",
-          "title": "The board and how the pieces move"
+          "title": "The board and how the pieces move",
+          "ready": true
         },
         {
           "slug": "check-checkmate-stalemate",
-          "title": "Check, checkmate and stalemate"
+          "title": "Check, checkmate and stalemate",
+          "ready": true
         },
         {
           "slug": "castling-and-en-passant",
-          "title": "Castling, en passant and promotion"
+          "title": "Castling, en passant and promotion",
+          "ready": true
         },
         {
           "slug": "reading-notation",
-          "title": "Reading chess notation"
+          "title": "Reading chess notation",
+          "ready": true
         },
         {
           "slug": "value-of-the-pieces",
-          "title": "What the pieces are worth"
+          "title": "What the pieces are worth",
+          "ready": true
         },
         {
           "slug": "three-opening-rules",
-          "title": "The three opening rules"
+          "title": "The three opening rules",
+          "ready": true
         },
         {
           "slug": "mate-with-the-queen",
-          "title": "Mating with the queen"
+          "title": "Mating with the queen",
+          "ready": true
         }
       ]
     },
@@ -43,15 +50,18 @@
       "lessons": [
         {
           "slug": "checks-captures-attacks",
-          "title": "Checks, captures, attacks"
+          "title": "Checks, captures, attacks",
+          "ready": true
         },
         {
           "slug": "evaluating-a-position",
-          "title": "Evaluating a position"
+          "title": "Evaluating a position",
+          "ready": true
         },
         {
           "slug": "blunder-check",
-          "title": "The blunder check"
+          "title": "The blunder check",
+          "ready": true
         }
       ]
     },
@@ -322,15 +332,18 @@
       "lessons": [
         {
           "slug": "morphy-opera-game",
-          "title": "Morphy – Duke of Brunswick and Count Isouard, Paris 1858"
+          "title": "Morphy – Duke of Brunswick and Count Isouard, Paris 1858",
+          "ready": true
         },
         {
           "slug": "fischer-byrne-1956",
-          "title": "Byrne – Fischer, New York 1956"
+          "title": "Byrne – Fischer, New York 1956",
+          "ready": true
         },
         {
           "slug": "kasparov-topalov-1999",
-          "title": "Kasparov – Topalov, Wijk aan Zee 1999"
+          "title": "Kasparov – Topalov, Wijk aan Zee 1999",
+          "ready": true
         }
       ]
     }

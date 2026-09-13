@@ -1,6 +1,6 @@
 # Roadmap
 
-Status: **Tactics (11), Openings (10), Checkmate patterns (6), Endgames (8) and Middlegame strategy (10) tracks complete 2026-09-13**, 45 lessons, every puzzle move engine-verified. Bot 0.2, the play page with evaluation bar and post-game review are live. Next: How to think, Study a whole game, First steps.
+Status: **All eight tracks complete 2026-09-13**: First steps (7), How to think (3), Tactics (11), Openings (10), Middlegame strategy (10), Endgames (8), Checkmate patterns (6), Study a whole game (3) — 58 lessons, 350 reader moves engine-verified, 16 game records checked against sources. Bot 0.2, the play page with evaluation bar and post-game review are live. Next: daily puzzle review, dark mode, Beth Harmon goes out (see below).
 
 ## Phase 0 — Scaffold (done 2026-09-12)
 - Shell, sidebar curriculum with progress, hash router, home page.
@@ -10,7 +10,7 @@ Status: **Tactics (11), Openings (10), Checkmate patterns (6), Endgames (8) and 
 - One complete lesson: Tactics → The Greek Gift (Greco c.1620, Colle–O'Hanlon 1930, Markland–Klundt 1971, Lasker–Bauer 1889).
 - `scripts/check-content.mjs` validates all FENs, PGNs and solutions.
 
-## Phase 1 — Content (in progress)
+## Phase 1 — Content (done 2026-09-13)
 Progress 2026-09-13: **Tactics track complete, 11/11 lessons**, every reader move in every puzzle verified against Stockfish with `scripts/verify-puzzles.mjs` (historical moves engines dislike carry an honesty note). Games: Morphy Opera 1858, Réti–Tartakower 1910, Fischer–Reshevsky 1958, Lasker–Bauer 1889, Greco c.1620, Colle–O'Hanlon 1930. Bernstein–Capablanca 1914 and Adams–Torre 1920 appear as positions only (full records not obtainable from an open source).
 
 Write the tracks in this order, one branch each, running both checkers on every commit:
