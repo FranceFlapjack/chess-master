@@ -101,14 +101,17 @@ export function mountPlay(main) {
     barEl.querySelector('.num').textContent = ev ? formatScore(ev) : ''
     barEl.classList.toggle('flipped', board.orientation() === 'b')
   }
+  const keyAt = i => uciMoves.slice(0, i).join(' ')
   function analyse(i, { live = true } = {}) {
-    const myGame = gameId
+    const myGame = gameId, key = keyAt(i)
+    const same = () => myGame === gameId && key === keyAt(i) // still the same position (no take-back since)
     return analyst().evaluate({
       moves: uciMoves.slice(0, i), depth: DEPTH,
-      onInfo: live ? r => { if (myGame === gameId && !reviewing && i === sans.length) paintBar(r) } : null,
+      onInfo: live ? r => { if (same() && !reviewing && i === sans.length) paintBar(r) } : null,
     }).then(r => {
-      if (!r || myGame !== gameId) return null
-      if (!evals[i] || r.depth >= evals[i].depth) evals[i] = r
+      if (!r || !same()) return null
+      const old = evals[i]
+      if (!old || (!old.final && r.depth >= old.depth)) evals[i] = r
       if (!reviewing && i === sans.length) paintBar()
       return r
     }).catch(() => null)
@@ -142,8 +145,8 @@ export function mountPlay(main) {
     progress.recordPlay({ opponent, level: opponent === 'bot' ? 0 : level.id, color: userColor, result: over.result })
     // the final position needs no engine: mate or a draw by rule
     const c = board.chess
-    if (c.isCheckmate()) evals[sans.length] = MATED[c.turn() === 'w' ? 'b' : 'w']
-    else if (c.isGameOver()) evals[sans.length] = { cp: 0, mate: null }
+    if (c.isCheckmate()) evals[sans.length] = Object.assign({ final: true }, MATED[c.turn() === 'w' ? 'b' : 'w'])
+    else if (c.isGameOver()) evals[sans.length] = { cp: 0, mate: null, final: true }
     review(over)
   }
 
@@ -195,6 +198,7 @@ export function mountPlay(main) {
   /** Cut the record back to `n` plies and hand the move to the user (one more ply back if needed). */
   async function resumeFrom(n) {
     gen++; if (thinking) { engine.stop(); thinking = false }
+    analyst().stop()
     if (n > 0 && (n % 2 === 0 ? 'w' : 'b') !== userColor) n--
     sans.length = n; uciMoves.length = n; evals.length = n + 1; grades = []
     reviewing = false; reviewEl.hidden = true; board.setArrows([])
@@ -238,8 +242,7 @@ export function mountPlay(main) {
     $('#summary').textContent = 'Analysing…'; $('#note').textContent = ''
     for (let i = 0; i <= n; i++) {
       if (myGame !== gameId) return
-      if (evals[i] && evals[i].depth === undefined) continue // rule-decided final position
-      if (evals[i] && evals[i].depth >= DEPTH) continue
+      if (evals[i] && (evals[i].final || evals[i].depth >= DEPTH)) continue
       $('#summary').textContent = `Analysing… ${i + 1} / ${n + 1}`
       await analyse(i, { live: false })
     }
@@ -256,14 +259,15 @@ export function mountPlay(main) {
   }
   function summary(over) {
     const side = c => grades.filter(g => g && g.mover === c)
-    const acc = c => { const g = side(c); return g.length ? Math.round(g.reduce((s, x) => s + x.acc, 0) / g.length) : null }
+    // an average over a handful of moves says nothing, so the figure needs at least ten of them
+    const acc = c => { const g = side(c); return g.length >= 10 ? Math.round(g.reduce((s, x) => s + x.acc, 0) / g.length) : null }
     const count = c => { const o = { inaccuracy: 0, mistake: 0, blunder: 0 }; for (const g of side(c)) if (g.label) o[g.label]++; return o }
     const opp = userColor === 'w' ? 'b' : 'w'
     const who = c => c === userColor ? 'You' : opponentName()
     const line = c => {
       const a = acc(c), k = count(c)
       const parts = [['inaccuracy', 'inaccuracies'], ['mistake', 'mistakes'], ['blunder', 'blunders']].filter(([s]) => k[s]).map(([s, p]) => `${k[s]} ${k[s] === 1 ? s : p}`)
-      return `<b>${who(c)}</b><span class="acc">${a == null ? '–' : a + '%'}</span><span class="counts">${parts.join(', ') || 'no mistakes'}</span>`
+      return `<b>${who(c)}</b><span class="acc">${a == null ? '' : a + '%'}</span><span class="counts">${parts.join(', ') || 'no mistakes'}</span>`
     }
     let turn = ''
     const worst = grades.reduce((w, g, i) => (g && g.label && (!w || g.drop > grades[w].drop)) ? i : w, 0)
