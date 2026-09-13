@@ -6,6 +6,7 @@ import { Markers } from '../vendor/cm-chessboard/src/extensions/markers/Markers.
 import { LearnArrows } from './arrows.js'
 import { PromotionDialog, PROMOTION_DIALOG_RESULT_TYPE } from '../vendor/cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js'
 import { sound } from './sound.js'
+import { progress } from './progress.js'
 
 const ASSETS = new URL('../vendor/cm-chessboard/assets/', import.meta.url).href
 
@@ -196,6 +197,7 @@ export class Board {
     this._markLast(m)
     await this.cb.setPosition(this.chess.fen(), true)
     this._paintCheck()
+    progress.recordMove() // a move the reader played, on any board: the activity grid counts these
     if (this.onMove) this.onMove(m, this)
   }
   /** Brief shake of the piece on a square (used for a wrong answer). */

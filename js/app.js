@@ -140,7 +140,7 @@ async function showLesson(main, track, slug) {
     const done = progress.isLessonDone(id); row.classList.toggle('done', done)
     if (done) row.innerHTML = `<span class="msg">Lesson complete.</span>${tryIds.length ? `<span class="count">${solvedCount()}/${tryIds.length} puzzles</span>` : ''}`
     else if (tryIds.length) row.innerHTML = `<span class="msg">Solve the puzzles to complete this lesson.</span><span class="count">${solvedCount()}/${tryIds.length}</span><button class="btn quiet" id="complete">Mark as read instead</button>`
-    else row.innerHTML = `<button class="btn primary" id="complete">Mark as read</button><span class="msg">+10 points, and it counts toward today's streak.</span>`
+    else row.innerHTML = `<button class="btn primary" id="complete">Mark as read</button><span class="msg">Ticks the lesson in the sidebar.</span>`
     const b = row.querySelector('#complete'); if (b) b.addEventListener('click', () => { progress.completeLesson(id); sound.play('success'); paintRow() })
   }
   function checkAuto() {

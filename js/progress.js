@@ -1,10 +1,10 @@
-// Local progress store: lessons done, exercises solved, points per day, streak.
+// Local progress store: lessons done, exercises solved, moves played per day (the activity grid), points per day.
 // Everything lives in one localStorage key; export/import as JSON.
 
 const KEY = 'chess-learn.progress.v1'
 export const POINTS = { lesson: 10, tryFirst: 5, tryLater: 2, puzzle: 3, game: 5, win: 15, draw: 5, loss: 2 }
 
-const empty = () => ({ v: 1, lessons: {}, tries: {}, games: {}, plays: [], days: {}, total: 0, beginner: false, lastLesson: null })
+const empty = () => ({ v: 1, lessons: {}, tries: {}, games: {}, plays: [], days: {}, moves: {}, total: 0, beginner: false, lastLesson: null })
 
 class Progress {
   constructor() {
@@ -21,6 +21,15 @@ class Progress {
     this._save()
   }
   pointsOn(day) { return this.state.days[day] || 0 }
+
+  // --- moves: every move the reader plays on any board, counted per day (what the grid shows) ---
+  recordMove(day = today()) {
+    if (!this.state.moves) this.state.moves = {}
+    this.state.moves[day] = (this.state.moves[day] || 0) + 1
+    this._save()
+  }
+  movesOn(day) { return (this.state.moves && this.state.moves[day]) || 0 }
+  get totalMoves() { return Object.values(this.state.moves || {}).reduce((s, n) => s + n, 0) }
 
   // --- lessons ---
   isLessonDone(id) { return !!this.state.lessons[id] }

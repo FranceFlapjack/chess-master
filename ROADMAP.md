@@ -6,7 +6,7 @@ Status: **All eight tracks complete 2026-09-13**: First steps (7), How to think 
 - Shell, sidebar curriculum with progress, hash router, home page.
 - Board component: drag + click input, eased animation, legal-move dots, last-move / check / selection tints, arrows, promotion picker, illegal-move shake, synthesised sounds (Web Audio), mute.
 - Lesson renderer with `board` / `pgn` / `try` fences; annotated game viewer with keyboard nav; exercises with hint / reset / show solution.
-- Progress: points per day, streak with one rest day per week, 12-week activity grid, export/import.
+- Progress: 12-week activity grid shaded by moves played per day (changed from points + streak on 2026-09-13 at the owner's request; points are still recorded internally, nothing shows them). Export/import removed.
 - One complete lesson: Tactics → The Greek Gift (Greco c.1620, Colle–O'Hanlon 1930, Markland–Klundt 1971, Lasker–Bauer 1889).
 - `scripts/check-content.mjs` validates all FENs, PGNs and solutions.
 
