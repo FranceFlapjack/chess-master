@@ -72,6 +72,12 @@ It is not "a whole other program". The engine is a separate module in this repo 
   So v0.2 is clearly stronger than v0.1, and the bot at 300 ms sits between Stockfish at 2k and 8k nodes. Next rungs to add: 3k and 5k nodes, and longer bot times.
 - Still to do here: bitboard move generator for speed; pawn hash; a learned evaluation (phase 3).
 
+### Beth Harmon goes out (owner's request 2026-09-13, deferred: "do it later")
+- Rename the bot to **Beth Harmon** (BOT_NAME in `js/engine/bot/uci.js`, play-page labels).
+- Lichess bot account + lichess-bot bridge (Python) driving `scripts/bot-uci.mjs` over UCI: automated games vs other bots and humans, real rating. Owner creates the token.
+- Relay mode on the play page for chess.com bots (no API, automation forbidden; engine help vs their bots is allowed): owner types the opponent's moves, Beth answers.
+- Local arena via `scripts/match.mjs` for friends' UCI bots (already works).
+
 ### Bot phase 3 — a learned evaluation (optional, the "smartest" part)
 - Train a small NNUE-style network offline in Python on Lichess evaluations (CC0), export weights to JSON, run inference in JS.
 - This is how modern engines got their strength jump; a small net is feasible in-browser.
