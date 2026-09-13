@@ -32,7 +32,7 @@ Open questions for the owner: which openings they already play (repertoire choic
 
 ## Phase 3 — Design drafts
 - Draft 2 (2026-09-12): metar-taf language — white, Helvetica Neue, uppercase labels, hairlines, square centred board. Owner will supply their own piece set and board art later; keep `--sq-*` tokens and `assets/pieces/` ready for it.
-- Still to do: dark mode, mobile polish, eval bar on the play page.
+- Still to do: dark mode, mobile polish.
 - Sound: replace synthesised set with CC0 samples if they feel better.
 
 ## Play mode & the bot (planned with the owner 2026-09-12)
@@ -77,7 +77,8 @@ It is not "a whole other program". The engine is a separate module in this repo 
 - This is how modern engines got their strength jump; a small net is feasible in-browser.
 
 ### Play page & arena
-- Human vs Stockfish: **done 2026-09-12** (`js/play.js`, `js/engine/`): seven strengths (UCI_Elo 1320…2600, Boss = full), colour choice, take-back, hint, resign, results and points recorded. Eval bar still to do.
+- Human vs Stockfish: **done 2026-09-12** (`js/play.js`, `js/engine/`): seven strengths (UCI_Elo 1320…2600, Boss = full), colour choice, take-back, hint, resign, results and points recorded.
+- Evaluation bar and post-game review: **done 2026-09-13**. A second, full-strength Stockfish (`js/engine/analyst.js`) judges every position at fixed depth 14; the bar (switchable, remembered) fills from the bottom for the side at the bottom; at game end every move is graded on Lichess's win-chance thresholds (`js/analysis.js`: inaccuracy / mistake / blunder, accuracy %, moves that keep a clearly won game are never flagged), marked moves show the played move in red and the engine's line in green, arrows step with ← →, and "Play from here" resumes from any point.
 - Bot vs bot arena: two UCI engines (workers or external bridges) play a match; Elo ladder kept in localStorage; PGN export of every game.
 - Final boss tier: Stockfish 18 lite single-thread WASM (~7 MB), vendored under `vendor/stockfish/` (GPL-3).
 - Local two-player on one screen is trivial. Online vs friend needs a server; decide then.

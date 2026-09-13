@@ -5,6 +5,7 @@ import { mountActivity } from './activity-grid.js'
 import { sound } from './sound.js'
 import { mountPlay } from './play.js'
 import { mountOpenings } from './openings.js'
+import { setActiveViewer } from './pgn-viewer.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -69,6 +70,7 @@ async function route() {
   const main = $('#main')
   toggleSidebar(false)
   if (unmountPage) { unmountPage(); unmountPage = null }
+  setActiveViewer(null) // the previous page's game viewer must not keep the arrow keys
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
   if (m) return showLesson(main, m[1], m[2])
   current = null

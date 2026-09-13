@@ -39,6 +39,30 @@ export class UciEngine {
     const mv = line.split(/\s+/)[1]
     return mv && mv !== '(none)' ? mv : null
   }
+  /**
+   * Search and return the result: { bestMove, cp, mate, depth, pv } with scores from the side to move,
+   * captured at the moment the bestmove line arrives. onInfo(info) streams intermediate scores.
+   */
+  async analyse({ fen, moves = [], depth = null, movetime = null, onInfo = null }) {
+    this.lastInfo = null
+    this.send(`position fen ${fen}${moves.length ? ' moves ' + moves.join(' ') : ''}`)
+    let last = null
+    const tap = line => { if (line.startsWith('info ') && line.includes(' score ') && !line.includes('lowerbound') && !line.includes('upperbound')) { last = parseInfo(line); if (onInfo) onInfo(last) } }
+    this.listeners.add(tap)
+    const reply = this.waitFor(l => l.startsWith('bestmove'))
+    this.send(depth && movetime ? `go depth ${depth} movetime ${movetime}` : depth ? `go depth ${depth}` : `go movetime ${movetime || 500}`)
+    let line
+    try { line = await reply } finally { this.listeners.delete(tap) }
+    const mv = line.split(/\s+/)[1]
+    const info = last || this.lastInfo || {}
+    return {
+      bestMove: mv && mv !== '(none)' ? mv : null,
+      cp: info.scoreType === 'cp' ? info.score : null,
+      mate: info.scoreType === 'mate' ? info.score : null,
+      depth: info.depth || 0,
+      pv: info.pv || [],
+    }
+  }
   stop() { this.send('stop') }
   /** Hard stop: kill the worker and start a fresh one (for engines that cannot interrupt a search). */
   restart() {

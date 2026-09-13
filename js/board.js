@@ -101,6 +101,17 @@ export class Board {
     return m
   }
 
+  /** Replace the game with `sans` played from the start position; the board keeps a real history. */
+  async setHistory(sans, { animate = true } = {}) {
+    this.chess.reset()
+    for (const s of sans) this.chess.move(s)
+    this.cb.removeMarkers(MARK.last); this.cb.removeMarkers(MARK.check)
+    const last = this.chess.history({ verbose: true }).at(-1)
+    if (last) this._markLast(last)
+    await this.cb.setPosition(this.chess.fen(), animate)
+    this._paintCheck()
+  }
+
   async flip() {
     const to = this.cb.getOrientation() === COLOR.white ? COLOR.black : COLOR.white
     await this.cb.setOrientation(to, true)

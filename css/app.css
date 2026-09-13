@@ -241,7 +241,7 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .nav-play .num { font-size: 9px; color: var(--ink-3); width: 1.4em; }
 .nav-play .name { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
 .nav-play:hover .name, .nav-play.current .name { color: var(--accent); }
-.play { display: grid; grid-template-columns: min(var(--board-max), 58%) minmax(0, 1fr); gap: var(--s-6); margin: var(--s-5) 0 var(--s-7); }
+.play { display: grid; grid-template-columns: min(var(--board-max), 58%) minmax(0, 1fr); align-items: start; gap: var(--s-6); margin: var(--s-5) 0 var(--s-7); }
 .play > * { min-width: 0; }
 .play-side { display: flex; flex-direction: column; gap: var(--s-4); }
 .field { display: flex; flex-direction: column; gap: 6px; }
@@ -257,6 +257,34 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .play .status.bad { color: var(--bad); }
 .play .moves .mv { cursor: default; }
 .play .moves .mv:hover { background: none; }
+.play .moves.reviewing .mv { cursor: pointer; }
+.play .moves.reviewing .mv:hover:not(.current) { background: var(--surface-2); }
+.play .moves .mv i { font-style: normal; font-weight: 600; margin-left: 1px; }
+.play .moves .mv.inaccuracy i { color: var(--ink-2); }
+.play .moves .mv.mistake { color: var(--arrow-alt); }
+.play .moves .mv.blunder { color: var(--bad); }
+.play .moves .mv.current.mistake, .play .moves .mv.current.blunder { color: #fff; }
+.switch-row.compact { margin: 0; }
+
+/* evaluation bar: the side at the bottom of the board fills from the bottom */
+.play-board { display: flex; align-items: stretch; gap: var(--s-3); }
+.play-board .board-wrap { flex: 1; min-width: 0; }
+.evalbar { position: relative; flex: none; width: 12px; background: var(--ink); border: 1px solid var(--ink); display: flex; flex-direction: column; justify-content: flex-end; }
+.evalbar .fill { display: block; width: 100%; height: 50%; background: #fff; transition: height 400ms ease; }
+.evalbar.flipped { background: #fff; }
+.evalbar.flipped .fill { background: var(--ink); }
+.evalbar .num { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 6px; font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+.evalbar[hidden] { display: none; }
+
+/* post-game review */
+.review[hidden] { display: none; }
+.review { display: flex; flex-direction: column; gap: var(--s-2); padding: var(--s-3) 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: var(--fs-1); }
+.review-summary { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 4px var(--s-3); align-items: baseline; }
+.review-summary b { font-weight: 600; }
+.review-summary .acc { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+.review-summary .counts { color: var(--ink-2); }
+.review-summary .turning { grid-column: 1 / -1; color: var(--ink-2); margin-top: 2px; }
+.review-note { color: var(--ink-2); line-height: 1.45; min-height: 2.9em; }
 
 /* ---------- openings book ---------- */
 .openings { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--s-6); }
