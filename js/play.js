@@ -5,14 +5,14 @@ import { stockfish, LEVELS, applyLevel } from './engine/stockfish.js'
 import { bot } from './engine/bot.js'
 import { analyst } from './engine/analyst.js'
 import { uciToMove } from './engine/uci.js'
-import { progress } from './progress.js'
+import { progress, adoptOldKey } from './progress.js'
 import { sound } from './sound.js'
 import { whiteShare, formatScore, grade, moveAccuracy, GLYPH, MATED } from './analysis.js'
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js/chess.js'
 import { ICONS } from './pgn-viewer.js'
 
-const KEY = 'chess-learn.play.v1'
-const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {} } catch (_) { return {} } }
+const KEY = 'chess-master.play.v1'
+const load = () => { try { adoptOldKey(KEY); return JSON.parse(localStorage.getItem(KEY)) || {} } catch (_) { return {} } }
 const save = s => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch (_) {} }
 const DEPTH = 14 // fixed depth for the judge, so evaluations of different positions compare fairly
 

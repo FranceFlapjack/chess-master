@@ -1,12 +1,14 @@
 // Synthesised board sounds via the Web Audio API — no files, zero latency.
+import { adoptOldKey } from './progress.js'
 // Each recipe is a tiny percussive/tonal gesture. Swap for samples later if wanted.
 
-const KEY = 'chess-learn.muted'
+const KEY = 'chess-master.muted'
 
 class SoundKit {
   constructor() {
     this.ctx = null
     this.noise = null
+    adoptOldKey(KEY)
     this.muted = safeGet(KEY) === '1'
     this.listeners = new Set()
   }

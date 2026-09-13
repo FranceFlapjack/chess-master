@@ -1,7 +1,15 @@
 // Local progress store: lessons done, exercises solved, moves played per day (the activity grid), points per day.
 // Everything lives in one localStorage key; export/import as JSON.
 
-const KEY = 'chess-learn.progress.v1'
+const KEY = 'chess-master.progress.v1'
+/** Earlier builds stored under a different prefix: adopt any key with the same suffix once, then remove it. */
+export function adoptOldKey(key) {
+  try {
+    if (localStorage.getItem(key) != null) return
+    const suffix = key.slice(key.indexOf('.'))
+    for (const k of Object.keys(localStorage)) if (k !== key && k.endsWith(suffix)) { localStorage.setItem(key, localStorage.getItem(k)); localStorage.removeItem(k); return }
+  } catch (_) {}
+}
 export const POINTS = { lesson: 10, tryFirst: 5, tryLater: 2, puzzle: 3, game: 5, win: 15, draw: 5, loss: 2 }
 
 const empty = () => ({ v: 1, lessons: {}, tries: {}, games: {}, plays: [], days: {}, moves: {}, total: 0, beginner: false, lastLesson: null })
@@ -96,7 +104,14 @@ class Progress {
   reset() { this.state = empty(); this._save() }
 }
 
-function load() { try { const raw = localStorage.getItem(KEY); if (raw) return Object.assign(empty(), JSON.parse(raw)) } catch (_) {} ; return empty() }
+function load() {
+  try {
+    adoptOldKey(KEY)
+    const raw = localStorage.getItem(KEY)
+    if (raw) return Object.assign(empty(), JSON.parse(raw))
+  } catch (_) {}
+  return empty()
+}
 export function dayKey(d) { const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), dd = String(d.getDate()).padStart(2, '0'); return `${y}-${m}-${dd}` }
 export function today() { return dayKey(new Date()) }
 export function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x }
