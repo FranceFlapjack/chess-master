@@ -228,35 +228,43 @@
       "lessons": [
         {
           "slug": "king-and-pawn",
-          "title": "King and pawn: opposition and the square"
+          "title": "King and pawn: opposition and the square",
+          "ready": true
         },
         {
           "slug": "lucena",
-          "title": "The Lucena position"
+          "title": "The Lucena position",
+          "ready": true
         },
         {
           "slug": "philidor",
-          "title": "The Philidor position"
+          "title": "The Philidor position",
+          "ready": true
         },
         {
           "slug": "rook-activity",
-          "title": "Rook activity and the seventh rank"
+          "title": "Rook activity and the seventh rank",
+          "ready": true
         },
         {
           "slug": "minor-pieces",
-          "title": "Minor-piece endings"
+          "title": "Minor-piece endings",
+          "ready": true
         },
         {
           "slug": "queen-vs-pawn",
-          "title": "Queen against pawn"
+          "title": "Queen against pawn",
+          "ready": true
         },
         {
           "slug": "converting-a-piece",
-          "title": "Converting an extra piece"
+          "title": "Converting an extra piece",
+          "ready": true
         },
         {
           "slug": "basic-mates",
-          "title": "Basic mates, a refresher"
+          "title": "Basic mates, a refresher",
+          "ready": true
         }
       ]
     },

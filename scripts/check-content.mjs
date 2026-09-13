@@ -67,7 +67,13 @@ for (const f of lessonFiles) {
       if (kind === 'try') {
         const moves = (p.solution || '').split(/\s+/).filter(t => t && !/^\d+\.+$/.test(t))
         if (!moves.length) fail(f, `${label}: missing solution`)
-        for (const san of moves) { try { if (!c.move(san)) throw new Error('illegal') } catch (_) { fail(f, `${label}: solution move "${san}" is illegal after ${c.history().join(' ') || 'start'}`); break } }
+        let bad = false
+        for (const san of moves) { // reader moves may list alternatives with "|"; each must be legal, the first continues
+          const alts = san.split('|')
+          for (const alt of alts.slice(1)) { const t = new Chess(c.fen()); try { if (!t.move(alt)) throw new Error('illegal') } catch (_) { fail(f, `${label}: alternative "${alt}" is illegal after ${c.history().join(' ') || 'start'}`); bad = true } }
+          try { if (!c.move(alts[0])) throw new Error('illegal') } catch (_) { fail(f, `${label}: solution move "${alts[0]}" is illegal after ${c.history().join(' ') || 'start'}`); bad = true }
+          if (bad) break
+        }
       }
     } else if (kind === 'pgn') {
       if (p.file) { const gf = path.join(gamesDir, p.file); if (!fs.existsSync(gf)) fail(f, `${label}: games/${p.file} not found`) }

@@ -51,7 +51,7 @@ Markdown with frontmatter (`id`, `track`, `title`, `lede`, `level`, `sources:` l
     caption: …
     ```
 
-Arrow types: `main` (default), `alt`, `bad`; knight moves draw as an L. `try` solutions alternate reader move / auto reply, starting with the reader. Add `type: line` (optional `tolerance: N` cp, default 50) for opening drills: the verifier then accepts any reader move within that margin of the engine's best, and the page says "not the book move" instead of "wrong".
+Arrow types: `main` (default), `alt`, `bad`; knight moves draw as an L. `try` solutions alternate reader move / auto reply, starting with the reader. Add `type: line` (optional `tolerance: N` cp, default 50) for opening drills: the verifier then accepts any reader move within that margin of the engine's best, and the page says "not the book move" instead of "wrong". A bare `tolerance: N` does the same check without the opening wording (endgame technique). A reader move may list alternatives with `|` (`Kf4|Kf5`): the page accepts any of them, the verifier checks each (within 30 cp of best), and the first continues the line, so use alternatives only on the last reader move of a puzzle.
 
 **Lesson shape (owner's rule):** short core idea → puzzles (`try` blocks, the main body) → a short "Remember" list → long explanations and full games collapsed behind `+++ Read more: title` … `+++` sections. A lesson ticks itself in the sidebar when all its puzzles are solved; "Mark as read" is the fallback for lessons without puzzles.
 

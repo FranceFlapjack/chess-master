@@ -34,7 +34,9 @@ export function mountExercise(container, o, ctx = {}) {
   const hintEl = container.querySelector('.hint')
   const board = new Board(container.querySelector('.board'), { fen: o.fen, orientation })
   let idx = 0, wrong = 0, solved = progress.isTryDone(id), showing = false
-  const isExpected = m => !!solution[idx] && norm(m.san) === norm(solution[idx])
+  // a reader move may list alternatives with "|" (Kf4|Kf5): any of them is accepted
+  const first = t => t.split('|')[0]
+  const isExpected = m => !!solution[idx] && solution[idx].split('|').some(alt => norm(alt) === norm(m.san))
   board.judge = m => isExpected(m)
 
   function setStatus(text, cls = '') { statusEl.textContent = text; statusEl.className = 'status ' + cls }
@@ -90,8 +92,8 @@ export function mountExercise(container, o, ctx = {}) {
   async function showSolution() {
     showing = true; board.disableInput()
     await board.showPosition(o.fen)
-    setStatus('Watch: ' + solution.join(' '))
-    for (const san of solution) { await wait(600); await board.play(san) }
+    setStatus('Watch: ' + solution.map(first).join(' '))
+    for (const san of solution) { await wait(600); await board.play(first(san)) }
     showing = false
     setStatus('That was the line. Reset to try it yourself.')
   }

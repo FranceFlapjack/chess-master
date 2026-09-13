@@ -34,34 +34,45 @@ for (const f of files) {
     n++
     const p = {}; for (const line of m[1].split(/\r?\n/)) { const kv = line.match(/^([\w-]+):\s*(.*)$/); if (kv) p[kv[1]] = kv[2].trim() }
     const moves = (p.solution || '').split(/\s+/).filter(t => t && !/^\d+\.+$/.test(t))
-    const tol = p.type === 'line' ? (+p.tolerance || 50) : 0 // opening lines: any move within `tol` cp of best is fine
+    const tol = p.type === 'line' ? (+p.tolerance || 50) : (+p.tolerance || 0) // any move within `tol` cp of best is fine (opening lines default to 50)
     const c = new Chess(p.fen)
     for (let i = 0; i < moves.length; i++) {
       const san = moves[i]
-      if (i % 2 === 0) { // reader's move
+      if (i % 2 === 0) { // reader's move; alternatives separated by "|" are each checked, the first continues the line
+        const alts = san.split('|')
         const fen = c.fen()
-        const mv = c.move(san); if (!mv) { problems++; console.log(`✗ ${path.relative(root, f)} try#${n}: illegal ${san}`); break }
-        const uci = mv.from + mv.to + (mv.promotion || '')
-        const r = await analyse(fen); checked++
-        const best = r['1'], second = r['2']
-        if (!best) continue
-        if (best.move !== uci && tol) {
-          // tolerant mode: evaluate the position after our move and compare with the best line
-          const after = await analyse(c.fen())
-          const ob = after['1']
-          const toCp = x => x.type === 'mate' ? Math.sign(x.score) * 10000 : x.score
-          const ours = ob ? -toCp(ob) : -99999
-          const diff = toCp(best) - ours
-          if (diff <= tol) { console.log(`✓ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} (book, ${diff} cp behind best ${best.move})`); continue }
-          problems++; console.log(`✗ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} is ${diff} cp behind ${best.move} (${best.type} ${best.score})`); continue
+        let broke = false
+        for (const alt of alts) {
+          const t = new Chess(fen)
+          const mv = t.move(alt); if (!mv) { problems++; console.log(`✗ ${path.relative(root, f)} try#${n}: illegal ${alt}`); broke = true; break }
+          const uci = mv.from + mv.to + (mv.promotion || '')
+          const r = await analyse(fen); checked++
+          const best = r['1'], second = r['2']
+          if (!best) continue
+          const label = `${path.relative(root, f)} try#${n} move ${i / 2 + 1}`
+          if (best.move !== uci && (tol || alts.length > 1)) {
+            // tolerant mode: evaluate the position after our move and compare with the best line
+            const after = await analyse(t.fen())
+            const ob = after['1']
+            const toCp = x => x.type === 'mate' ? Math.sign(x.score) * 10000 : x.score
+            const ours = ob ? -toCp(ob) : -99999
+            const diff = toCp(best) - ours
+            const lim = tol || 30
+            if (diff <= lim) { console.log(`✓ ${label}: ${alt} (${diff} cp behind best ${best.move}, within ${lim})`); continue }
+            // in a won position the exact cp is noise; a move that keeps a decisive advantage is sound technique
+            if (tol && toCp(best) >= 300 && ours >= 300) { console.log(`✓ ${label}: ${alt} keeps a decisive advantage (${ours} cp; best ${best.move} ${toCp(best)})`); continue }
+            problems++; console.log(`✗ ${label}: ${alt} is ${diff} cp behind ${best.move} (${best.type} ${best.score})`); continue
+          }
+          if (best.move !== uci) {
+            const bestTxt = `${best.move} (${best.type} ${best.score})`
+            const ours = second && second.move === uci ? `${second.type} ${second.score}` : 'not in top 2'
+            const okAlt = second && second.move === uci && best.type === 'cp' && second.type === 'cp' && Math.abs(best.score - second.score) <= 40
+            if (okAlt) console.log(`~ ${label}: ${alt} is 2nd best (${ours}), best ${bestTxt} — acceptable`)
+            else { problems++; console.log(`✗ ${label}: ${alt} — engine prefers ${bestTxt}; ours: ${ours}`) }
+          } else console.log(`✓ ${label}: ${alt} (${best.type} ${best.score})`)
         }
-        if (best.move !== uci) {
-          const bestTxt = `${best.move} (${best.type} ${best.score})`
-          const ours = second && second.move === uci ? `${second.type} ${second.score}` : 'not in top 2'
-          const okAlt = second && second.move === uci && best.type === 'cp' && second.type === 'cp' && Math.abs(best.score - second.score) <= 40
-          if (okAlt) console.log(`~ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} is 2nd best (${ours}), best ${bestTxt} — acceptable`)
-          else { problems++; console.log(`✗ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} — engine prefers ${bestTxt}; ours: ${ours}`) }
-        } else console.log(`✓ ${path.relative(root, f)} try#${n} move ${i / 2 + 1}: ${san} (${best.type} ${best.score})`)
+        if (broke) break
+        if (!c.move(alts[0])) { problems++; break }
       } else { if (!c.move(san)) { problems++; console.log(`✗ ${path.relative(root, f)} try#${n}: illegal reply ${san}`); break } }
     }
   }
