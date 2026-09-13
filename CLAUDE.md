@@ -2,7 +2,7 @@
 
 A chess course as a website: lessons built on real games and real books, with an interactive board inside the text. Play modes (vs engine, local two-player, online) come later.
 
-Static site, **no build step, no framework** — deliberate. Plain HTML/CSS/ES modules; libraries are vendored under `vendor/` (see `vendor/VERSIONS.md`). Local only for now; GitHub Pages later.
+Static site, **no build step, no framework** — deliberate. Plain HTML/CSS/ES modules; libraries are vendored under `vendor/` (see `vendor/VERSIONS.md`). Published on GitHub Pages from `main` (https://github.com/FranceFlapjack/chess-learn → https://franceflapjack.github.io/chess-learn/, since 2026-09-13): **a push to main is a deploy**, so merge only what is tested. All paths must stay relative (the site lives under `/chess-learn/`).
 
 **Before starting any work here, read `ROADMAP.md`** — it holds the agreed phases and what is next.
 
