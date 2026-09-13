@@ -63,6 +63,7 @@ export function mountPlay(main) {
           <div class="review" id="review" hidden>
             <div class="review-summary" id="summary"></div>
             <div class="review-note" id="note"></div>
+            <div class="key-moves" id="keymoves"></div>
           </div>
           <div class="moves" id="moves"></div>
         </aside>
@@ -239,7 +240,7 @@ export function mountPlay(main) {
     const myGame = gameId, n = sans.length
     $('#takeback').disabled = false; $('#takeback').textContent = 'Play from here'
     reviewEl.hidden = false
-    $('#summary').textContent = 'Analysing…'; $('#note').textContent = ''
+    $('#summary').textContent = 'Analysing…'; $('#note').textContent = ''; $('#keymoves').innerHTML = ''
     for (let i = 0; i <= n; i++) {
       if (myGame !== gameId) return
       if (evals[i] && (evals[i].final || evals[i].depth >= DEPTH)) continue
@@ -255,7 +256,43 @@ export function mountPlay(main) {
     }
     paintMoves(); paintBar()
     $('#summary').innerHTML = summary(over)
+    $('#keymoves').innerHTML = keyMoves()
     $('#note').textContent = 'Click a move, or use ← → to step through. Marked moves show what the engine preferred.'
+  }
+  /** The moves that decided the game: every mistake and blunder, in game order, with the better line. */
+  function keyMoves() {
+    const opp = userColor === 'w' ? 'b' : 'w'
+    const pick = (c, max) => {
+      let list = grades.map((g, i) => g && g.mover === c && (g.label === 'mistake' || g.label === 'blunder') ? i : 0).filter(Boolean)
+      if (!list.length) list = grades.map((g, i) => g && g.mover === c && g.label === 'inaccuracy' ? i : 0).filter(Boolean)
+      if (list.length > max) list = list.sort((a, b) => grades[b].drop - grades[a].drop).slice(0, max).sort((a, b) => a - b)
+      return list
+    }
+    const item = (i, mine) => {
+      const g = grades[i], ev0 = evals[i - 1], ev1 = evals[i], line = betterLine(i)
+      return `<button class="key ${g.label}" data-ply="${i}">
+        <span class="key-move">${esc(moveLabel(i))}</span>
+        <span class="key-swing">${formatScore(ev0)} → ${formatScore(ev1)}</span>
+        <span class="key-better">${line ? `${mine ? 'Play instead' : 'Punish with'} <b>${esc(line)}</b>` : ''}</span>
+      </button>`
+    }
+    const mine = pick(userColor, 6), theirs = pick(opp, 3)
+    let html = ''
+    if (mine.length) html += `<div class="key-head">Key moves</div>${mine.map(i => item(i, true)).join('')}`
+    if (theirs.length) html += `<div class="key-head">Chances you missed</div>${theirs.map(i => item(i, false)).join('')}`
+    return html
+  }
+  /** The engine's line from the position before ply i, in SAN with move numbers (up to `n` plies). */
+  function betterLine(i, n = 4) {
+    const ev0 = evals[i - 1]; if (!ev0 || !ev0.pv.length) return ''
+    const c = new Chess(); for (const s of sans.slice(0, i - 1)) c.move(s)
+    const pv = []
+    for (const u of ev0.pv.slice(0, n)) {
+      const white = c.turn() === 'w', num = c.moveNumber()
+      const m = c.move(uciToMove(u)); if (!m) break
+      pv.push((white ? `${num}. ` : pv.length ? '' : `${num}… `) + m.san)
+    }
+    return pv.join(' ')
   }
   function summary(over) {
     const side = c => grades.filter(g => g && g.mover === c)
@@ -280,14 +317,7 @@ export function mountPlay(main) {
     const g = grades[i], ev0 = evals[i - 1], ev1 = evals[i]
     if (!g || !ev0 || !ev1) return moveLabel(i)
     if (!g.label) return `${moveLabel(i)} · ${formatScore(ev1)}${ev0.best === uciMoves[i - 1] ? ' · the engine’s choice' : ''}`
-    const c = new Chess(); for (const s of sans.slice(0, i - 1)) c.move(s)
-    const pv = []
-    for (const u of ev0.pv.slice(0, 4)) {
-      const white = c.turn() === 'w', num = c.moveNumber()
-      const m = c.move(uciToMove(u)); if (!m) break
-      pv.push((white ? `${num}. ` : pv.length ? '' : `${num}… `) + m.san)
-    }
-    const better = pv.join(' ')
+    const better = betterLine(i)
     const word = { inaccuracy: 'An inaccuracy', mistake: 'A mistake', blunder: 'A blunder' }[g.label]
     return `${moveLabel(i)} — ${word}. ${formatScore(ev0)} → ${formatScore(ev1)}.${better ? ` Better was ${better}.` : ''}`
   }
@@ -332,6 +362,12 @@ export function mountPlay(main) {
     e.currentTarget.setAttribute('aria-checked', prefs.evalbar); barEl.hidden = !prefs.evalbar; paintBar()
   })
   movesEl.addEventListener('click', e => { const b = e.target.closest('[data-ply]'); if (b && reviewing) goTo(+b.dataset.ply) })
+  $('#keymoves').addEventListener('click', e => {
+    const b = e.target.closest('[data-ply]'); if (!b || !reviewing) return
+    goTo(+b.dataset.ply)
+    const r = main.querySelector('.play-board').getBoundingClientRect()
+    if (r.top < 0 || r.bottom > window.innerHeight) main.querySelector('.play-board').scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
   const onKey = e => {
     if (!reviewing || e.altKey || e.metaKey || e.ctrlKey || /input|select|textarea/i.test(e.target.tagName)) return
     const k = { ArrowLeft: cursor - 1, ArrowRight: cursor + 1, ArrowUp: 0, ArrowDown: sans.length }[e.key]

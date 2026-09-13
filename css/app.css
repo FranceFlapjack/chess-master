@@ -285,6 +285,18 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .review-summary .counts { color: var(--ink-2); }
 .review-summary .turning { grid-column: 1 / -1; color: var(--ink-2); margin-top: 2px; }
 .review-note { color: var(--ink-2); line-height: 1.45; min-height: 2.9em; }
+.key-moves:empty { display: none; }
+.key-moves { display: flex; flex-direction: column; margin-top: var(--s-2); }
+.key-head { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); padding: var(--s-3) 0 var(--s-2); }
+.key-head + .key-head { padding-top: var(--s-4); }
+.key { display: grid; grid-template-columns: auto 1fr; gap: 2px var(--s-3); align-items: baseline; text-align: left; font: inherit; font-size: var(--fs-1); border: 0; border-top: 1px solid var(--line); background: none; padding: var(--s-2) 0; cursor: pointer; color: var(--ink); }
+.key:hover .key-move { color: var(--accent); }
+.key-move { font-family: var(--font-mono); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.key.mistake .key-move { color: var(--arrow-alt); }
+.key.blunder .key-move { color: var(--bad); }
+.key-swing { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.key-better { grid-column: 1 / -1; color: var(--ink-2); }
+.key-better b { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--ink); }
 
 /* ---------- openings book ---------- */
 .openings { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--s-6); }
