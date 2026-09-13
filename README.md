@@ -1,6 +1,6 @@
-# Chess Learn
+# Chess Master
 
-**Live at https://franceflapjack.github.io/chess-learn/**
+**Live at https://franceflapjack.github.io/chess-master/**
 
 A chess course as a website. Every lesson is built on a real game or a real book, with an interactive board inside the text: play through the model game, then try the idea yourself.
 

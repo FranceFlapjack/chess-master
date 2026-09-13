@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Match runner: Chess Learn Bot vs Stockfish (Elo-limited) under Node.
+// Match runner: Chess Master Bot vs Stockfish (Elo-limited) under Node.
 // Usage: node scripts/match.mjs [games=4] [opponent=nodes:50000|elo:1800] [botMs=300] [sfMs=300]
 //   BOT_DIR=/path/to/other/bot node scripts/match.mjs …   plays a different build of the bot (for before/after tests)
 import { Chess } from '../vendor/chess.js/chess.js'

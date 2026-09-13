@@ -89,7 +89,7 @@ class Progress {
   exportJSON() { return JSON.stringify(this.state, null, 2) }
   importJSON(text) {
     const obj = JSON.parse(text)
-    if (!obj || obj.v !== 1 || typeof obj.days !== 'object') throw new Error('Not a Chess Learn progress file')
+    if (!obj || obj.v !== 1 || typeof obj.days !== 'object') throw new Error('Not a Chess Master progress file')
     this.state = Object.assign(empty(), obj)
     this._save()
   }

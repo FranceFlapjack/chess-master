@@ -24,7 +24,7 @@ export function mountPlay(main) {
       <header class="lesson-head">
         <span class="eyebrow">Play</span>
         <h1>Against the computer</h1>
-        <p class="lede">Two opponents live inside this page: Stockfish 18 at seven strengths, up to the Boss that nobody beats, and the Chess Learn Bot, our own engine, still young. A third Stockfish watches the game at full strength and reviews it with you when it ends.</p>
+        <p class="lede">Two opponents live inside this page: Stockfish 18 at seven strengths, up to the Boss that nobody beats, and the Chess Master Bot, our own engine, still young. A third Stockfish watches the game at full strength and reviews it with you when it ends.</p>
       </header>
       <div class="play">
         <div class="play-left">
@@ -47,7 +47,7 @@ export function mountPlay(main) {
             <label>Opponent</label>
             <div class="seg" role="radiogroup">
               <button class="btn${prefs.opponent === 'stockfish' ? ' on' : ''}" data-opp="stockfish" role="radio" aria-checked="${prefs.opponent === 'stockfish'}">Stockfish</button>
-              <button class="btn${prefs.opponent === 'bot' ? ' on' : ''}" data-opp="bot" role="radio" aria-checked="${prefs.opponent === 'bot'}">Chess Learn Bot</button>
+              <button class="btn${prefs.opponent === 'bot' ? ' on' : ''}" data-opp="bot" role="radio" aria-checked="${prefs.opponent === 'bot'}">Chess Master Bot</button>
             </div>
           </div>
           <div class="field" id="level-field"${prefs.opponent === 'bot' ? ' hidden' : ''}>

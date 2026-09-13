@@ -1,10 +1,10 @@
-// UCI protocol for the Chess Learn Bot. IO-agnostic: feed lines to handle(), get lines from `send`.
+// UCI protocol for the Chess Master Bot. IO-agnostic: feed lines to handle(), get lines from `send`.
 import { Board } from './board.js'
 import { Search } from './search.js'
 import { MATE } from './eval.js'
 import { BOOK } from './book.js'
 
-export const BOT_NAME = 'Chess Learn Bot 0.2'
+export const BOT_NAME = 'Chess Master Bot 0.2'
 
 export class BotUci {
   constructor(send) {
@@ -21,7 +21,7 @@ export class BotUci {
     line = line.trim()
     const [cmd, ...args] = line.split(/\s+/)
     switch (cmd) {
-      case 'uci': this.send(`id name ${BOT_NAME}`); this.send('id author Chess Learn'); this.send('option name OwnBook type check default true'); this.send('uciok'); break
+      case 'uci': this.send(`id name ${BOT_NAME}`); this.send('id author Chess Master'); this.send('option name OwnBook type check default true'); this.send('uciok'); break
       case 'isready': this.send('readyok'); break
       case 'ucinewgame': this.search.clear(); this.board.load('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'); break
       case 'position': this.position(args); break

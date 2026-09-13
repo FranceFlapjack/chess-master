@@ -1,4 +1,4 @@
-// Chess Learn Bot — board representation and move generation.
+// Chess Master Bot — board representation and move generation.
 // 0x88 mailbox: square = rank*16 + file; an index with (sq & 0x88) set is off the board.
 // Pieces: (color << 3) | type. Empty = 0. Moves are packed integers (see encode()).
 

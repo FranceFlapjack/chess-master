@@ -75,14 +75,14 @@ async function route() {
   if (m) return showLesson(main, m[1], m[2])
   current = null
   renderSidebar()
-  if (hash.startsWith('#/play')) { document.title = 'Play · Chess Learn'; unmountPage = mountPlay(main); window.scrollTo({ top: 0 }); return }
+  if (hash.startsWith('#/play')) { document.title = 'Play · Chess Master'; unmountPage = mountPlay(main); window.scrollTo({ top: 0 }); return }
   const om = hash.match(/^#\/openings(?:\/(\d+))?/)
-  if (om) { document.title = 'Openings book · Chess Learn'; unmountPage = mountOpenings(main, om[1]); return }
+  if (om) { document.title = 'Openings book · Chess Master'; unmountPage = mountOpenings(main, om[1]); return }
   showHome(main)
 }
 
 function showHome(main) {
-  document.title = 'Chess Learn'
+  document.title = 'Chess Master'
   const lessons = allLessons()
   const last = progress.state.lastLesson && lessons.find(l => lessonId(l.track, l.slug) === progress.state.lastLesson)
   const next = lessons.find(l => l.ready && !progress.isLessonDone(lessonId(l.track, l.slug)))
@@ -94,7 +94,7 @@ function showHome(main) {
         <h1>Learn chess from the games that taught everyone else.</h1>
         <p>Every lesson is built on a real game or a real book, with the board right there in the text so you can play through it and then try it yourself.</p>
       </section>
-      <div class="card continue play-card"><div><span class="eyebrow">Play</span><h3>Against the computer</h3><div class="small">Stockfish 18, seven strengths, from beginner to the Boss, or the Chess Learn Bot.</div></div><a class="btn" href="#/play">Play</a></div>
+      <div class="card continue play-card"><div><span class="eyebrow">Play</span><h3>Against the computer</h3><div class="small">Stockfish 18, seven strengths, from beginner to the Boss, or the Chess Master Bot.</div></div><a class="btn" href="#/play">Play</a></div>
       <div class="card continue play-card"><div><span class="eyebrow">Reference</span><h3>Openings book</h3><div class="small">All 84 lines the bot plays, each with its idea, playable and drillable from either side.</div></div><a class="btn" href="#/openings">Open</a></div>
       ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.trackTitle)}</div></div><a class="btn primary" href="#/lesson/${cont.track}/${cont.slug}">Open lesson</a></div>` : ''}
       <div class="track-grid">
@@ -128,7 +128,7 @@ async function showLesson(main, track, slug) {
   main.innerHTML = ''; main.appendChild(page)
   if (unsubLesson) { unsubLesson(); unsubLesson = null }
   const { meta, tryIds } = await renderLesson(page, md, { lessonId: id, onSolved: () => checkAuto() })
-  document.title = `${meta.title || slug} · Chess Learn`
+  document.title = `${meta.title || slug} · Chess Master`
   progress.setLastLesson(id)
 
   // complete row + prev/next. A lesson with puzzles completes itself when all of them are solved.

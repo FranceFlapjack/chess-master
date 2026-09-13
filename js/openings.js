@@ -7,7 +7,7 @@ let catalogue = null
 
 export function mountOpenings(main, selectedId) {
   let current = null // {viewer, exercise}
-  main.innerHTML = `<div class="page"><header class="lesson-head"><span class="eyebrow">Openings book</span><h1>Every line in the book</h1><p class="lede">The 84 openings the Chess Learn Bot plays from, with the idea behind each. Pick a line, step through it, then drill it from either side.</p></header><div class="openings"><nav class="openings-list" id="olist"></nav><section class="openings-view" id="oview"><p class="small">Loading…</p></section></div></div>`
+  main.innerHTML = `<div class="page"><header class="lesson-head"><span class="eyebrow">Openings book</span><h1>Every line in the book</h1><p class="lede">The 84 openings the Chess Master Bot plays from, with the idea behind each. Pick a line, step through it, then drill it from either side.</p></header><div class="openings"><nav class="openings-list" id="olist"></nav><section class="openings-view" id="oview"><p class="small">Loading…</p></section></div></div>`
   const listEl = main.querySelector('#olist'), viewEl = main.querySelector('#oview')
 
   ;(catalogue ? Promise.resolve(catalogue) : fetch('content/openings/lines.json').then(r => r.json()).then(j => (catalogue = j))).then(lines => {

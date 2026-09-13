@@ -51,7 +51,7 @@ It is not "a whole other program". The engine is a separate module in this repo 
 - `eval.js`: material + Michniewski piece-square tables, tapered king table, bishop pair.
 - `uci.js` speaks UCI; `worker.js` runs it in the site (`js/engine/bot.js`), `scripts/bot-uci.mjs` runs it standalone on stdin/stdout for any GUI or match runner.
 - `scripts/match.mjs [games] [elo] [botMs] [sfMs]` plays it against Stockfish (Elo-limited) under Node and prints the score. This is the yardstick for every improvement.
-- On the play page as the "Chess Learn Bot" opponent, 0.8 s per move.
+- On the play page as the "Chess Master Bot" opponent, 0.8 s per move.
 - **Ladder so far (2026-09-12, 300 ms per move each side):** vs Stockfish@1500 +2 =0 −0; @1800 +3 =0 −1; @2000 +3 =0 −1. Caveat: Stockfish's Elo limiter is calibrated for longer thinking times, so at 300 ms the limited engine is probably weaker than its label; treat these as a relative yardstick, and rerun with `botMs=sfMs=1000` before quoting a number.
 - Known limits: `stop` cannot interrupt a running search (searches are time-bounded instead); no opening book; no pawn-structure or king-safety terms yet.
 

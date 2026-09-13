@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "chess-learn", "runtimeExecutable": "python3", "runtimeArgs": ["scripts/serve.py", "8000"], "port": 8000 }
+    { "name": "chess-master", "runtimeExecutable": "python3", "runtimeArgs": ["scripts/serve.py", "8000"], "port": 8000 }
   ]
 }
