@@ -1,0 +1,10 @@
+[Event "London (casual game)"]
+[Site "London ENG"]
+[Date "1851.06.21"]
+[White "Adolf Anderssen"]
+[Black "Lionel Kieseritzky"]
+[Result "1-0"]
+[ECO "C33"]
+
+{The Immortal Game. A King's Gambit played for fun during the London 1851 tournament. White gives a bishop, both rooks and the queen, and mates with the three minor pieces he has left. Move list checked against Wikipedia.}
+1. e4 e5 2. f4 exf4 3. Bc4 Qh4+ 4. Kf1 b5 {The Bryan Counter-gambit: Black offers a pawn to pull the bishop off the a2–g8 diagonal.} 5. Bxb5 Nf6 6. Nf3 Qh6 7. d3 Nh5 8. Nh4 Qg5 9. Nf5 c6 10. g4 Nf6 11. Rg1 {The first rook is offered: the bishop on b5 is left hanging.} cxb5 12. h4 Qg6 13. h5 Qg5 14. Qf3 Ng8 {Black's queen has moved seven times and every other black piece is home. White has every piece out.} 15. Bxf4 Qf6 16. Nc3 Bc5 17. Nd5 Qxb2 18. Bd6 {The bishop blocks the c5 bishop's defence of the king and takes e7 and f8 from it.} Bxg1 19. e5 {Cuts the queen off from g7. The second rook goes with check.} Qxa1+ 20. Ke2 Na6 {Black is a queen and two rooks up. It is mate in three.} 21. Nxg7+ Kd8 22. Qf6+ {The queen too.} Nxf6 23. Be7# 1-0

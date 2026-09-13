@@ -267,27 +267,33 @@
       "lessons": [
         {
           "slug": "back-rank-mate",
-          "title": "Back-rank mate"
+          "title": "Back-rank mate",
+          "ready": true
         },
         {
           "slug": "smothered-mate",
-          "title": "Smothered mate and Philidor's legacy"
+          "title": "Smothered mate and Philidor's legacy",
+          "ready": true
         },
         {
           "slug": "anastasia-arabian",
-          "title": "Anastasia's and the Arabian mate"
+          "title": "Anastasia's and the Arabian mate",
+          "ready": true
         },
         {
           "slug": "boden-and-greco",
-          "title": "Boden's and Greco's mate"
+          "title": "Boden's and Greco's mate",
+          "ready": true
         },
         {
           "slug": "epaulette-dovetail",
-          "title": "Epaulette and dovetail mates"
+          "title": "Epaulette and dovetail mates",
+          "ready": true
         },
         {
           "slug": "immortal-games",
-          "title": "The Immortal and the Evergreen"
+          "title": "The Immortal and the Evergreen",
+          "ready": true
         }
       ]
     },

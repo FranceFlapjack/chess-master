@@ -1,0 +1,10 @@
+[Event "London (casual game)"]
+[Site "London ENG"]
+[Date "1853.??.??"]
+[White "Schulder"]
+[Black "Samuel Boden"]
+[Result "0-1"]
+[ECO "C41"]
+
+{The game that gave Boden's mate its name. White castles long into two black bishops on criss-crossing diagonals, and a queen sacrifice opens the second one. Move list checked against Wikipedia.}
+1. e4 e5 2. Nf3 d6 3. c3 f5 4. Bc4 Nf6 5. d4 fxe4 6. dxe5 exf3 7. exf6 Qxf6 8. gxf3 Nc6 9. f4 Bd7 10. Be3 O-O-O 11. Nd2 Re8 12. Qf3 Bf5 {Both bishops now aim at White's queenside. The one on f5 controls c2 and b1; the other will come to a3.} 13. O-O-O {Castling into it.} d5 14. Bxd5 {14.Bb3 was necessary.} Qxc3+ {The queen goes so that the b-pawn leaves b2 and opens the a3–c1 diagonal.} 15. bxc3 Ba3# 0-1
