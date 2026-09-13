@@ -34,15 +34,13 @@ prompt: White to play. 1. e4, and after Black's reply, 2. Nf3.
 success: 1. e4 e5 2. Nf3. The most common opening moves in chess, and you have just read and played them.
 ```
 
-<p class="puzzle-intro">2 · Play the capture Bxf7+.</p>
+**Read this one.** The position after 1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5. White's next move is written **Bxf7+**.
 
-```try
-fen: r1bqkb1r/pppp1ppp/2n2n2/4p1N1/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 1
-solution: Bxf7+
-tolerance: 200
-hint: The bishop on c4 takes the pawn on f7 with check.
-prompt: White to play. Bxf7+.
-success: Bishop takes f7, check. You have read a capture and a check.
+```board
+fen: r1bqkb1r/pppp1ppp/2n2n2/4p1N1/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 5
+arrows: c4f7
+highlight: f7
+caption: Bxf7+: the bishop (B) captures (x) on f7, with check (+). The knight could take on f7 too, and that would be written Nxf7.
 ```
 
 ## Remember
