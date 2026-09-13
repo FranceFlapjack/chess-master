@@ -9,6 +9,7 @@ import { progress } from './progress.js'
 import { sound } from './sound.js'
 import { whiteShare, formatScore, grade, moveAccuracy, GLYPH, MATED } from './analysis.js'
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js/chess.js'
+import { ICONS } from './pgn-viewer.js'
 
 const KEY = 'chess-learn.play.v1'
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {} } catch (_) { return {} } }
@@ -26,9 +27,20 @@ export function mountPlay(main) {
         <p class="lede">Two opponents live inside this page: Stockfish 18 at seven strengths, up to the Boss that nobody beats, and the Chess Learn Bot, our own engine, still young. A third Stockfish watches the game at full strength and reviews it with you when it ends.</p>
       </header>
       <div class="play">
-        <div class="play-board">
-          <div class="evalbar" id="evalbar" title="Evaluation" aria-hidden="true"><i class="fill"></i><b class="num"></b></div>
-          <div class="board-wrap"><div class="board"></div></div>
+        <div class="play-left">
+          <div class="play-board">
+            <div class="evalbar" id="evalbar" title="Evaluation" aria-hidden="true"><i class="fill"></i><b class="num"></b></div>
+            <div class="board-wrap"><div class="board"></div></div>
+          </div>
+          <div class="game-controls review-controls" id="controls" hidden>
+            <button class="icon-btn" data-nav="prevkey" title="Previous key move (shift ←)">${ICONS.prevkey}</button>
+            <button class="icon-btn" data-nav="prev" title="Previous move (←)">${ICONS.prev}</button>
+            <button class="icon-btn" data-nav="next" title="Next move (→)">${ICONS.next}</button>
+            <button class="icon-btn" data-nav="nextkey" title="Next key move (shift →)">${ICONS.nextkey}</button>
+            <span class="spacer"></span>
+            <span class="review-pos" id="pos"></span>
+          </div>
+          <div class="review-note" id="note" hidden></div>
         </div>
         <aside class="play-side">
           <div class="field">
@@ -62,7 +74,6 @@ export function mountPlay(main) {
           <div class="status" id="status" aria-live="polite">Press New game.</div>
           <div class="review" id="review" hidden>
             <div class="review-summary" id="summary"></div>
-            <div class="review-note" id="note"></div>
             <div class="key-moves" id="keymoves"></div>
           </div>
           <div class="moves" id="moves"></div>
@@ -78,6 +89,7 @@ export function mountPlay(main) {
   // the game record: sans[i] / uciMoves[i] is ply i+1; evals[i] judges the position after i plies
   const sans = [], uciMoves = []
   let evals = [], grades = [], cursor = 0, shownPly = 0 // shownPly: what the board displays (review)
+  let keyPlies = [] // plies listed as key moves, in game order
 
   const setStatus = (t, cls = '') => { statusEl.textContent = t; statusEl.className = 'status ' + cls }
   const buttons = on => { for (const id of ['takeback', 'hint', 'resign']) $('#' + id).disabled = !on }
@@ -127,7 +139,11 @@ export function mountPlay(main) {
     }).join('')
     movesEl.classList.toggle('reviewing', reviewing)
     const cur = movesEl.querySelector('.current')
-    if (cur) cur.scrollIntoView({ block: 'nearest' })
+    if (cur) { // keep the current move visible inside the list without scrolling the page
+      const top = cur.offsetTop - movesEl.offsetTop, bottom = top + cur.offsetHeight
+      if (top < movesEl.scrollTop) movesEl.scrollTop = top
+      else if (bottom > movesEl.scrollTop + movesEl.clientHeight) movesEl.scrollTop = bottom - movesEl.clientHeight
+    }
   }
 
   function gameOver() {
@@ -182,7 +198,7 @@ export function mountPlay(main) {
     analyst().stop()
     thinking = false; playing = true; reviewing = false
     sans.length = 0; uciMoves.length = 0; evals = []; grades = []; cursor = 0
-    reviewEl.hidden = true; board.setArrows([])
+    reviewEl.hidden = true; $('#controls').hidden = true; $('#note').hidden = true; board.setArrows([])
     $('#takeback').textContent = 'Take back'
     await board.showPosition(DEFAULT_POSITION)
     if (board.orientation() !== userColor) await board.flip()
@@ -202,7 +218,7 @@ export function mountPlay(main) {
     analyst().stop()
     if (n > 0 && (n % 2 === 0 ? 'w' : 'b') !== userColor) n--
     sans.length = n; uciMoves.length = n; evals.length = n + 1; grades = []
-    reviewing = false; reviewEl.hidden = true; board.setArrows([])
+    reviewing = false; reviewEl.hidden = true; $('#controls').hidden = true; $('#note').hidden = true; board.setArrows([])
     $('#takeback').textContent = 'Take back'
     await board.setHistory(sans)
     paintMoves(); paintBar(); analyse(n)
@@ -257,7 +273,9 @@ export function mountPlay(main) {
     paintMoves(); paintBar()
     $('#summary').innerHTML = summary(over)
     $('#keymoves').innerHTML = keyMoves()
-    $('#note').textContent = 'Click a move, or use ← → to step through. Marked moves show what the engine preferred.'
+    $('#controls').hidden = false; paintControls()
+    $('#note').hidden = false
+    $('#note').textContent = 'Step through with the buttons or ← →; the double arrows jump between key moves.'
   }
   /** The moves that decided the game: every mistake and blunder, in game order, with the better line. */
   function keyMoves() {
@@ -277,6 +295,7 @@ export function mountPlay(main) {
       </button>`
     }
     const mine = pick(userColor, 6), theirs = pick(opp, 3)
+    keyPlies = [...mine, ...theirs].sort((a, b) => a - b)
     let html = ''
     if (mine.length) html += `<div class="key-head">Key moves</div>${mine.map(i => item(i, true)).join('')}`
     if (theirs.length) html += `<div class="key-head">Chances you missed</div>${theirs.map(i => item(i, false)).join('')}`
@@ -338,8 +357,18 @@ export function mountPlay(main) {
     else if (t !== shownPly) await board.setHistory(sans.slice(0, t))
     shownPly = t
     board.setArrows(arrows)
-    paintMoves(); paintBar()
+    paintMoves(); paintBar(); paintControls()
     $('#note').textContent = note(k)
+  }
+  const prevKey = () => keyPlies.filter(p => p < cursor).at(-1)
+  const nextKey = () => keyPlies.find(p => p > cursor)
+  function paintControls() {
+    const c = $('#controls'); if (c.hidden) return
+    c.querySelector('[data-nav="prevkey"]').disabled = prevKey() === undefined
+    c.querySelector('[data-nav="nextkey"]').disabled = nextKey() === undefined
+    c.querySelector('[data-nav="prev"]').disabled = cursor === 0
+    c.querySelector('[data-nav="next"]').disabled = cursor === sans.length
+    $('#pos').textContent = cursor ? moveLabel(cursor) : 'Start'
   }
 
   // ---- wiring ----
@@ -370,11 +399,16 @@ export function mountPlay(main) {
   })
   const onKey = e => {
     if (!reviewing || e.altKey || e.metaKey || e.ctrlKey || /input|select|textarea/i.test(e.target.tagName)) return
-    const k = { ArrowLeft: cursor - 1, ArrowRight: cursor + 1, ArrowUp: 0, ArrowDown: sans.length }[e.key]
+    const k = e.shiftKey ? { ArrowLeft: prevKey(), ArrowRight: nextKey() }[e.key] : { ArrowLeft: cursor - 1, ArrowRight: cursor + 1, ArrowUp: 0, ArrowDown: sans.length }[e.key]
     if (k === undefined) return
     e.preventDefault(); goTo(k)
   }
   document.addEventListener('keydown', onKey)
+  $('#controls').addEventListener('click', e => {
+    const b = e.target.closest('[data-nav]'); if (!b || !reviewing) return
+    const k = { prevkey: prevKey(), nextkey: nextKey(), prev: cursor - 1, next: cursor + 1 }[b.dataset.nav]
+    if (k !== undefined) goTo(k)
+  })
   $('#new').addEventListener('click', () => { sound.unlock(); newGame() })
   $('#takeback').addEventListener('click', takeBack)
   $('#hint').addEventListener('click', hint)
