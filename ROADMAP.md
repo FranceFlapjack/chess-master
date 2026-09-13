@@ -1,6 +1,6 @@
 # Roadmap
 
-Status: **Tactics (11), Openings (10), Checkmate patterns (6) and Endgames (8) tracks complete 2026-09-13**, 35 lessons, every puzzle move engine-verified. Bot 0.2, the play page with evaluation bar and post-game review are live. Next: Middlegame strategy, How to think, Study a whole game, First steps.
+Status: **Tactics (11), Openings (10), Checkmate patterns (6), Endgames (8) and Middlegame strategy (10) tracks complete 2026-09-13**, 45 lessons, every puzzle move engine-verified. Bot 0.2, the play page with evaluation bar and post-game review are live. Next: How to think, Study a whole game, First steps.
 
 ## Phase 0 — Scaffold (done 2026-09-12)
 - Shell, sidebar curriculum with progress, hash router, home page.

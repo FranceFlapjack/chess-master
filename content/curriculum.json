@@ -181,43 +181,53 @@
       "lessons": [
         {
           "slug": "pawn-structure",
-          "title": "Pawn structure: the skeleton of the game"
+          "title": "Pawn structure: the skeleton of the game",
+          "ready": true
         },
         {
           "slug": "isolated-pawn",
-          "title": "The isolated queen's pawn"
+          "title": "The isolated queen's pawn",
+          "ready": true
         },
         {
           "slug": "outposts",
-          "title": "Outposts and weak squares"
+          "title": "Outposts and weak squares",
+          "ready": true
         },
         {
           "slug": "open-files",
-          "title": "Open files and the seventh rank"
+          "title": "Open files and the seventh rank",
+          "ready": true
         },
         {
           "slug": "bishops",
-          "title": "Good bishop, bad bishop, bishop pair"
+          "title": "Good bishop, bad bishop, bishop pair",
+          "ready": true
         },
         {
           "slug": "attacking-the-king",
-          "title": "Attacking the castled king"
+          "title": "Attacking the castled king",
+          "ready": true
         },
         {
           "slug": "opposite-castling",
-          "title": "Opposite-side castling"
+          "title": "Opposite-side castling",
+          "ready": true
         },
         {
           "slug": "prophylaxis",
-          "title": "Prophylaxis and overprotection"
+          "title": "Prophylaxis and overprotection",
+          "ready": true
         },
         {
           "slug": "making-a-plan",
-          "title": "Making a plan"
+          "title": "Making a plan",
+          "ready": true
         },
         {
           "slug": "converting",
-          "title": "Converting an advantage"
+          "title": "Converting an advantage",
+          "ready": true
         }
       ]
     },
