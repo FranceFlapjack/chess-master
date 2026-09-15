@@ -108,6 +108,8 @@ button { font: inherit; color: inherit; }
 /* ---------- home ---------- */
 .hero { max-width: var(--measure); margin: 0 0 var(--s-7); }
 .hero h1 { margin: var(--s-3) 0 var(--s-4); }
+.hero h1.quote { text-transform: none; letter-spacing: 0; font-weight: 500; line-height: 1.25; margin-bottom: var(--s-2); }
+.hero .attrib { display: block; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: var(--s-5); }
 .hero p { font-size: var(--fs-2); color: var(--ink-2); }
 .card { border: 1px solid var(--line); padding: var(--s-5); background: var(--surface); }
 .continue { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); margin-bottom: var(--s-6); }
