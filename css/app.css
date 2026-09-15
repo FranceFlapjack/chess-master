@@ -70,34 +70,36 @@ button { font: inherit; color: inherit; }
 .topbar .brand { flex-direction: row; align-items: center; gap: var(--s-3); }
 .topbar .brand .logo { width: 28px; height: 28px; margin: 0; }
 
-/* the family bubble: a rounded glass card that comes out of the logo's lower corner and lists the other Master apps */
+/* the family bubble: liquid glass just below the logo, its left edge on the logo's own left grid line */
 .brand .logo-wrap { position: relative; display: block; }
 .family {
-  position: absolute; left: 10px; top: calc(100% - 10px); z-index: 30; width: 220px;
-  padding: 8px; border-radius: var(--bubble-radius);
+  position: absolute; left: 1px; top: calc(100% - 5px + var(--bubble-gap)); z-index: 30; width: 220px;   /* 1px / 5px: where the board sits inside the logo's viewBox */
+  padding: 8px; border-radius: var(--bubble-radius); overflow: hidden;
   background: var(--bubble-fallback);
-  box-shadow: inset 0 1px 0 var(--bubble-rim), inset 0 0 0 0.5px var(--bubble-rim), var(--bubble-shadow);
-  transform-origin: 12px 0; transform: scale(0.6) translate(-6px, -10px); opacity: 0;
+  box-shadow: inset 0 0 0 1px var(--bubble-rim), 0 0 0 0.5px var(--bubble-edge), var(--bubble-shadow);
+  transform-origin: 0 0; transform: scale(0.85) translateY(-8px); opacity: 0;
   transition: transform var(--bubble-anim) cubic-bezier(0.2, 0.8, 0.2, 1), opacity var(--bubble-anim);
   text-transform: none; letter-spacing: 0; font-weight: 400;
 }
+.family::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--bubble-sheen); pointer-events: none; }
+.family > * { position: relative; }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .family { background: var(--bubble-bg); -webkit-backdrop-filter: blur(var(--bubble-blur)) saturate(var(--bubble-saturate)); backdrop-filter: blur(var(--bubble-blur)) saturate(var(--bubble-saturate)); }
 }
 .family.open { transform: none; opacity: 1; }
-.topbar .family { left: 6px; top: calc(100% - 4px); }
+.topbar .family { left: 3.5px; top: calc(100% - 3.5px + var(--bubble-gap)); }
 .family-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); padding: 6px 12px; }
 .family-item {
   display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: var(--bubble-row-radius);
   color: var(--ink); text-decoration: none; transition: background 120ms;
 }
-.family-item:hover, .family-item:focus-visible { background: rgba(255, 255, 255, 0.55); box-shadow: inset 0 0 0 0.5px var(--bubble-rim); outline: none; }
+.family-item:hover, .family-item:focus-visible { background: rgba(255, 255, 255, 0.5); box-shadow: inset 0 0 0 0.5px var(--bubble-rim); outline: none; }
 .family-item.next { color: var(--ink-3); cursor: default; }
 .family-item.next .family-tile { color: var(--ink-3); background: transparent; box-shadow: inset 0 0 0 0.5px var(--bubble-rim); }
 .family-item.next:hover { background: transparent; box-shadow: none; }
 .family-tile {
   flex: none; width: 40px; height: 40px; border-radius: var(--bubble-tile-radius); color: var(--app-accent);
-  background: rgba(255, 255, 255, 0.7); box-shadow: inset 0 0 0 0.5px var(--bubble-rim), 0 1px 3px rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.6); box-shadow: inset 0 0 0 0.5px var(--bubble-rim), 0 1px 3px rgba(0, 0, 0, 0.06);
   display: flex; align-items: center; justify-content: center;
 }
 .family-tile svg { width: 26px; height: 26px; display: block; }
