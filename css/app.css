@@ -59,12 +59,47 @@ button { font: inherit; color: inherit; }
   display: flex; flex-direction: column;
 }
 .brand {
-  display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-6) var(--s-5) var(--s-5);
-  font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+  position: relative;
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-3); padding: var(--s-6) var(--s-5) var(--s-5);
+  font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
 }
-.brand .logo { width: 40px; height: 40px; margin: -4px 0 0 -4px; display: block; color: var(--accent); }
+.brand .brand-text { color: inherit; text-decoration: none; }
+.brand .logo-btn { display: block; padding: 0; border: 0; background: none; cursor: pointer; color: var(--accent); border-radius: var(--bubble-tile-radius); }
+.brand .logo-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+.brand .logo { width: 40px; height: 40px; margin: -4px 0 0 -4px; display: block; }
 .topbar .brand { flex-direction: row; align-items: center; gap: var(--s-3); }
 .topbar .brand .logo { width: 28px; height: 28px; margin: 0; }
+
+/* the family bubble: a rounded glass card that grows out of the logo's corner and lists the Master apps */
+.family {
+  position: absolute; left: var(--s-4); top: calc(100% - var(--s-3)); z-index: 30; width: 220px;
+  padding: 8px; border-radius: var(--bubble-radius);
+  background: var(--bubble-fallback);
+  box-shadow: inset 0 1px 0 var(--bubble-rim), inset 0 0 0 0.5px var(--bubble-rim), var(--bubble-shadow);
+  transform-origin: 20px 0; transform: scale(0.92) translateY(-6px); opacity: 0;
+  transition: transform var(--bubble-anim) cubic-bezier(0.2, 0.8, 0.2, 1), opacity var(--bubble-anim);
+  text-transform: none; letter-spacing: 0; font-weight: 400;
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .family { background: var(--bubble-bg); -webkit-backdrop-filter: blur(var(--bubble-blur)) saturate(var(--bubble-saturate)); backdrop-filter: blur(var(--bubble-blur)) saturate(var(--bubble-saturate)); }
+}
+.family.open { transform: none; opacity: 1; }
+.topbar .family { top: calc(100% + 6px); left: 0; }
+.family-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); padding: 6px 12px; }
+.family-item {
+  display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: var(--bubble-row-radius);
+  color: var(--ink); text-decoration: none; transition: background 120ms;
+}
+.family-item:hover, .family-item:focus-visible { background: rgba(255, 255, 255, 0.55); box-shadow: inset 0 0 0 0.5px var(--bubble-rim); outline: none; }
+.family-item.here { background: rgba(255, 255, 255, 0.55); box-shadow: inset 0 0 0 0.5px var(--bubble-rim); }
+.family-item.here .family-name::after { content: 'you are here'; display: block; font-size: 10px; letter-spacing: 0.08em; color: var(--ink-3); margin-top: 2px; }
+.family-tile {
+  flex: none; width: 40px; height: 40px; border-radius: var(--bubble-tile-radius); color: var(--app-accent);
+  background: rgba(255, 255, 255, 0.7); box-shadow: inset 0 0 0 0.5px var(--bubble-rim), 0 1px 3px rgba(0, 0, 0, 0.06);
+  display: flex; align-items: center; justify-content: center;
+}
+.family-tile svg { width: 26px; height: 26px; display: block; }
+.family-name { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .brand small { display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; color: var(--ink-3); margin-top: 4px; text-transform: none; }
 .curriculum { flex: 1; padding: 0 var(--s-3) var(--s-4); }
 .track { margin-bottom: var(--s-2); }
@@ -357,5 +392,6 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 }
 @media (prefers-reduced-motion: reduce) {
   .cm-chessboard .pieces-layer .piece-shake { animation: none; }
+  .family { transition: none; }
   .switch::after, .track-head .bar i { transition: none; }
 }

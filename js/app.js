@@ -6,6 +6,7 @@ import { sound } from './sound.js'
 import { mountPlay } from './play.js'
 import { mountOpenings } from './openings.js'
 import { setActiveViewer } from './pgn-viewer.js'
+import { mountFamily } from './family.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -23,6 +24,7 @@ async function boot() {
   const mute = $('#mute')
   const paintMute = () => { mute.innerHTML = sound.muted ? ICON_SOUND_OFF : ICON_SOUND_ON; mute.setAttribute('aria-pressed', String(sound.muted)); mute.title = sound.muted ? 'Sound off' : 'Sound on' }
   paintMute(); mute.addEventListener('click', () => { sound.toggle(); paintMute() })
+  mountFamily('chess')
   $('#menu').addEventListener('click', () => toggleSidebar())
   $('#scrim').addEventListener('click', () => toggleSidebar(false))
   document.addEventListener('pointerdown', () => sound.unlock(), { once: true })
