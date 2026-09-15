@@ -91,8 +91,8 @@ function showHome(main) {
     <div class="page">
       <section class="hero">
         <span class="eyebrow">A course, not a feed</span>
-        <h1 class="quote">“You may learn much more from a game you lose than from a game you win.”</h1>
-        <span class="attrib">José Raúl Capablanca, world champion 1921–1927</span>
+        <h1 class="quote">“It’s an entire world of just 64 squares. I feel safe in it.”</h1>
+        <span class="attrib">Beth Harmon, The Queen’s Gambit</span>
         <p>Every lesson is built on a real game or a real book, with the board right there in the text so you can play through it and then try it yourself.</p>
       </section>
       <div class="card continue play-card"><div><span class="eyebrow">Play</span><h3>Against the computer</h3><div class="small">Stockfish 18, seven strengths, from beginner to the Boss, or the Chess Master Bot.</div></div><a class="btn" href="#/play">Play</a></div>
