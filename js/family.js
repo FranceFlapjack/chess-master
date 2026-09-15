@@ -5,8 +5,10 @@
 // Links: on GitHub Pages the apps are siblings (`/chess-master/`, `/go-master/`), so `path` is relative to
 // this app's folder; on localhost each app has its own port, so `dev` is used instead.
 // Progress is not shared: each app keeps its own storage prefix; this only navigates.
+// The bubble lists the OTHER apps (never the one you are in) and ends with a silhouette for the next Master, not yet named.
 
 const LOGO_CHESS = `<svg viewBox="-4 -4 40 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="1" y="1" width="30" height="30"/><rect x="1" y="1" width="15" height="15" fill="currentColor" stroke="none"/><rect x="16" y="16" width="15" height="15" fill="currentColor" stroke="none"/><g transform="translate(23.5 8.5)" fill="currentColor" stroke="none"><circle cx="0" cy="-3.6" r="2.9"/><path d="M-2.1 -1.2 H2.1 L3.6 3.4 H-3.6 Z"/><rect x="-5" y="3.4" width="10" height="2.2" rx="0.6"/></g><g transform="translate(23.5 23.5)" fill="#fff" stroke="none"><circle cx="0" cy="-3.6" r="2.9"/><path d="M-2.1 -1.2 H2.1 L3.6 3.4 H-3.6 Z"/><rect x="-5" y="3.4" width="10" height="2.2" rx="0.6"/></g></svg>`
+const LOGO_NEXT = `<svg viewBox="-4 -4 40 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="2.5 2.5"><rect x="1" y="1" width="30" height="30"/><path d="M16 1V31M1 16H31"/></svg>`
 const LOGO_GO = `<svg viewBox="-6 -6 44 44" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M1 1 H31 M1 16 H31 M1 31 H31 M1 1 V31 M16 1 V31 M31 1 V31"/><circle cx="16" cy="16" r="5" fill="currentColor" stroke="none"/><circle cx="31" cy="1" r="5" fill="#fff"/></svg>`
 
 export const FAMILY = [
@@ -30,16 +32,15 @@ function mountOne(brand, selfId) {
   bubble.setAttribute('role', 'menu')
   bubble.setAttribute('aria-label', 'The Master series')
   bubble.hidden = true
-  bubble.innerHTML = `<div class="family-title">The Master series</div>` + FAMILY.map(app => {
-    const here = app.id === selfId
-    return `<a class="family-item${here ? ' here' : ''}" role="menuitem" href="${here ? '#/' : hrefOf(app)}" style="--app-accent:${app.accent}"${here ? ' aria-current="true"' : ''}>
-      <span class="family-tile">${app.logo}</span><span class="family-name">${app.name}</span></a>`
-  }).join('')
-  brand.appendChild(bubble)
+  bubble.innerHTML = `<div class="family-title">The Master series</div>` + FAMILY.filter(app => app.id !== selfId).map(app =>
+    `<a class="family-item" role="menuitem" href="${hrefOf(app)}" style="--app-accent:${app.accent}"><span class="family-tile">${app.logo}</span><span class="family-name">${app.name}</span></a>`
+  ).join('') + `<div class="family-item next" role="menuitem" aria-disabled="true"><span class="family-tile">${LOGO_NEXT}</span><span class="family-name">Coming soon</span></div>`
+  const wrap = document.createElement('span'); wrap.className = 'logo-wrap'
+  logo.replaceWith(wrap); wrap.append(logo, bubble)
   logo.setAttribute('aria-haspopup', 'menu'); logo.setAttribute('aria-expanded', 'false')
 
   let openTimer = 0, closeTimer = 0, isOpen = false
-  const items = () => [...bubble.querySelectorAll('.family-item')]
+  const items = () => [...bubble.querySelectorAll('.family-item:not(.next)')]
   function open() {
     clearTimeout(closeTimer); if (isOpen) return
     isOpen = true; bubble.hidden = false; logo.setAttribute('aria-expanded', 'true')
@@ -71,7 +72,6 @@ function mountOne(brand, selfId) {
   }
   // click / tap / Enter toggles (phones have no hover)
   logo.addEventListener('click', () => { clearTimeout(openTimer); isOpen ? close() : (open(), items()[0]?.focus({ preventScroll: true })) })
-  bubble.addEventListener('click', e => { if (e.target.closest('.family-item.here')) close() })
 }
 
 const animMs = () => parseInt(getComputedStyle(document.documentElement).getPropertyValue('--bubble-anim')) || 0
