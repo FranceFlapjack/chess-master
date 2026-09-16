@@ -51,7 +51,7 @@ export function mountGames(main) {
       <section id="list" class="games-list" hidden></section>
       <section id="reviewwrap" class="games-review" hidden>
         <span class="eyebrow">Review</span>
-        <div id="review"></div>
+        <div id="reviewhost"></div>
       </section>
       <section id="drills" class="games-drills" hidden></section>
     </div>`
@@ -82,7 +82,8 @@ export function mountGames(main) {
       if (!fresh.length) throw new Error('No standard games found for that account.')
       const known = new Set(fresh.map(g => g.id))
       store.games = [...fresh, ...store.games.filter(g => !known.has(g.id))].slice(0, MAX_GAMES * 2)
-      save(store); setStatus(`${fresh.length} games fetched.`, 'good')
+      const unknown = fresh.filter(g => g.unknownSide).length
+      save(store); setStatus(unknown ? `${fresh.length} games fetched, but in ${unknown} of them neither player is called “${user}” — those are shown from White's side.` : `${fresh.length} games fetched.`, unknown ? 'bad' : 'good')
       paint()
     } catch (err) { setStatus(err.message, 'bad') }
     $('#fetch').disabled = false
@@ -168,12 +169,12 @@ export function mountGames(main) {
     selected = id
     main.querySelectorAll('.games-table tr').forEach(tr => tr.classList.toggle('current', tr.dataset.id === id))
     const wrap = $('#reviewwrap'); wrap.hidden = false
-    reviewer = mountReview($('#review'), {
+    reviewer = mountReview($('#reviewhost'), {
       sans: p.sans, uciMoves: p.uciMoves, userColor: g.userColor, names: g.names, result: g.result,
       subtitle: [g.date, g.opening, g.timeClass, g.site === 'pgn' ? '' : g.site === 'lichess' ? 'Lichess' : 'chess.com'].filter(Boolean).join(' · '),
       evals: store.evals[id],
     }, {
-      onEvals: evals => { store.evals[id] = evals; trimEvals(); save(store) },
+      onEvals: evals => { store.evals[id] = evals.map(e => e && e.pv ? Object.assign({}, e, { pv: e.pv.slice(0, 6) }) : e); trimEvals(); save(store) }, // the review never reads past six plies of a line
       onGraded: rec => { addDrills(g, rec); paint() },
     })
     wrap.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -259,17 +260,19 @@ export function parse(pgn) {
 }
 export function splitPgn(text) { return text.replace(/\r/g, '').split(/\n(?=\[Event )/).map(s => s.trim()).filter(s => s) }
 /** A game record from a PGN: { id, site, url, date, names:{w,b}, result, opening, eco, timeClass, userColor, pgn }. */
-function fromPgn(pgn, site, { user = '', url = '', timeClass = '', userColor } = {}) {
+export function fromPgn(pgn, site, { user = '', url = '', timeClass = '', userColor } = {}) {
   const p = parse(pgn); if (!p) return null
   const h = p.headers
   const names = { w: h.White || '', b: h.Black || '' }
   const lower = user.toLowerCase()
-  const me = userColor || (lower && names.b.toLowerCase() === lower && names.w.toLowerCase() !== lower ? 'b' : 'w')
+  const isMe = c => lower && names[c].toLowerCase() === lower
+  const me = userColor || (isMe('b') && !isMe('w') ? 'b' : 'w')
+  const unknownSide = !userColor && !isMe('w') && !isMe('b') // neither name is the username: assume White, but say so
   const link = url || (h.Site && /^https?:/.test(h.Site) ? h.Site : '')
   const date = (h.UTCDate || h.Date || '').replace(/\./g, '-').replace(/-\?\?/g, '')
   const opening = h.Opening || (h.ECOUrl ? openingFromUrl(h.ECOUrl) : '')
   const id = link ? link.replace(/^https?:\/\//, '') : `pgn:${hash(p.uciMoves.join(' ') + names.w + names.b + date)}`
-  return { id, site, url: link, date, names, result: h.Result && h.Result !== '*' ? h.Result : '', opening, eco: h.ECO || '', timeClass: timeClass || ((h.Event || '').match(/bullet|blitz|rapid|classical|correspondence/i) || [''])[0].toLowerCase(), userColor: me, pgn }
+  return { id, site, url: link, date, names, result: h.Result && h.Result !== '*' ? h.Result : '', opening, eco: h.ECO || '', timeClass: timeClass || ((h.Event || '').match(/bullet|blitz|rapid|classical|correspondence/i) || [''])[0].toLowerCase(), userColor: me, unknownSide, pgn }
 }
 function resultFor(g) {
   if (!g.result) return ''
