@@ -399,3 +399,39 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
   .family { transition: none; }
   .switch::after, .track-head .bar i { transition: none; }
 }
+
+/* my games */
+.games-source { display: flex; flex-direction: column; gap: var(--s-4); margin: var(--s-5) 0; max-width: var(--measure); }
+.games-source .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); }
+.games-source input[type="text"], .games-source textarea { font: inherit; font-size: var(--fs-1); border: 1px solid var(--line-2); background: var(--surface); padding: 8px 10px; outline: none; color: var(--ink); flex: 1; min-width: 12em; }
+.games-source textarea { font-family: var(--font-mono); font-size: 12px; width: 100%; resize: vertical; }
+.games-source input:focus, .games-source textarea:focus { border-color: var(--accent); }
+.games-source [hidden] { display: none; }
+.games-openings, .games-list, .games-review, .games-drills { margin: var(--s-6) 0; }
+.games-openings[hidden], .games-list[hidden], .games-review[hidden], .games-drills[hidden] { display: none; }
+.games-openings .small, .games-drills .small { max-width: var(--measure); margin: var(--s-2) 0 var(--s-3); }
+.games-table, .openings-table { border-collapse: collapse; width: 100%; font-size: var(--fs-1); margin-top: var(--s-3); }
+.games-table th, .openings-table th { text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line-2); }
+.games-table td, .openings-table td { padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.games-table tr.current td { background: var(--surface-2); }
+.games-table .turn-dot { margin-right: 6px; }
+.games-table .res.win { color: var(--accent); font-weight: 600; }
+.games-table .res.loss { color: var(--bad); }
+.games-table .btn.quiet { padding: 4px 10px; font-size: 10px; }
+.games-table tr.analysed .btn.quiet { border-color: var(--accent); color: var(--accent); }
+.openings-table a { color: var(--accent); text-decoration: none; }
+.openings-table a:hover { text-decoration: underline; }
+.games-review .play { margin-top: var(--s-3); }
+.review-head { display: flex; flex-direction: column; gap: 2px; }
+.review-players { font-size: var(--fs-2); }
+.review-players .vs { color: var(--ink-3); margin: 0 4px; }
+.review-players .res { font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); margin-left: 6px; }
+.drill { margin: var(--s-4) 0 var(--s-6); }
+.drill-caption { font-size: var(--fs-1); color: var(--ink-2); margin-bottom: var(--s-2); }
+.reviewer .moves .mv { cursor: pointer; }
+.games-table .turn-dot { display: inline-block; vertical-align: -1px; }
+.games-source .status { font-size: var(--fs-1); color: var(--ink-2); min-height: 1.4em; }
+.games-source .status.good { color: var(--accent); }
+.games-source .status.bad { color: var(--bad); }
+.table-scroll { overflow-x: auto; }
+.games-table td.mono, .games-table td.res, .games-table td:last-child { white-space: nowrap; }

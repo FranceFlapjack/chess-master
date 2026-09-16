@@ -1,6 +1,6 @@
 # Roadmap
 
-Status: **All eight tracks complete 2026-09-13**: First steps (7), How to think (3), Tactics (11), Openings (10), Middlegame strategy (10), Endgames (8), Checkmate patterns (6), Study a whole game (3) — 58 lessons, 350 reader moves engine-verified, 16 game records checked against sources. Bot 0.2, the play page with evaluation bar and post-game review are live. Next: daily puzzle review, dark mode, Beth Harmon goes out (see below).
+Status: **All eight tracks complete 2026-09-13**: First steps (7), How to think (3), Tactics (11), Openings (10), Middlegame strategy (10), Endgames (8), Checkmate patterns (6), Study a whole game (3) — 58 lessons, 350 reader moves engine-verified, 16 game records checked against sources. Bot 0.2, the play page with evaluation bar and post-game review are live; My games (review your own games from Lichess / chess.com / PGN, your openings, drills from your own mistakes) built 2026-09-16. Next: daily puzzle review, dark mode, Beth Harmon goes out (see below).
 
 ## Phase 0 — Scaffold (done 2026-09-12)
 - Shell, sidebar curriculum with progress, hash router, home page.
@@ -23,7 +23,7 @@ Write the tracks in this order, one branch each, running both checkers on every 
 6. How to think (3), Study a whole game (3).
 7. First steps (7, beginner track).
 
-Open questions for the owner: which openings they already play (repertoire choice); Lichess / chess.com username for a future "your games" lesson type.
+Open questions for the owner: which openings they already play (repertoire choice). The "your games" idea became the My games page (2026-09-16); the username is typed on the page, never stored in the repo.
 
 ## Phase 2 — Exercises & review
 - Daily puzzle review mode (spaced repetition over solved/failed puzzles).
@@ -85,6 +85,7 @@ It is not "a whole other program". The engine is a separate module in this repo 
 ### Play page & arena
 - Human vs Stockfish: **done 2026-09-12** (`js/play.js`, `js/engine/`): seven strengths (UCI_Elo 1320…2600, Boss = full), colour choice, take-back, hint, resign, results and points recorded.
 - Evaluation bar and post-game review: **done 2026-09-13**. A second, full-strength Stockfish (`js/engine/analyst.js`) judges every position at fixed depth 14; the bar (switchable, remembered) fills from the bottom for the side at the bottom; at game end every move is graded on Lichess's win-chance thresholds (`js/analysis.js`: inaccuracy / mistake / blunder, accuracy %, moves that keep a clearly won game are never flagged), marked moves show the played move in red and the engine's line in green, arrows step with ← →, and "Play from here" resumes from any point.
+- **My games** (`js/games.js`, `#/games`, 2026-09-16, owner-approved idea): the owner's own games pulled from Lichess (`/api/games/user/<name>`, PGN with `opening=true`) or chess.com (`/pub/player/<name>/games/archives`, newest months first, standard chess only), or pasted as PGN with "I played White/Black". Both APIs allow cross-origin reads, so it all runs in the browser; the last games and their evaluations are cached in `chess-master.games.v1`. A game is analysed only on request (one game ≈ 40 s for 90 plies) by the same review as the play page, now shared in `js/review.js` (`mountReview` for an imported game; the pure grading and wording used by `play.js`). "Your openings" groups the games by opening family (site name, else the book line followed, else the first three moves) with the owner's score and links to the book lines followed for ≥ 4 plies. "Traps you fell for": every mistake/blunder of the owner's in the first 15 moves of an analysed game becomes a `try` exercise (position before it, engine's move as the answer, engine line as hint and success text; ids `my-games#<game>#<ply>`, so solving them counts as tries). Lichess answers 429 for a minute or so after too many requests; the page says so.
 - Bot vs bot arena: two UCI engines (workers or external bridges) play a match; Elo ladder kept in localStorage; PGN export of every game.
 - Final boss tier: Stockfish 18 lite single-thread WASM (~7 MB), vendored under `vendor/stockfish/` (GPL-3).
 - Local two-player on one screen is trivial. Online vs friend needs a server; decide then.

@@ -5,6 +5,7 @@ import { mountActivity } from './activity-grid.js'
 import { sound } from './sound.js'
 import { mountPlay } from './play.js'
 import { mountOpenings } from './openings.js'
+import { mountGames } from './games.js'
 import { setActiveViewer } from './pgn-viewer.js'
 import { mountFamily } from './family.js'
 
@@ -41,7 +42,7 @@ function renderSidebar() {
   const nav = $('#curriculum')
   const open = new Set([...nav.querySelectorAll('.track.open')].map(t => t.dataset.track))
   if (current) open.add(current.track)
-  const playLink = `<a class="nav-play${location.hash.startsWith('#/play') ? ' current' : ''}" href="#/play"><span class="num">▶</span><span class="name">Play vs computer</span></a><a class="nav-play${location.hash.startsWith('#/openings') ? ' current' : ''}" href="#/openings"><span class="num">≡</span><span class="name">Openings book</span></a>`
+  const playLink = `<a class="nav-play${location.hash.startsWith('#/play') ? ' current' : ''}" href="#/play"><span class="num">▶</span><span class="name">Play vs computer</span></a><a class="nav-play${location.hash.startsWith('#/openings') ? ' current' : ''}" href="#/openings"><span class="num">≡</span><span class="name">Openings book</span></a><a class="nav-play${location.hash.startsWith('#/games') ? ' current' : ''}" href="#/games"><span class="num">↺</span><span class="name">My games</span></a>`
   nav.innerHTML = playLink + visibleTracks().map((t, i) => {
     const ready = t.lessons.filter(l => l.ready)
     const done = ready.filter(l => progress.isLessonDone(lessonId(t.id, l.slug))).length
@@ -80,6 +81,7 @@ async function route() {
   if (hash.startsWith('#/play')) { document.title = 'Play · Chess Master'; unmountPage = mountPlay(main); window.scrollTo({ top: 0 }); return }
   const om = hash.match(/^#\/openings(?:\/(\d+))?/)
   if (om) { document.title = 'Openings book · Chess Master'; unmountPage = mountOpenings(main, om[1]); return }
+  if (hash.startsWith('#/games')) { document.title = 'My games · Chess Master'; unmountPage = mountGames(main); window.scrollTo({ top: 0 }); return }
   showHome(main)
 }
 
@@ -99,6 +101,7 @@ function showHome(main) {
       </section>
       <div class="card continue play-card"><div><span class="eyebrow">Play</span><h3>Against the computer</h3><div class="small">Stockfish 18, seven strengths, from beginner to the Boss, or the Chess Master Bot.</div></div><a class="btn" href="#/play">Play</a></div>
       <div class="card continue play-card"><div><span class="eyebrow">Reference</span><h3>Openings book</h3><div class="small">All 84 lines the bot plays, each with its idea, playable and drillable from either side.</div></div><a class="btn" href="#/openings">Open</a></div>
+      <div class="card continue play-card"><div><span class="eyebrow">Your games</span><h3>My games</h3><div class="small">Pull your last games from Lichess or chess.com, review them, see your real openings and drill the traps you fell for.</div></div><a class="btn" href="#/games">Open</a></div>
       ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.trackTitle)}</div></div><a class="btn primary" href="#/lesson/${cont.track}/${cont.slug}">Open lesson</a></div>` : ''}
       <div class="track-grid">
         ${visibleTracks().map((t, i) => {

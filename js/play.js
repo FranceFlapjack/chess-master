@@ -7,14 +7,12 @@ import { analyst } from './engine/analyst.js'
 import { uciToMove } from './engine/uci.js'
 import { progress, adoptOldKey } from './progress.js'
 import { sound } from './sound.js'
-import { whiteShare, formatScore, grade, moveAccuracy, GLYPH, MATED } from './analysis.js'
-import { Chess, DEFAULT_POSITION } from '../vendor/chess.js/chess.js'
-import { ICONS } from './pgn-viewer.js'
+import { DEFAULT_POSITION } from '../vendor/chess.js/chess.js'
+import { DEPTH, gradeAll, moveLabel, keyMoves, summary, note, reviewArrows, movesHtml, keepCurrentVisible, paintBar as paintEvalBar, controlsHtml, finalEval } from './review.js'
 
 const KEY = 'chess-master.play.v1'
 const load = () => { try { adoptOldKey(KEY); return JSON.parse(localStorage.getItem(KEY)) || {} } catch (_) { return {} } }
 const save = s => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch (_) {} }
-const DEPTH = 14 // fixed depth for the judge, so evaluations of different positions compare fairly
 
 export function mountPlay(main) {
   const prefs = Object.assign({ level: 3, color: 'w', opponent: 'stockfish', evalbar: true }, load())
@@ -32,14 +30,7 @@ export function mountPlay(main) {
             <div class="evalbar" id="evalbar" title="Evaluation" aria-hidden="true"><i class="fill"></i><b class="num"></b></div>
             <div class="board-wrap"><div class="board"></div></div>
           </div>
-          <div class="game-controls review-controls" id="controls" hidden>
-            <button class="icon-btn" data-nav="prevkey" title="Previous key move (shift ←)">${ICONS.prevkey}</button>
-            <button class="icon-btn" data-nav="prev" title="Previous move (←)">${ICONS.prev}</button>
-            <button class="icon-btn" data-nav="next" title="Next move (→)">${ICONS.next}</button>
-            <button class="icon-btn" data-nav="nextkey" title="Next key move (shift →)">${ICONS.nextkey}</button>
-            <span class="spacer"></span>
-            <span class="review-pos" id="pos"></span>
-          </div>
+          <div class="game-controls review-controls" id="controls" hidden>${controlsHtml()}</div>
           <div class="review-note" id="note" hidden></div>
         </div>
         <aside class="play-side">
@@ -90,6 +81,8 @@ export function mountPlay(main) {
   const sans = [], uciMoves = []
   let evals = [], grades = [], cursor = 0, shownPly = 0 // shownPly: what the board displays (review)
   let keyPlies = [] // plies listed as key moves, in game order
+  // the record the shared review functions read; evals/grades/userColor are reassigned, hence getters
+  const rec = { sans, uciMoves, get evals() { return evals }, get grades() { return grades }, get userColor() { return userColor }, who: c => c === userColor ? 'You' : opponentName() }
 
   const setStatus = (t, cls = '') => { statusEl.textContent = t; statusEl.className = 'status ' + cls }
   const buttons = on => { for (const id of ['takeback', 'hint', 'resign']) $('#' + id).disabled = !on }
@@ -107,13 +100,7 @@ export function mountPlay(main) {
 
   // ---- evaluation bar ----
   barEl.hidden = !prefs.evalbar
-  function paintBar(ev = evals[reviewing ? cursor : sans.length]) {
-    const share = whiteShare(ev)
-    const bottom = board.orientation() === 'w' ? share : 1 - share
-    barEl.querySelector('.fill').style.height = (bottom * 100).toFixed(1) + '%'
-    barEl.querySelector('.num').textContent = ev ? formatScore(ev) : ''
-    barEl.classList.toggle('flipped', board.orientation() === 'b')
-  }
+  const paintBar = (ev = evals[reviewing ? cursor : sans.length]) => paintEvalBar(barEl, ev, board.orientation())
   const keyAt = i => uciMoves.slice(0, i).join(' ')
   function analyse(i, { live = true } = {}) {
     const myGame = gameId, key = keyAt(i)
@@ -132,18 +119,9 @@ export function mountPlay(main) {
 
   // ---- move list ----
   function paintMoves() {
-    movesEl.innerHTML = sans.map((san, i) => {
-      const g = grades[i + 1]
-      const cls = ['mv', reviewing ? (i + 1 === cursor ? 'current' : '') : (i === sans.length - 1 ? 'current' : ''), g && g.label ? g.label : ''].filter(Boolean).join(' ')
-      return `${i % 2 === 0 ? `<span class="mvnum">${i / 2 + 1}.</span>` : ''}<button class="${cls}" data-ply="${i + 1}"${reviewing ? '' : ' tabindex="-1"'}>${esc(san)}${g && g.label ? `<i>${GLYPH[g.label]}</i>` : ''}</button>`
-    }).join('')
+    movesEl.innerHTML = movesHtml(rec, { current: reviewing ? cursor : sans.length, clickable: reviewing })
     movesEl.classList.toggle('reviewing', reviewing)
-    const cur = movesEl.querySelector('.current')
-    if (cur) { // keep the current move visible inside the list without scrolling the page
-      const top = cur.offsetTop - movesEl.offsetTop, bottom = top + cur.offsetHeight
-      if (top < movesEl.scrollTop) movesEl.scrollTop = top
-      else if (bottom > movesEl.scrollTop + movesEl.clientHeight) movesEl.scrollTop = bottom - movesEl.clientHeight
-    }
+    keepCurrentVisible(movesEl)
   }
 
   function gameOver() {
@@ -161,9 +139,7 @@ export function mountPlay(main) {
     if (over.result === 'win') sound.play('success')
     progress.recordPlay({ opponent, level: opponent === 'bot' ? 0 : level.id, color: userColor, result: over.result })
     // the final position needs no engine: mate or a draw by rule
-    const c = board.chess
-    if (c.isCheckmate()) evals[sans.length] = Object.assign({ final: true }, MATED[c.turn() === 'w' ? 'b' : 'w'])
-    else if (c.isGameOver()) evals[sans.length] = { cp: 0, mate: null, final: true }
+    const fin = finalEval(board.chess); if (fin) evals[sans.length] = fin
     review(over)
   }
 
@@ -264,92 +240,20 @@ export function mountPlay(main) {
       await analyse(i, { live: false })
     }
     if (myGame !== gameId) return
-    grades = []
-    for (let i = 1; i <= n; i++) {
-      const before = evals[i - 1], after = evals[i], mover = i % 2 === 1 ? 'w' : 'b'
-      if (!before || !after) continue
-      grades[i] = Object.assign(grade(before, after, mover, before.best === uciMoves[i - 1]), { acc: moveAccuracy(before, after, mover), mover })
-    }
+    grades = gradeAll(rec)
     paintMoves(); paintBar()
-    $('#summary').innerHTML = summary(over)
-    $('#keymoves').innerHTML = keyMoves()
+    $('#summary').innerHTML = summary(rec)
+    const km = keyMoves(rec); keyPlies = km.plies
+    $('#keymoves').innerHTML = km.html
     $('#controls').hidden = false; paintControls()
     $('#note').hidden = false
     $('#note').textContent = 'Step through with the buttons or ← →; the double arrows jump between key moves.'
-  }
-  /** The moves that decided the game: every mistake and blunder, in game order, with the better line. */
-  function keyMoves() {
-    const opp = userColor === 'w' ? 'b' : 'w'
-    const pick = (c, max) => {
-      let list = grades.map((g, i) => g && g.mover === c && (g.label === 'mistake' || g.label === 'blunder') ? i : 0).filter(Boolean)
-      if (!list.length) list = grades.map((g, i) => g && g.mover === c && g.label === 'inaccuracy' ? i : 0).filter(Boolean)
-      if (list.length > max) list = list.sort((a, b) => grades[b].drop - grades[a].drop).slice(0, max).sort((a, b) => a - b)
-      return list
-    }
-    const item = (i, mine) => {
-      const g = grades[i], ev0 = evals[i - 1], ev1 = evals[i], line = betterLine(i)
-      return `<button class="key ${g.label}" data-ply="${i}">
-        <span class="key-move">${esc(moveLabel(i))}</span>
-        <span class="key-swing">${formatScore(ev0)} → ${formatScore(ev1)}</span>
-        <span class="key-better">${line ? `${mine ? 'Play instead' : 'Punish with'} <b>${esc(line)}</b>` : ''}</span>
-      </button>`
-    }
-    const mine = pick(userColor, 6), theirs = pick(opp, 3)
-    keyPlies = [...mine, ...theirs].sort((a, b) => a - b)
-    let html = ''
-    if (mine.length) html += `<div class="key-head">Key moves</div>${mine.map(i => item(i, true)).join('')}`
-    if (theirs.length) html += `<div class="key-head">Chances you missed</div>${theirs.map(i => item(i, false)).join('')}`
-    return html
-  }
-  /** The engine's line from the position before ply i, in SAN with move numbers (up to `n` plies). */
-  function betterLine(i, n = 4) {
-    const ev0 = evals[i - 1]; if (!ev0 || !ev0.pv.length) return ''
-    const c = new Chess(); for (const s of sans.slice(0, i - 1)) c.move(s)
-    const pv = []
-    for (const u of ev0.pv.slice(0, n)) {
-      const white = c.turn() === 'w', num = c.moveNumber()
-      const m = c.move(uciToMove(u)); if (!m) break
-      pv.push((white ? `${num}. ` : pv.length ? '' : `${num}… `) + m.san)
-    }
-    return pv.join(' ')
-  }
-  function summary(over) {
-    const side = c => grades.filter(g => g && g.mover === c)
-    // an average over a handful of moves says nothing, so the figure needs at least ten of them
-    const acc = c => { const g = side(c); return g.length >= 10 ? Math.round(g.reduce((s, x) => s + x.acc, 0) / g.length) : null }
-    const count = c => { const o = { inaccuracy: 0, mistake: 0, blunder: 0 }; for (const g of side(c)) if (g.label) o[g.label]++; return o }
-    const opp = userColor === 'w' ? 'b' : 'w'
-    const who = c => c === userColor ? 'You' : opponentName()
-    const line = c => {
-      const a = acc(c), k = count(c)
-      const parts = [['inaccuracy', 'inaccuracies'], ['mistake', 'mistakes'], ['blunder', 'blunders']].filter(([s]) => k[s]).map(([s, p]) => `${k[s]} ${k[s] === 1 ? s : p}`)
-      return `<b>${who(c)}</b><span class="acc">${a == null ? '' : a + '%'}</span><span class="counts">${parts.join(', ') || 'no mistakes'}</span>`
-    }
-    let turn = ''
-    const worst = grades.reduce((w, g, i) => (g && g.label && (!w || g.drop > grades[w].drop)) ? i : w, 0)
-    if (worst) turn = `<span class="turning">Turning point: ${moveLabel(worst)}</span>`
-    return line(userColor) + line(opp) + turn
-  }
-  function moveLabel(i) { const g = grades[i]; return `${Math.ceil(i / 2)}${i % 2 ? '.' : '…'} ${sans[i - 1]}${g && g.label ? GLYPH[g.label] : ''}` }
-  function note(i) {
-    if (!i) return 'Starting position.'
-    const g = grades[i], ev0 = evals[i - 1], ev1 = evals[i]
-    if (!g || !ev0 || !ev1) return moveLabel(i)
-    if (!g.label) return `${moveLabel(i)} · ${formatScore(ev1)}${ev0.best === uciMoves[i - 1] ? ' · the engine’s choice' : ''}`
-    const better = betterLine(i)
-    const word = { inaccuracy: 'An inaccuracy', mistake: 'A mistake', blunder: 'A blunder' }[g.label]
-    return `${moveLabel(i)} — ${word}. ${formatScore(ev0)} → ${formatScore(ev1)}.${better ? ` Better was ${better}.` : ''}`
   }
   async function goTo(k) {
     if (!reviewing) return
     k = Math.max(0, Math.min(sans.length, k))
     cursor = k
-    const g = grades[k], ev0 = evals[k - 1]
-    const arrows = []
-    if (k && g && g.label) {
-      const played = uciToMove(uciMoves[k - 1]); arrows.push({ from: played.from, to: played.to, type: 'bad' })
-      if (ev0 && ev0.best && ev0.best !== uciMoves[k - 1]) { const b = uciToMove(ev0.best); arrows.push({ from: b.from, to: b.to, type: 'main' }) }
-    }
+    const arrows = reviewArrows(rec, k)
     // a marked move is shown on the position before it, with the played move in red and the better one in green
     const t = arrows.length ? k - 1 : k
     if (t === shownPly + 1) await board.play(sans[t - 1])
@@ -358,7 +262,7 @@ export function mountPlay(main) {
     shownPly = t
     board.setArrows(arrows)
     paintMoves(); paintBar(); paintControls()
-    $('#note').textContent = note(k)
+    $('#note').textContent = note(rec, k)
   }
   const prevKey = () => keyPlies.filter(p => p < cursor).at(-1)
   const nextKey = () => keyPlies.find(p => p > cursor)
@@ -368,7 +272,7 @@ export function mountPlay(main) {
     c.querySelector('[data-nav="nextkey"]').disabled = nextKey() === undefined
     c.querySelector('[data-nav="prev"]').disabled = cursor === 0
     c.querySelector('[data-nav="next"]').disabled = cursor === sans.length
-    $('#pos').textContent = cursor ? moveLabel(cursor) : 'Start'
+    $('#pos').textContent = cursor ? moveLabel(rec, cursor) : 'Start'
   }
 
   // ---- wiring ----
