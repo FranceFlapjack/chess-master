@@ -199,7 +199,7 @@ export function mountGames(main) {
     const rows = [...groups.values()].sort((a, b) => b.games.length - a.games.length)
     const scanned = store.games.filter(g => scanOf(g)).length
     $('#report').innerHTML = `<span class="eyebrow">Opening report</span>
-      <p class="small">What you actually play, from the ${store.games.length} games above. “Leaves the book” is the first move where a game stopped following the line of the same name in our openings book — a different move order can look like a departure, so read it as a pointer, not a verdict.</p>
+      <p class="small">What you actually play, from the ${store.games.length} games above. “Leaves the book” is the first move where a game stopped following the closest line in our openings book — the one that matched the most moves. That line is named under the move and may belong to another opening, because the same position can be reached by more than one move order, so read it as a pointer, not a verdict.</p>
       <div class="report-actions">
         <button class="btn${scanned ? '' : ' primary'}" id="scan"${!scanning && scanned === store.games.length ? ' disabled' : ''}>${scanning ? 'Stop the scan' : scanned === store.games.length ? 'All games scanned' : scanned ? `Scan the ${store.games.length - scanned} new game${store.games.length - scanned === 1 ? '' : 's'}` : `Scan the first ${SCAN_PLY / 2} moves of every game`}</button>
         <span class="small" id="scanstatus">${scanning ? scanMsg : scanned ? `${scanned} of ${store.games.length} games scanned${scanned === store.games.length ? ' — fetch more games and the button comes back' : ''}.` : 'The engine looks for your first mistake in the opening; half a minute for twenty games.'}</span>
