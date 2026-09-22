@@ -12,7 +12,7 @@ python3 scripts/serve.py
 
 Open http://localhost:8000. Validate content with `node scripts/check-content.mjs`; check every puzzle against the engine with `node scripts/verify-puzzles.mjs "" 800`.
 
-Eight tracks, 58 lessons: First steps, How to think, Tactics, Openings, Middlegame strategy, Endgames, Checkmate patterns, Study a whole game. Plus an openings book of 84 lines, a play page against Stockfish or the site's own engine with an evaluation bar and a post-game review, and a My games page that pulls your last games from Lichess or chess.com (or a pasted PGN), reviews them, shows the openings you really play and turns your own early mistakes into drills.
+Eight tracks, 58 lessons: First steps, How to think, Tactics, Openings, Middlegame strategy, Endgames, Checkmate patterns, Study a whole game. Plus an openings book of 84 lines, a play page against Stockfish or the site's own engine with an evaluation bar and a post-game review, and a My games page that pulls your games from chess.com or Lichess (or a pasted PGN), reviews them, reports which openings you really play and where you leave the book, and turns your own early mistakes into drills. Only finished games are ever fetched.
 
 Play mode runs [Stockfish 18](https://github.com/nmrugg/stockfish.js) (GPL-3) as WebAssembly inside the page.
 

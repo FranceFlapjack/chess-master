@@ -435,3 +435,24 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .games-source .status.bad { color: var(--bad); }
 .table-scroll { overflow-x: auto; }
 .games-table td.mono, .games-table td.res, .games-table td:last-child { white-space: nowrap; }
+.games-source .fairplay { max-width: var(--measure); color: var(--ink-3); }
+.ratings { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-2) var(--s-4); }
+.ratings[hidden] { display: none; }
+.ratings .rating { font-size: var(--fs-1); color: var(--ink-2); }
+.ratings .rating b { font-family: var(--font-mono); font-size: var(--fs-2); color: var(--ink); font-weight: 600; margin-right: 3px; }
+.games-report { margin: var(--s-6) 0; }
+.games-report[hidden] { display: none; }
+.games-report .small { max-width: var(--measure); margin: var(--s-2) 0 var(--s-3); }
+.report-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); margin-bottom: var(--s-3); }
+.report-actions .small { margin: 0; }
+.openings-table .btn.quiet { padding: 4px 10px; font-size: 10px; white-space: nowrap; }
+.openings-table b.mono { font-size: 12px; }
+#linedrill[hidden] { display: none; }
+#linedrill { margin: var(--s-5) 0; }
+.table-scroll table { min-width: 560px; }
+.openings-table { min-width: 640px; }
+.openings-table td b.mono, .openings-table td .mono { white-space: nowrap; }
+.openings-table td.mono, .openings-table th:nth-child(2), .openings-table th:nth-child(3) { width: 1%; white-space: nowrap; }
+.openings-table td:first-child { min-width: 180px; }
+.openings-table td:nth-child(4) { min-width: 190px; }
+.openings-table td.mono .small { font-family: var(--font-sans); white-space: nowrap; }
