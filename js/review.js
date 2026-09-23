@@ -200,14 +200,14 @@ export function mountReview(container, game, { onEvals, onGraded } = {}) {
     k = Math.max(0, Math.min(n, k)); cursor = k
     const arrows = reviewArrows(rec, k)
     const t = arrows.length ? k - 1 : k
+    // the list, the bar and the note are painted before the board moves, so the page never waits on an animation
+    paintMoves(); bar(); paintControls()
+    $('#note').textContent = rec.grades.length ? note(rec, k) : k ? moveLabel(rec, k) : 'Starting position.'
     if (t === shownPly + 1) await board.play(rec.sans[t - 1])
     else if (t === shownPly - 1) await board.undo({ silent: true })
     else if (t !== shownPly) await board.setHistory(rec.sans.slice(0, t))
     shownPly = t
     board.setArrows(arrows)
-    paintMoves(); bar(); paintControls()
-    if (rec.grades.length) $('#note').textContent = note(rec, k)
-    else $('#note').textContent = k ? moveLabel(rec, k) : 'Starting position.'
   }
   function paintReview() {
     rec.grades = gradeAll(rec)

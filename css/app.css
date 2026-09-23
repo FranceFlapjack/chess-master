@@ -456,3 +456,46 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .openings-table td:first-child { min-width: 180px; }
 .openings-table td:nth-child(4) { min-width: 190px; }
 .openings-table td.mono .small { font-family: var(--font-sans); white-space: nowrap; }
+.games-filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); margin: var(--s-5) 0 0; padding: var(--s-3) 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.games-filters[hidden] { display: none; }
+.games-filters label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: var(--s-2); }
+.games-filters select { font: inherit; font-size: var(--fs-1); letter-spacing: 0; text-transform: none; color: var(--ink); border: 0; border-bottom: 1px solid var(--line-2); background: transparent; padding: 2px 0; outline: none; cursor: pointer; }
+.games-filters select:focus { border-bottom-color: var(--accent); }
+.games-filters label.check { text-transform: none; letter-spacing: 0; font-size: var(--fs-1); font-weight: 400; color: var(--ink-2); }
+.games-filters .small { margin-left: auto; }
+.games-clock { margin: var(--s-6) 0; }
+.games-clock[hidden] { display: none; }
+.games-clock .small { max-width: var(--measure); margin: var(--s-2) 0 var(--s-4); }
+.clock-figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--s-4); margin-bottom: var(--s-5); }
+.clock-figures .fig { display: flex; flex-direction: column; gap: 2px; border-left: 2px solid var(--line-2); padding-left: var(--s-3); }
+.clock-figures .fig b { font-family: var(--font-mono); font-size: var(--fs-3); font-weight: 600; }
+.clock-figures .fig span { font-size: var(--fs-1); color: var(--ink-2); line-height: 1.35; }
+.clock-figures .fig i { font-style: normal; font-weight: 600; color: var(--ink); }
+.clock-figures .fig.bad { border-left-color: var(--bad); }
+.clock-figures .fig.bad b { color: var(--bad); }
+.clock-table { border-collapse: collapse; font-size: var(--fs-1); min-width: 320px; }
+.clock-table th { text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); padding: 6px 24px 6px 0; border-bottom: 1px solid var(--line-2); }
+.clock-table td { padding: 6px 24px 6px 0; border-bottom: 1px solid var(--line); }
+.clock-slow { margin-top: var(--s-5); display: flex; flex-direction: column; }
+.clock-slow .slow { display: grid; grid-template-columns: 4.5em 5em minmax(0, 1fr); gap: var(--s-3); align-items: baseline; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: none; font: inherit; padding: 7px 0; cursor: pointer; }
+.clock-slow .slow:hover { background: var(--surface-2); }
+.clock-slow .slow b { font-size: 12px; font-weight: 600; }
+.clock-slow .slow > span.mono { font-size: 12px; }
+.clock-slow .eyebrow { display: block; margin-bottom: var(--s-2); }
+.scout { margin: var(--s-6) 0; border-top: 1px solid var(--line); padding-top: var(--s-4); }
+.scout > summary { cursor: pointer; list-style: none; }
+.scout > summary::-webkit-details-marker { display: none; }
+.scout > summary .eyebrow::after { content: ' +'; }
+.scout[open] > summary .eyebrow::after { content: ' –'; }
+.scout .small { max-width: var(--measure); }
+.scout form { margin: var(--s-3) 0; max-width: var(--measure); }
+.scout .row { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+.scout input[type="text"] { font: inherit; font-size: var(--fs-1); border: 1px solid var(--line-2); background: var(--surface); padding: 8px 10px; outline: none; color: var(--ink); flex: 1; min-width: 12em; }
+.scout input[type="text"]:focus { border-color: var(--accent); }
+.scout .status { font-size: var(--fs-1); color: var(--ink-2); min-height: 1.4em; }
+.scout .status.good { color: var(--accent); }
+.scout .status.bad { color: var(--bad); }
+.scout-head { margin: var(--s-4) 0 var(--s-2); font-size: var(--fs-2); }
+.scout-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-2) var(--s-4); padding: 7px 0; border-bottom: 1px solid var(--line); }
+.scout-line > .small:first-child { flex: 0 0 13em; color: var(--ink-3); }
+.scout-line .pick b { font-size: 12px; }
