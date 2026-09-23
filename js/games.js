@@ -11,7 +11,7 @@
 // the opening report is built from the move lists alone and shows at once, one game is reviewed on
 // request, and the opening scan (first sixteen plies of every game) is a button the owner presses.
 import { mountReview, betterLine, gradeAll, DEPTH } from './review.js'
-import { gameClock, clockReport, hurriedMistakes, mmss } from './clocks.js'
+import { gameClock, clockReport, hurriedMistakes, lostOnTimeOf, mmss } from './clocks.js'
 import { mountExercise } from './exercise.js'
 import { analyst } from './engine/analyst.js'
 import { adoptOldKey } from './progress.js'
@@ -418,13 +418,14 @@ export function mountGames(main) {
     const list = shown().map(g => {
       const p = parse(g.pgn)
       const evals = store.evals[g.id]
-      let grades = null
+      let grades = null, full = false
       if (p && evals) {
         const n = Math.min(evals.length - 1, p.sans.length)
+        full = evals.length - 1 >= p.sans.length
         const rec = { sans: p.sans.slice(0, n), uciMoves: p.uciMoves.slice(0, n), evals, grades: [] }
         grades = gradeAll(rec)
       }
-      return { clock: p && gameClock(g, p.sans), result: resultFor(g), lostOnTime: g.lostOnTime, grades, label: `${g.date} vs ${g.names[g.userColor === 'w' ? 'b' : 'w']}` }
+      return { clock: p && gameClock(g, p.sans), result: resultFor(g), lostOnTime: lostOnTimeOf(g), grades, full, label: `${g.date} vs ${g.names[g.userColor === 'w' ? 'b' : 'w']}` }
     })
     const r = clockReport(list)
     $('#clock').hidden = !r
@@ -439,7 +440,7 @@ export function mountGames(main) {
         <div class="fig"><b>${pct(r.lostBy15)}</b><span>of it gone by move 15 in the games you <i>lost</i></span></div>
         <div class="fig"><b>${pct(r.endLeft)}</b><span>left on the clock when the game ended</span></div>
         ${r.timeLosses ? `<div class="fig bad"><b>${r.timeLosses}</b><span>game${r.timeLosses === 1 ? '' : 's'} lost on time</span></div>` : ''}
-        ${hurried ? `<div class="fig"><b>${hurried.hurried} of ${hurried.total}</b><span>of your judged mistakes came with under ${hurried.under}s left</span></div>` : ''}
+        ${hurried ? `<div class="fig"><b>${hurried.hurried} of ${hurried.total}</b><span>mistakes came with under ${hurried.under}s left, in the ${hurried.games} game${hurried.games === 1 ? '' : 's'} you have reviewed in full</span></div>` : ''}
       </div>
       <div class="table-scroll"><table class="clock-table"><thead><tr><th>Phase</th><th>Seconds a move</th></tr></thead><tbody>${r.phase.map(p => `<tr><td>${p.name}</td><td class="mono">${mmss(p.seconds)}</td></tr>`).join('')}</tbody></table></div>
       <div class="clock-slow"><span class="eyebrow">Your longest thinks</span>${r.slowest.map(m => `<button class="slow" data-slow="${esc(m.id)}:${m.ply}"><b class="mono">${mmss(m.spent)}</b><span class="mono">${m.no}${m.ply % 2 ? '.' : '…'} ${esc(m.san)}</span><span class="small">${esc(m.label)} · ${mmss(m.left)} left after it</span></button>`).join('')}</div>`

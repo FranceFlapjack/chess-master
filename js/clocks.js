@@ -29,11 +29,22 @@ export function spentPerPly(clocks, { base, inc }) {
   return clocks.map((c, i) => Math.max(0, Math.round(((i >= 2 ? clocks[i - 2] : base) - c + inc) * 10) / 10))
 }
 
+const header = (pgn, name) => (pgn.match(new RegExp(`\\[${name} "([^"]*)"\\]`)) || [])[1] || ''
+/** The time control, from the record or — for games stored before the field existed — from the PGN itself. */
+export const timeControlOf = g => g.tc || header(g.pgn, 'TimeControl')
+/** Did we lose this one on the clock? Records made before the field existed still have the headers. */
+export function lostOnTimeOf(g) {
+  if (g.lostOnTime !== undefined) return g.lostOnTime
+  const result = header(g.pgn, 'Result'), term = header(g.pgn, 'Termination')
+  const lost = result && result !== '*' && result !== '1/2-1/2' && (result === '1-0') !== (g.userColor === 'w')
+  return !!lost && /time forfeit|on time|timeout/i.test(term)
+}
+
 /** One game seen through the clock, or null when it has none (daily games are left out: thinking time there is meaningless). */
 export function gameClock(g, sans) {
   const clocks = clocksFrom(g.pgn)
   if (!clocks || !sans) return null
-  const tc = parseTimeControl(g.tc)
+  const tc = parseTimeControl(timeControlOf(g))
   if (!tc || tc.daily) return null
   const spent = spentPerPly(clocks, tc)
   const moves = []
@@ -75,17 +86,22 @@ export function clockReport(list) {
     longest: every.length ? Math.max(...every.map(m => m.spent)) : 0,
     phase,
     wonBy15: share('win'), lostBy15: share('loss'),
-    endLeft: avg(games.map(x => x.clock.endLeft / x.clock.base)),
+    endLeft: avg(games.map(x => Math.min(1, x.clock.endLeft / x.clock.base))),
     timeLosses: games.filter(x => x.lostOnTime).length,
     slowest,
   }
 }
 
-/** Mistakes you made while short of time, from games the engine has already judged. */
+/**
+ * Mistakes you made while short of time. Only games judged from first move to last count: a game the
+ * opening scan judged covers the first eight moves, where nobody is ever short of time, and counting
+ * those would say "time pressure is not your problem" whatever the truth is.
+ */
 export function hurriedMistakes(list, under = 30) {
-  let hurried = 0, total = 0
+  let hurried = 0, total = 0, games = 0
   for (const x of list) {
-    if (!x.clock || !x.grades) continue
+    if (!x.clock || !x.grades || !x.full) continue
+    games++
     for (const m of x.clock.moves) {
       const g = x.grades[m.ply]
       if (!g || !g.label || g.label === 'inaccuracy') continue
@@ -93,7 +109,7 @@ export function hurriedMistakes(list, under = 30) {
       if (m.left < under) hurried++
     }
   }
-  return total ? { hurried, total, under } : null
+  return total ? { hurried, total, under, games } : null
 }
 
 export function mmss(s) {
