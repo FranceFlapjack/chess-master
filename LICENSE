@@ -1,0 +1,37 @@
+Chess Master — https://franceflapjack.github.io/chess-master/
+Copyright (c) 2026 FranceFlapjack. All rights reserved except as granted below.
+
+You may read this site, learn from it, share it and build on it, as long as you
+credit the original and link back, and as long as you do not sell it or run it
+as a commercial product or service. Two licences cover the two halves:
+
+1. THE CODE — everything under js/, css/, scripts/, index.html and the build
+   and content-checking tools — is licensed under the
+   PolyForm Noncommercial License 1.0.0:
+   https://polyformproject.org/licenses/noncommercial/1.0.0/
+   Non-commercial use, modification and redistribution are allowed; the
+   copyright notice and this licence must travel with any copy.
+
+2. THE WRITING AND THE DESIGN — everything under content/ (lessons,
+   annotations, opening notes, curriculum) and design/, and the name
+   "Chess Master" as used here, together with the site's look — is licensed
+   under Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+   International (CC BY-NC-SA 4.0):
+   https://creativecommons.org/licenses/by-nc-sa/4.0/
+   Credit "Chess Master by FranceFlapjack" with a link to the site above,
+   do not use it commercially, and share any adaptation on these same terms.
+
+WHAT IS NOT COVERED
+
+- Everything under vendor/ belongs to its own authors and keeps its own
+  licence: Stockfish 18 (GPL-3.0, see vendor/stockfish/Copying.txt),
+  chess.js (BSD-2-Clause), cm-chessboard (MIT), marked (MIT).
+  See vendor/VERSIONS.md. Nothing in this file adds to or takes away from
+  those licences, and the vendored programs remain separate works.
+- Chess move lists are facts and belong to nobody. The games are free to use;
+  the annotations around them are not.
+- Quoted public-domain and Creative Commons material keeps the terms named in
+  each lesson's sources block.
+
+For permission beyond these terms, open an issue at
+https://github.com/FranceFlapjack/chess-master

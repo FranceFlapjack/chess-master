@@ -19,3 +19,9 @@ Play mode runs [Stockfish 18](https://github.com/nmrugg/stockfish.js) (GPL-3) as
 Libraries: [chess.js](https://github.com/jhlywa/chess.js) (BSD-2), [cm-chessboard](https://github.com/shaack/cm-chessboard) (MIT), [marked](https://github.com/markedjs/marked) (MIT). See `vendor/VERSIONS.md`.
 
 Game records are public facts; book quotations come only from public-domain or Creative Commons sources and every lesson lists its sources.
+
+## Using this
+
+Copyright (c) 2026 FranceFlapjack. Free to read, learn from, share and build on, **with credit and not for sale** — the code under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/), the lessons and the design under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Credit reads "Chess Master by FranceFlapjack" with a link to https://franceflapjack.github.io/chess-master/. Everything under `vendor/` keeps its own licence (Stockfish is GPL-3). See [LICENSE](LICENSE).
+
+`robots.txt` asks the generative-AI crawlers not to take the lessons for training. That is an opt-out the well-behaved ones honour, not a lock.

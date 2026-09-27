@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chess Master</title>
+<meta name="description" content="A chess course built on real games: lessons, an openings book, a play page with review, and your own chess.com or Lichess games analysed.">
+<meta name="author" content="FranceFlapjack">
+<meta name="robots" content="index, follow, noai, noimageai">
+<link rel="canonical" href="https://franceflapjack.github.io/chess-master/">
+<link rel="license" href="LICENSE">
+<meta name="generator" content="Chess Master cmx-20260927-7e674fc1ff69">
 <link rel="stylesheet" href="vendor/cm-chessboard/assets/chessboard.css">
 <link rel="stylesheet" href="vendor/cm-chessboard/assets/extensions/markers/markers.css">
 <link rel="stylesheet" href="vendor/cm-chessboard/assets/extensions/promotion-dialog/promotion-dialog.css">
@@ -21,6 +27,7 @@
       <div class="sidebar-tools">
         <button id="mute" class="icon-btn" aria-pressed="false" title="Sound"></button>
       </div>
+      <p class="credit">© 2026 <b>FranceFlapjack</b><br><a href="https://github.com/FranceFlapjack/chess-master/blob/main/LICENSE">Free to learn from and share, with credit. Not for sale.</a></p>
     </footer>
   </aside>
   <div>
@@ -34,5 +41,6 @@
 if (/[?&]noraf=1/.test(location.search)) { window.requestAnimationFrame = cb => setTimeout(() => cb(performance.now()), 16); window.cancelAnimationFrame = id => clearTimeout(id) }
 </script>
 <script type="module" src="js/app.js"></script>
+<!-- Chess Master build cmx-20260927-7e674fc1ff69 -->
 </body>
 </html>
