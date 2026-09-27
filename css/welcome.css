@@ -1,0 +1,110 @@
+/* The Master series welcome — the screen someone sees the first time they open an app of the series.
+
+   THIS FILE IS IDENTICAL IN EVERY APP OF THE SERIES, like js/family.js and js/welcome.js. What differs
+   from game to game is only the word and the colour: the word comes from the app, the colour is the
+   app's own --accent. So these tokens live here rather than in tokens.css — they are series decisions,
+   and a comment on one is a diff to all three.
+
+   Draft 2 (owner's comment on the first, a poker table with the cast round it): plain type, nothing
+   else. The game's word, heavy, fitted edge to edge to whatever screen it is on; MASTER small beneath it
+   in the same sans; and you scroll the whole curtain up and away to enter.
+
+         ┌────────────────────────────┐
+         │                            │
+         │POKER                       │   the word fills the width, tight
+         │           MASTER           │
+         │                            │
+         │           scroll           │
+         └────────────────────────────┘
+
+   EVERY CLASS HERE IS PREFIXED `wl-`, including the state classes. This file drops into apps it was not
+   written in, and an unprefixed state class collides: the first version used `.play`, and each app of
+   the series has a `.play` rule for its Play page — it put that page's margins on the welcome. */
+
+:root {
+  --wl-ink: #f6f1e7;                              /* warm paper, not white — gentler on the colour */
+  --wl-word-weight: 900;
+  --wl-word-track: -0.035em;                      /* tight: the letters hold together as one shape */
+  --wl-margin: max(14px, 3.2vw);                  /* how close the word comes to the edges */
+  --wl-word-max-h: 58vh;                          /* on a short screen the word is held by height instead */
+  --wl-master-size: clamp(11px, 1.3vw, 15px);
+  --wl-master-track: 0.6em;
+  /* the arrival */
+  --wl-word-at: 120ms;
+  --wl-master-at: 700ms;
+  --wl-cue-at: 1200ms;
+  --wl-leave: 520ms;
+}
+
+html.wl-open, html.wl-open body { overflow: hidden; }
+
+/* A column: the title takes all the height the cue leaves, and centres in it. The cue is in the flow,
+   not laid over the bottom, so a short screen (a phone turned sideways) can never put the two on top of
+   each other — js/welcome.js fits the word to the title's own box. On a tall screen this sits the word a
+   little above the geometric middle, which is where the eye puts the middle anyway. */
+.wl {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; flex-direction: column; align-items: center;
+  padding-top: max(14px, env(safe-area-inset-top));
+  color: var(--wl-ink);
+  background: var(--accent);
+  overflow: hidden;
+  touch-action: none;                             /* the curtain takes the swipe, not the page behind */
+  will-change: transform;
+}
+.wl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* every app's h1 is small, tracked and uppercased; none of that is wanted here, so it is reset */
+.wl-title { margin: 0; font-size: inherit; font-weight: 400; line-height: 1; letter-spacing: normal; text-transform: none; text-align: center; }
+.wl-title {
+  flex: 1 1 auto; min-height: 0; align-self: stretch;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.wl-word {
+  display: block;
+  font-family: var(--font-sans); font-weight: var(--wl-word-weight);
+  font-size: 18vw;                                /* replaced by the measured fit in js/welcome.js */
+  letter-spacing: var(--wl-word-track);
+  line-height: .86; white-space: nowrap;
+  opacity: 0;
+}
+.wl-master {
+  display: block; margin-top: 1.5em;
+  font-family: var(--font-sans); font-size: var(--wl-master-size); font-weight: 500;
+  letter-spacing: var(--wl-master-track); padding-left: var(--wl-master-track);   /* re-centre the tracking */
+  opacity: 0;
+}
+.wl.wl-playing .wl-word { animation: wl-word 1100ms cubic-bezier(.2, .8, .2, 1) var(--wl-word-at) both; }
+.wl.wl-playing .wl-master { animation: wl-fade 900ms ease var(--wl-master-at) both; }
+
+/* the way in: a word and a line with a dot running down it — and a button, for anyone not scrolling */
+.wl-cue {
+  flex: none; margin: 10px 0 max(22px, env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 6px 12px; border: 0; background: none; cursor: pointer; color: inherit;
+  font-family: var(--font-sans); font-size: 10px; font-weight: 600; letter-spacing: .28em; text-transform: uppercase;
+  opacity: 0;
+}
+.wl-cue span { padding-left: .28em; }
+.wl-cue i { position: relative; display: block; width: 1px; height: 34px; background: color-mix(in srgb, var(--wl-ink), transparent 70%); overflow: hidden; }
+.wl-cue i::after { content: ""; position: absolute; left: 0; top: -10px; width: 1px; height: 10px; background: var(--wl-ink); }
+.wl.wl-playing .wl-cue { animation: wl-fade-full 700ms ease var(--wl-cue-at) both; }
+.wl.wl-playing .wl-cue i::after { animation: wl-drip 1.6s cubic-bezier(.6, 0, .4, 1) calc(var(--wl-cue-at) + 500ms) infinite; }
+.wl-cue:hover, .wl-cue:focus-visible { outline: none; }
+.wl-cue:focus-visible span { text-decoration: underline; text-underline-offset: 4px; }
+
+@keyframes wl-word { from { opacity: 0; transform: scale(1.04) } to { opacity: 1; transform: scale(1) } }
+@keyframes wl-fade { from { opacity: 0 } to { opacity: .8 } }
+@keyframes wl-fade-full { from { opacity: 0 } to { opacity: .85 } }
+@keyframes wl-drip { 0% { top: -10px } 70%, 100% { top: 34px } }
+
+/* reduced motion: the final frame, arrived at with a plain fade. Every final value is stated — a
+   one-sided keyframe ends on the element's own value, and here that is the hidden starting state */
+@media (prefers-reduced-motion: reduce) {
+  .wl.wl-playing .wl-word, .wl.wl-playing .wl-master, .wl.wl-playing .wl-cue { animation: wl-still 400ms ease both; }
+  .wl.wl-playing .wl-word { opacity: 1; }
+  .wl.wl-playing .wl-master { opacity: .8; }
+  .wl.wl-playing .wl-cue { opacity: .85; }
+  .wl.wl-playing .wl-cue i::after { animation: none; top: 12px; }
+  @keyframes wl-still { from { opacity: 0 } }
+}

@@ -8,6 +8,7 @@ import { mountOpenings } from './openings.js'
 import { mountGames } from './games.js'
 import { setActiveViewer } from './pgn-viewer.js'
 import { mountFamily } from './family.js'
+import { mountWelcome } from './welcome.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -31,6 +32,8 @@ async function boot() {
   document.addEventListener('pointerdown', () => sound.unlock(), { once: true })
   progress.onChange(() => renderSidebar())
   window.addEventListener('hashchange', route)
+  // the series welcome, the first time this browser opens the app — a curtain over the app, not a route
+  if (location.hash !== '#/welcome') mountWelcome({ app: 'chess', word: 'Chess' })
   route()
 }
 
@@ -69,6 +72,10 @@ function toggleSidebar(force) {
 }
 
 async function route() {
+  if (location.hash === '#/welcome') {
+    history.replaceState(null, '', '#/')
+    mountWelcome({ app: 'chess', word: 'Chess', force: true })
+  }
   const hash = location.hash || '#/'
   const main = $('#main')
   toggleSidebar(false)

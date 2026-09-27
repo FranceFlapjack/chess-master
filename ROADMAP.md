@@ -34,6 +34,7 @@ Open questions for the owner: which openings they already play (repertoire choic
 - Draft 2 (2026-09-12): metar-taf language — white, Helvetica Neue, uppercase labels, hairlines, square centred board. Owner will supply their own piece set and board art later; keep `--sq-*` tokens and `assets/pieces/` ready for it.
 - Still to do: dark mode, mobile polish.
 - Sound: replace synthesised set with CC0 samples if they feel better.
+- Poker Master joins the series and the series welcome arrives (2026-09-27, owner's request): `js/family.js` gains the Poker entry (navy `#0f2d57`, a card logo), copied from Poker Master byte for byte once it was live; `js/welcome.js` and `css/welcome.css` are the same shared files, on this app's accent. Checked locally before merging: the welcome's colour is this app's `--accent`, the word fits at 375px and 1280px with MASTER and the cue clear, entering is remembered, the bubble lists Poker, and the console is clean.
 
 ## Play mode & the bot (planned with the owner 2026-09-12)
 
