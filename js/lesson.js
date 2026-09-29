@@ -1,11 +1,12 @@
-// Lesson renderer: Markdown (+ frontmatter) → HTML, with `board`, `pgn` and `try` fences mounted as components.
+// Lesson renderer: Markdown (+ frontmatter) → HTML, with `board`, `pgn`, `try` and `tip` fences mounted as components.
 import { marked } from '../vendor/marked/marked.esm.js'
 import { Board } from './board.js'
 import { mountPgnViewer } from './pgn-viewer.js'
 import { mountExercise } from './exercise.js'
 import { progress } from './progress.js'
+import { mascot, catHeadHTML } from './mascot.js'
 
-const BLOCKS = new Set(['board', 'pgn', 'try'])
+const BLOCKS = new Set(['board', 'pgn', 'try', 'tip'])
 marked.use({
   renderer: {
     code({ text, lang }) {
@@ -93,9 +94,50 @@ export async function renderLesson(container, md, { lessonId, contentBase = 'con
       const ex = mountExercise(fig, p, { lessonId, index: tryIndex++, onSolved })
       tryIds.push(ex.id)
       mounted.push(ex)
+    } else if (kind === 'tip') {
+      mounted.push(mountTip(blk, src))
     }
   }
   return { meta, mounted, tryIds }
+}
+
+/**
+ * A tip tucked into a lesson: ```tip fences (ported from Poker Master). In the text it is only a small cat
+ * and a label. The first time the tip scrolls fully into view the cat in the corner meows that it has
+ * one; clicking the cat, or the label, opens it. With the cat switched off, the label opens it inline.
+ *
+ * The body is plain text, **bold** allowed. An optional first line `title: …` replaces "Meow tip".
+ */
+function mountTip(blk, raw) {
+  const lines = raw.trim().split('\n')
+  let title = null
+  if (/^title:/i.test(lines[0])) title = lines.shift().replace(/^title:\s*/i, '').trim()
+  const text = lines.join(' ').replace(/\s+/g, ' ').trim()
+
+  const el = document.createElement('div')
+  el.className = 'tip'
+  el.innerHTML = `<button class="tip-cue" type="button">${catHeadHTML(26)}<span>${esc(title || 'Meow tip')}</span></button><p class="tip-text" hidden></p>`
+  el.querySelector('.tip-text').innerHTML = esc(text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+  blk.replaceWith(el)
+
+  const msg = { kind: 'tip', text, title: title || 'Meow tip', owner: el }
+  let io = null, dead = false, seen = false
+  // clicking the label in the text is asking, so the bubble opens; with the cat off, it opens inline
+  el.querySelector('.tip-cue').addEventListener('click', () => {
+    seen = true                     // read now: it should not meow about itself afterwards
+    if (io) { io.disconnect(); io = null }
+    if (!mascot.say(msg)) { const t = el.querySelector('.tip-text'); t.hidden = !t.hidden }
+  })
+  // Meow once, the first time the whole cue is on screen and clear of the bottom fifth (where the cat
+  // sits). Armed only after the page has settled, so a cue the reader never scrolled to is not spent.
+  const arm = setTimeout(() => {
+    if (dead || seen || !el.isConnected || typeof IntersectionObserver !== 'function') return
+    io = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting) && el.isConnected) { io.disconnect(); io = null; mascot.notify(msg) }
+    }, { threshold: 1, rootMargin: '0px 0px -20% 0px' })
+    io.observe(el.querySelector('.tip-cue'))
+  }, 700)
+  return { destroy() { dead = true; clearTimeout(arm); if (io) io.disconnect(); mascot.hide(el) } }
 }
 
 function linkify(s) { return s.replace(/(https?:\/\/[^\s)]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>') }

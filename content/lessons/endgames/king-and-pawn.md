@@ -36,6 +36,10 @@ caption: Kings on e4 and e6, White to move. 1.e3! passes the move to Black, who 
 
 ## Play it
 
+```tip
+When the queens come off, the king becomes a fighting piece: **march it to the centre**. In pawn endings a king one square closer often decides the game.
+```
+
 <p class="puzzle-intro">1 · The square. White's b-pawn is running and the black king is on g6. Black to move.</p>
 
 ```try

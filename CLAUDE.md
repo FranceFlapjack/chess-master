@@ -54,6 +54,8 @@ Markdown with frontmatter (`id`, `track`, `title`, `lede`, `level`, `sources:` l
     caption: …
     ```
 
+A fourth fence, ```` ```tip ````, is a tip for the cat (below): plain text, **bold** allowed, an optional first line `title: …`, at most ~260 characters (the checker enforces it). Put it just before a lesson's first puzzle, and only when it says something the lesson does not already say.
+
 Arrow types: `main` (default), `alt`, `bad`; knight moves draw as an L. `try` solutions alternate reader move / auto reply, starting with the reader. Add `type: line` (optional `tolerance: N` cp, default 50) for opening drills: the verifier then accepts any reader move within that margin of the engine's best, and the page says "not the book move" instead of "wrong". A bare `tolerance: N` does the same check without the opening wording (endgame technique). A reader move may list alternatives with `|` (`Kf4|Kf5`): the page accepts any of them, the verifier checks each (within 30 cp of best), and the first continues the line, so use alternatives only on the last reader move of a puzzle.
 
 **Lesson shape (owner's rule):** short core idea → puzzles (`try` blocks, the main body) → a short "Remember" list → long explanations and full games collapsed behind `+++ Read more: title` … `+++` sections. A lesson ticks itself in the sidebar when all its puzzles are solved; "Mark as read" is the fallback for lessons without puzzles.
@@ -73,4 +75,10 @@ Branch before editing; merge to `main` with `--ff-only` after the owner approves
 ## Licence
 
 `LICENSE` (2026-09-27): the code is PolyForm Noncommercial 1.0.0, the lessons, design and assets are CC BY-NC-SA 4.0, `vendor/` keeps its own licences (Stockfish stays GPL-3) — credit and no selling, the same terms across the whole Master series. `robots.txt` asks generative-AI training crawlers to stay out; the head carries `author`, `canonical`, `license` and `noai` tags and the sidebar footer carries the credit line. Keep all of it in place, and keep the wording identical across the series.
+
+## The cat
+
+`js/mascot.js` (2026-09-30) is Poker Master's cat in the box, ported as-is: only `KEY` (`chess-master.mascot`) and the `adoptOldKey` call differ, so mirror any other change into `../poker-master/js/mascot.js`. It sits small in the bottom-right corner, **meows and waits to be clicked** — nothing opens by itself — and answers a click with hearts when it has nothing to say. A hint always beats a tip. Puzzles: after the second wrong move the cat meows that it has the puzzle's `hint:`; the Hint button opens it at once; a puzzle with no hint gets the checks–captures–threats reminder. Lesson ```` ```tip ```` blocks show a small cat label in the text and make the cat meow the first time they scroll into view. The switch beside the sound button turns the cat off; hints and tips then show inline, as before. Every board that uses `mountExercise` (lessons, openings book, My games drills) gets the cat for free.
+
+**The artwork is shigureni's** (https://shigureni.com/illust/82, recorded in `content/images/mascot/manifest.json`), not ours and not covered by our LICENSE. Their terms allow cropping, scaling, compositing and animation; they forbid redrawing it in any form (SVG, tracing, hand-drawing) and any use with generative AI. So the cat is only ever that file, cropped and scaled; `INK`, `HEAD` and `HEAD_CROP` in `mascot.js` are measurements of it and must not change unless the file does; and **never look at the artwork through an AI tool** — no screenshots of the cat sent to a model, including to check how it looks. Verify the cat through the DOM (`aside.mascot[data-state]` quiet → meowing → open, the bubble text, the live region) and ask the owner to look.
 

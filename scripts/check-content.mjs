@@ -8,7 +8,7 @@ import { Chess, validateFen } from '../vendor/chess.js/chess.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const content = path.join(root, 'content')
-let errors = 0, checked = 0
+let errors = 0, checked = 0, tips = 0
 const fail = (file, msg) => { errors++; console.error(`✗ ${path.relative(root, file)}: ${msg}`) }
 
 function parseFrontmatter(md) {
@@ -52,11 +52,21 @@ for (const f of lessonFiles) {
   const entry = listed.get(rel)
   if (!entry) fail(f, 'not listed in curriculum.json')
   else if (!entry.ready) fail(f, 'exists but curriculum.json does not mark it ready: true')
-  const re = /```(board|pgn|try)\r?\n([\s\S]*?)```/g
+  const re = /```(board|pgn|try|tip)\r?\n([\s\S]*?)```/g
   let m, n = 0
   while ((m = re.exec(body))) {
     n++
     const kind = m[1], p = parseParams(m[2]), label = `${kind} block #${n}`
+    if (kind === 'tip') {
+      // a tip is plain text for the cat: an optional `title:` line, then a body short enough for its bubble
+      const lines = m[2].trim().split(/\r?\n/)
+      if (/^title:/i.test(lines[0])) lines.shift()
+      const text = lines.join(' ').replace(/\s+/g, ' ').trim()
+      if (!text) fail(f, `${label}: empty tip`)
+      else if (text.length > 260) fail(f, `${label}: ${text.length} characters — the cat's bubble holds about 260`)
+      tips++
+      continue
+    }
     if (kind === 'board' || kind === 'try') {
       if (!p.fen) { fail(f, `${label}: missing fen`); continue }
       const v = validateFen(p.fen); if (!v.ok) { fail(f, `${label}: bad FEN — ${v.error}`); continue }
@@ -83,5 +93,5 @@ for (const f of lessonFiles) {
 }
 for (const [id, l] of listed) if (l.ready && !lessonFiles.some(f => f.endsWith(path.join(...id.split('/')) + '.md'))) fail(path.join(content, 'curriculum.json'), `lesson ${id} is marked ready but has no file`)
 
-console.log(errors ? `${errors} problem(s), ${checked} items checked` : `✓ all good — ${lessonFiles.length} lesson(s), ${checked} positions/games checked`)
+console.log(errors ? `${errors} problem(s), ${checked} items checked` : `✓ all good — ${lessonFiles.length} lesson(s), ${checked} positions/games, ${tips} tips checked`)
 process.exit(errors ? 1 : 0)

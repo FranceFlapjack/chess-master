@@ -24,6 +24,10 @@ caption: Nc7+ attacks the king and the queen at once. The king must move, and th
 
 ## Play it
 
+```tip
+Knight forks are the nastiest: **nothing hits back along an L** except another knight, so the two pieces a knight attacks can never take it from where they stand.
+```
+
 <p class="puzzle-intro">1 · Fischer – Reshevsky, 1958. The knight on c6 has wandered to a5 and the knight on f6 to e8. The square e6 has lost its guards.</p>
 
 ```try

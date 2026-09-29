@@ -38,6 +38,11 @@ caption: The bishop on d4 runs along both diagonals as far as the board allows.
 
 ## Play it
 
+```tip
+title: At a real board
+**Touch-move.** In a club game a piece you touch must be moved if it has a legal move. To straighten one, say “I adjust” first.
+```
+
 <p class="puzzle-intro">1 · Move the knight from d4 to f5.</p>
 
 ```try

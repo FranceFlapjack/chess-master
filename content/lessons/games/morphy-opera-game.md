@@ -15,6 +15,11 @@ Play the position at each pause before reading on. The game is short enough to l
 
 ## Play it
 
+```tip
+title: How to study a game
+Before each click, **cover the next move and guess it**. A wrong guess you then understand teaches more than ten moves read in a row.
+```
+
 <p class="puzzle-intro">1 · After 9…b5. Black attacks the bishop on c4. Morphy is not interested in retreating.</p>
 
 ```try

@@ -25,6 +25,10 @@ The pattern lesson is short. The work is in **spotting the guard** of the back r
 
 ## Play it
 
+```tip
+When the enemy back rank is weak, **count who guards it**. If one piece guards it and that piece can be deflected or exchanged off, the mate is already there.
+```
+
 <p class="puzzle-intro">1 · Two rooks against one guard. The rook on a8 covers e8, but it can only capture once.</p>
 
 ```try

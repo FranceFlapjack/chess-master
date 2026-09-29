@@ -504,3 +504,113 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .sidebar-footer .credit a { color: var(--ink-3); text-decoration: none; }
 .sidebar-footer .credit a:hover { color: var(--accent); }
 /* cmx-20260927-7e674fc1ff69 */
+
+/* ---------- the cat in the box (js/mascot.js) ---------- */
+/* Always in the corner, small. It meows when it has something and waits to be clicked; the bubble only
+   opens on a click. Clicked with nothing to say, it answers with hearts. */
+.mascot {
+  position: fixed; right: max(14px, env(safe-area-inset-right)); bottom: max(8px, env(safe-area-inset-bottom)); z-index: 60;
+  display: flex; flex-direction: column; align-items: flex-end;
+  pointer-events: none;
+}
+.mascot > * { pointer-events: auto; }
+.mascot[hidden] { display: none; }
+.mascot-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* the bubble: only there when opened */
+.mascot-bubble {
+  position: relative; box-sizing: border-box;
+  width: max-content; max-width: min(232px, calc(100vw - 28px));
+  padding: 8px 24px 9px 11px;
+  margin: 0 0 calc(var(--mascot-tail) * 1px + 3px) 0;
+  transform-origin: 70% 100%; transform: scale(.6); opacity: 0; visibility: hidden;
+  transition: transform 240ms cubic-bezier(.2, 1.4, .4, 1), opacity 140ms, visibility 0s 240ms;
+}
+.mascot[data-state="open"] .mascot-bubble { transform: scale(1); opacity: 1; visibility: visible; transition: transform 240ms cubic-bezier(.2, 1.4, .4, 1), opacity 140ms, visibility 0s; }
+.mascot-outline { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.mascot-outline path {
+  fill: var(--mascot-paper); stroke: var(--mascot-line); stroke-width: calc(var(--mascot-stroke) * 1px);
+  stroke-linejoin: round; stroke-linecap: round;
+}
+.mascot-label, .mascot-text, .mascot-close { position: relative; }
+.mascot-label { display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 2px; color: var(--mascot-tip); }
+.mascot[data-kind="hint"] .mascot-label { color: var(--mascot-hint); }
+.mascot-text { margin: 0; font-size: 12.5px; line-height: 1.42; color: var(--ink); }
+.mascot-text b { font-weight: 700; }
+.mascot-close {
+  position: absolute; top: 3px; right: 4px; width: 20px; height: 20px; padding: 0;
+  border: 0; background: none; color: var(--ink-3); font-size: 16px; line-height: 1; cursor: pointer;
+}
+.mascot-close:hover { color: var(--ink); }
+
+/* the cat, its meow, its hearts */
+.mascot-body { position: relative; }
+.mascot-cat {
+  display: block; width: var(--mascot-cat-w); padding: 0; margin: 0; border: 0; background: none; cursor: pointer;
+  transform-origin: 50% 100%; transition: transform 160ms;
+}
+.mascot-cat:hover { transform: translateY(-2px); }
+.mascot-cat:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.mascot-cat svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.10)); }
+.mascot-cat.squish { animation: mascot-squish 260ms ease-out; }
+.mascot-body.hop { animation: mascot-hop 700ms cubic-bezier(.3, 0, .3, 1); }
+
+/* "meow" — a word and three sound lines beside the head, drawn in the artwork's black */
+.mascot-meow {
+  position: absolute; right: 64%; bottom: 72%;
+  display: flex; align-items: flex-end; gap: 1px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; color: var(--mascot-ink);
+  opacity: 0; transform: scale(.4) rotate(-8deg); transform-origin: 100% 100%;
+  transition: opacity 160ms, transform 240ms cubic-bezier(.2, 1.5, .4, 1);
+  pointer-events: none;
+}
+.mascot-meow span { transform: rotate(-8deg); }
+.mascot-sound { width: 13px; height: 13px; order: 2; margin-bottom: 7px; }
+.mascot-sound path { fill: none; stroke: var(--mascot-ink); stroke-width: 1.6; stroke-linecap: round; }
+.mascot[data-state="meowing"] .mascot-meow { opacity: 1; transform: scale(1) rotate(-8deg); animation: mascot-meow 1.6s ease-in-out 400ms infinite; }
+
+.mascot-hearts { position: absolute; left: 40%; top: 6%; width: 0; height: 0; pointer-events: none; }
+.mascot-hearts .heart {
+  position: absolute; left: calc(var(--size) / -2); top: 0; width: var(--size); height: var(--size);
+  animation: mascot-heart 1.1s ease-out var(--delay) both;
+}
+.mascot-hearts svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.mascot-hearts path { fill: var(--mascot-heart); stroke: var(--mascot-ink); stroke-width: 1.8; stroke-linejoin: round; }
+
+@keyframes mascot-hop { 0%, 100% { transform: translateY(0) } 28% { transform: translateY(-9px) } 50% { transform: translateY(0) } 68% { transform: translateY(-3px) } }
+@keyframes mascot-squish { 0% { transform: scale(1, 1) } 35% { transform: scale(1.07, .9) } 70% { transform: scale(.97, 1.04) } 100% { transform: scale(1, 1) } }
+@keyframes mascot-meow { 0%, 100% { transform: scale(1) rotate(-8deg) } 50% { transform: scale(1.1) rotate(-5deg) } }
+@keyframes mascot-heart {
+  0% { transform: translate(0, 0) scale(.3); opacity: 0 }
+  18% { transform: translate(calc(var(--dx) * .3), -8px) scale(1); opacity: 1 }
+  100% { transform: translate(var(--dx), -58px) scale(.85); opacity: 0 }
+}
+
+@media (max-width: 560px) {
+  .mascot { right: max(10px, env(safe-area-inset-right)); }
+  .mascot-cat { width: var(--mascot-cat-w-phone); }
+  .mascot-bubble { max-width: calc(100vw - 20px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mascot-bubble, .mascot[data-state="open"] .mascot-bubble { transform: none; transition: opacity 140ms, visibility 0s; }
+  .mascot-cat.squish, .mascot-body.hop, .mascot[data-state="meowing"] .mascot-meow { animation: none; }
+  .mascot-meow { transform: rotate(-8deg); }
+  .mascot-hearts .heart { animation: mascot-heart-still 1.1s ease-out var(--delay) both; }
+  @keyframes mascot-heart-still { 0% { opacity: 0 } 25% { opacity: 1 } 100% { opacity: 0; transform: translate(var(--dx), -20px) } }
+}
+
+/* a tip tucked into a lesson: a small cat and a label in the text; the cat in the corner delivers it */
+.prose .tip { margin: var(--s-4) 0; }
+.prose .tip-cue {
+  display: inline-flex; align-items: center; gap: 9px; padding: 3px 12px 3px 4px;
+  border: 1px solid var(--line-2); border-radius: 999px; background: var(--bg); cursor: pointer;
+  font: inherit; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2);
+}
+.prose .tip-cue:hover { border-color: var(--accent); color: var(--accent); }
+.prose .tip-cat { display: block; }
+.prose .tip-text { margin: var(--s-2) 0 0; padding-left: var(--s-3); border-left: 2px solid var(--line-2); font-size: var(--fs-1); color: var(--ink-2); }
+
+/* the switch for the cat, beside the mute button */
+.icon-btn.cat-toggle { width: 32px; }
+.icon-btn.cat-toggle .tip-cat { width: 24px; height: auto; }
+.icon-btn.cat-toggle[aria-pressed="false"] { opacity: 0.4; }

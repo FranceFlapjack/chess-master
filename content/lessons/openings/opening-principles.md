@@ -29,6 +29,10 @@ caption: A textbook opening for both sides: centre pawns, knights and bishops ou
 
 ## Play it
 
+```tip
+After move eight, **count developed pieces** — yours and theirs. If you are behind, stop hunting pawns and bring the next piece out.
+```
+
 <p class="puzzle-intro">1 · Someone brings the queen out on move two. You are Black. Meet Scholar's mate the calm way: develop with tempo, cover f7, and never touch the queen.</p>
 
 ```try

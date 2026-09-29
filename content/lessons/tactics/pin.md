@@ -29,6 +29,10 @@ credit: Paul Morphy, engraving, 1859. Library of Congress via Wikimedia Commons,
 
 ## Play it
 
+```tip
+A pinned piece is a **bad defender**: it cannot leave its line without exposing what stands behind it. When you see a pin, look at what that piece was supposed to guard.
+```
+
 <p class="puzzle-intro">1 · Opera Game, move 13. Both black knights are pinned: d7 to the king, f6 to the queen. Win material.</p>
 
 ```try

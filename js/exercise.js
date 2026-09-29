@@ -3,8 +3,11 @@ import { Board, MARK } from './board.js'
 import { sound } from './sound.js'
 import { progress } from './progress.js'
 import { setActiveViewer } from './pgn-viewer.js'
+import { mascot } from './mascot.js'
 
 const norm = s => s.replace(/[+#!?]/g, '')
+// what the cat says when a puzzle has no hint of its own and the reader asks for one anyway
+const NO_HINT = 'No hint written for this one. Run the habit: **checks, captures, threats** — every one of them, for both sides, before anything quiet.'
 const isMoveToken = t => t && !/^\d+\.+$/.test(t) && !/^(1-0|0-1|1\/2-1\/2|\*)$/.test(t)
 
 export function mountExercise(container, o, ctx = {}) {
@@ -65,7 +68,9 @@ export function mountExercise(container, o, ctx = {}) {
       await wait(600)
       board.clearMarks(MARK.bad)
       await board.undo({ silent: true })
-      if (wrong >= 2) showHint()
+      // two misses before the hint, as before: on a board nothing gets crossed out, so a first miss
+      // still leaves the whole puzzle to think about. The cat meows that it has the hint; nothing opens.
+      if (wrong >= 2) showHint(false)
       arm()
     }
   }
@@ -77,10 +82,23 @@ export function mountExercise(container, o, ctx = {}) {
     const first = wrong === 0
     progress.recordTry(id, first)
     board.disableInput()
+    mascot.hide(container)
     if (ctx.onSolved) ctx.onSolved(id)
   }
-  function showHint() { if (o.hint) { hintEl.textContent = o.hint; hintEl.hidden = false } }
+  /**
+   * `asked`: the reader pressed Hint, so the cat opens it now; otherwise it only meows that it has one.
+   * With the cat switched off the hint goes inline, as it always did.
+   */
+  function showHint(asked) {
+    const text = o.hint || (asked ? NO_HINT : '')
+    if (!text) return
+    const msg = { kind: 'hint', text, owner: container }
+    if (asked ? mascot.say(msg) : mascot.notify(msg)) return
+    if (o.hint) { hintEl.textContent = o.hint; hintEl.hidden = false }
+    else setStatus('No hint for this one — think about checks first.')
+  }
   async function reset() {
+    mascot.hide(container)
     showing = false; idx = 0; solved = false
     board.disableInput()
     container.classList.remove('solved')
@@ -90,6 +108,7 @@ export function mountExercise(container, o, ctx = {}) {
     arm()
   }
   async function showSolution() {
+    mascot.hide(container)
     showing = true; board.disableInput()
     await board.showPosition(o.fen)
     setStatus('Watch: ' + solution.map(first).join(' '))
@@ -101,7 +120,7 @@ export function mountExercise(container, o, ctx = {}) {
   container.querySelector('.actions').addEventListener('click', e => {
     const b = e.target.closest('[data-act]'); if (!b) return
     sound.unlock()
-    if (b.dataset.act === 'hint') { showHint(); if (!o.hint) setStatus('No hint for this one — think about checks first.') }
+    if (b.dataset.act === 'hint') showHint(true)
     if (b.dataset.act === 'reset') reset()
     if (b.dataset.act === 'solution') showSolution()
   })

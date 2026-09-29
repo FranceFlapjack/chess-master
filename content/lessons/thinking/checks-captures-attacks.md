@@ -21,6 +21,11 @@ List them for yourself, then for the opponent. Only then choose. Most of the tim
 
 ## Play it
 
+```tip
+title: Short on time
+Do the habit in its **cheapest form**: only the checks — yours, and the ones your opponent gets after your move. That alone catches the blunders that end games at once.
+```
+
 <p class="puzzle-intro">1 · Checks first. The knight has one check. What does it do?</p>
 
 ```try

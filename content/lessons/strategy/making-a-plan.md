@@ -32,6 +32,10 @@ caption: Botvinnik – Capablanca after 18…Nb3. Black attacks a4. White plays 
 
 ## Play it
 
+```tip
+Stuck for a plan? Ask **what your opponent wants to play next**, then look for a move that stops it and improves one of your pieces at the same time.
+```
+
 <p class="puzzle-intro">1 · Botvinnik – Capablanca, AVRO 1938, after 18…Nb3. Black will take on a4 next. What does the position ask White to do?</p>
 
 ```try

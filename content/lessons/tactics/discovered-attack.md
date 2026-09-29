@@ -25,6 +25,10 @@ caption: Réti – Tartakower, 1910, after 8…Nxe4. The queen goes to d8 with c
 
 ## Play it
 
+```tip
+Scan your own lines: every piece standing **in front of your own rook, bishop or queen** is a discovered attack waiting for the right moment.
+```
+
 <p class="puzzle-intro">1 · Réti – Tartakower, Vienna 1910. The most famous eleven-move game in chess.</p>
 
 ```try

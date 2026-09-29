@@ -24,6 +24,10 @@ The puzzles below are from the other side: the opponent has just made a natural-
 
 ## Play it
 
+```tip
+Blunders love the move **right after something good happens** — you win material, or your opponent slips. That is the moment to slow down, not to speed up.
+```
+
 <p class="puzzle-intro">1 · White played 3.Ng5, threatening f7. It was a blunder.</p>
 
 ```try

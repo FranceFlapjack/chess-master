@@ -25,6 +25,11 @@ caption: Botvinnik – Capablanca after 25…Re8. White converts the central pla
 
 ## Play it
 
+```tip
+title: On the clock
+Winning and short on time? **Take the safe line.** A clean extra pawn in a simple ending is worth more than a brilliant finish you have not had time to check.
+```
+
 <p class="puzzle-intro">1 · Botvinnik – Capablanca, after 25…Re8. Black offers a rook trade. White has something better than a trade: a transformation.</p>
 
 ```try

@@ -35,6 +35,10 @@ caption: One square over, it is checkmate. Same pieces; the difference is whethe
 
 ## Play it
 
+```tip
+**A check is not a plan.** Check when it wins something or leads to mate; otherwise it often just chases the king to a safer square.
+```
+
 <p class="puzzle-intro">1 · Give check with the queen.</p>
 
 ```try

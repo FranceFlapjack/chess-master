@@ -21,6 +21,10 @@ caption: A quiet position with no forcing moves. Several moves are fine: …Na5,
 
 ## Play it
 
+```tip
+Facing a move you have never seen? **Spend your clock there.** A new move early on deserves a long think; the book moves you know can be played quickly.
+```
+
 <p class="puzzle-intro">1 · No book move to remember. Improve a piece. Any good move is accepted.</p>
 
 ```try

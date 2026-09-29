@@ -9,6 +9,7 @@ import { mountGames } from './games.js'
 import { setActiveViewer } from './pgn-viewer.js'
 import { mountFamily } from './family.js'
 import { mountWelcome } from './welcome.js'
+import { mascot, catHeadHTML } from './mascot.js'
 
 const $ = s => document.querySelector(s)
 let curriculum = null
@@ -27,6 +28,13 @@ async function boot() {
   const paintMute = () => { mute.innerHTML = sound.muted ? ICON_SOUND_OFF : ICON_SOUND_ON; mute.setAttribute('aria-pressed', String(sound.muted)); mute.title = sound.muted ? 'Sound off' : 'Sound on' }
   paintMute(); mute.addEventListener('click', () => { sound.toggle(); paintMute() })
   mountFamily('chess')
+  // the cat's own switch, beside the sound: hints and tips go inline when it is off
+  const cat = $('#cat')
+  cat.innerHTML = catHeadHTML(20)
+  const paintCat = () => { cat.setAttribute('aria-pressed', String(mascot.enabled)); cat.title = mascot.enabled ? 'Tips from the cat: on' : 'Tips from the cat: off' }
+  paintCat(); cat.addEventListener('click', () => { mascot.enabled = !mascot.enabled })
+  mascot.mount()   // the cat lives in its corner from the start, quiet until it has something to say
+  document.addEventListener('mascot-toggle', paintCat)
   $('#menu').addEventListener('click', () => toggleSidebar())
   $('#scrim').addEventListener('click', () => toggleSidebar(false))
   document.addEventListener('pointerdown', () => sound.unlock(), { once: true })
@@ -81,6 +89,7 @@ async function route() {
   toggleSidebar(false)
   if (unmountPage) { unmountPage(); unmountPage = null }
   setActiveViewer(null) // the previous page's game viewer must not keep the arrow keys
+  mascot.hide()         // a hint belongs to the page it was given on
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
   if (m) return showLesson(main, m[1], m[2])
   current = null

@@ -24,6 +24,11 @@ caption: Qxh7 would be mate if the knight on f6 were not guarding h7. So take th
 
 ## Play it
 
+```tip
+title: Two jobs
+Ask of every enemy piece: **what is it guarding?** A piece with two jobs — two squares, or two pieces to protect — can only do one of them when you attack both.
+```
+
 <p class="puzzle-intro">1 · The knight on f6 is the only guard of h7.</p>
 
 ```try
