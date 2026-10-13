@@ -16,11 +16,11 @@ import { mountExercise } from './exercise.js'
 import { analyst } from './engine/analyst.js'
 import { adoptOldKey } from './progress.js'
 import { Chess } from '../vendor/chess.js/chess.js'
+import { fetchLichess, fetchChesscom, fetchStats, parse, splitPgn, fromPgn, resultFor, family, openingName, bookMatch } from './games-data.js'
 
 const KEY = 'chess-master.games.v1'
 const load = () => { try { adoptOldKey(KEY); return JSON.parse(localStorage.getItem(KEY)) || {} } catch (_) { return {} } }
 const save = s => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch (_) {} }
-const FETCH_GAMES = 20   // games per fetch
 const MAX_STORED = 60    // games kept in the browser
 const MAX_CACHED = 30    // games whose evaluations are kept
 const EARLY_PLY = 30     // "early" for the trap drills: the first fifteen moves
@@ -96,6 +96,13 @@ export function mountGames(main) {
   const f = store.filters
   const passes = g => (f.tc === 'all' || g.timeClass === f.tc) && (f.color === 'all' || g.userColor === f.color) && (!f.rated || g.rated !== false)
   const shown = () => store.games.filter(passes)
+  // another tab saved: take its copy, or this tab's next save would overwrite what that tab recorded
+  const onStorage = e => {
+    if (e.key !== KEY || !e.newValue) return
+    Object.assign(store, JSON.parse(e.newValue)); Object.assign(f, store.filters); store.filters = f
+    paint(); paintRatings(); paintMore()
+  }
+  addEventListener('storage', onStorage)
 
   // ---- source ----
   main.querySelector('.games-source').addEventListener('click', e => {
@@ -129,12 +136,13 @@ export function mountGames(main) {
       const fresh = games.filter(g => !known.has(g.id))
       const seen = new Set(games.map(g => g.id))
       store.games = [...games, ...store.games.filter(g => !seen.has(g.id))].sort((a, b) => (b.time || 0) - (a.time || 0)).slice(0, MAX_STORED)
+      const kept = fresh.filter(g => store.games.some(x => x.id === g.id)).length // the cap drops the oldest
       const unknown = games.filter(g => g.unknownSide).length
       save(store)
       setStatus(unknown
         ? `${games.length} games fetched, but in ${unknown} of them neither player is called “${user}” — those are shown from White's side.`
-        : older ? `${fresh.length} older game${fresh.length === 1 ? '' : 's'} added — ${store.games.length} in total.`
-        : fresh.length ? `${fresh.length} new game${fresh.length === 1 ? '' : 's'} since last time — ${store.games.length} in total.`
+        : older ? `${kept} older game${kept === 1 ? '' : 's'} added — ${store.games.length} in total${store.games.length >= MAX_STORED ? ', the most this page keeps' : ''}.`
+        : kept ? `${kept} new game${kept === 1 ? '' : 's'} since last time — ${store.games.length} in total.`
         : `No new games; you already had all ${games.length}.`, unknown ? 'bad' : 'good')
       paint()
       fetchStats(site, user).then(s => { store.stats = s; save(store); paintRatings() }).catch(() => {})
@@ -226,7 +234,7 @@ export function mountGames(main) {
   })
   function paintMore() {
     const site = store.site
-    $('#more').hidden = site === 'pgn' || !store.games.some(g => g.site === site)
+    $('#more').hidden = site === 'pgn' || !store.games.some(g => g.site === site) || store.games.length >= MAX_STORED // full: older games would be cut straight away
     $('#more').disabled = false
     $('#forget').hidden = !store.games.length
   }
@@ -451,9 +459,13 @@ export function mountGames(main) {
     open(b.dataset.slow.slice(0, i), { ply: +b.dataset.slow.slice(i + 1) })
   })
 
+  let drillKey = ''
   function paintDrills() {
     const d = store.drills
     $('#drills').hidden = !d.length
+    const key = d.map(x => x.id).join()
+    if (key === drillKey) return // same drills: keep the boards, and any drill half played
+    drillKey = key
     for (const x of exercises) x.board.destroy()
     exercises = []
     if (!d.length) return
@@ -592,7 +604,7 @@ export function mountGames(main) {
   paint(); paintRatings(); paintMore()
   if (store.games.length) setStatus(`${store.games.length} games from last time. Fetch again for the new ones.`)
   return () => {
-    dead = true; scanning = false; analyst().stop()
+    dead = true; scanning = false; analyst().stop(); removeEventListener('storage', onStorage)
     if (reviewer) reviewer.destroy()
     if (lineDrill) lineDrill.board.destroy()
     for (const x of exercises) x.board.destroy()
@@ -612,126 +624,4 @@ function commonest(list) {
   return best
 }
 
-// ---- fetching (finished games only; see the note at the top of this file) ----
-async function fetchLichess(user, { max = FETCH_GAMES, before } = {}) {
-  const until = before ? `&until=${(before - 1) * 1000}` : ''
-  const r = await fetch(`https://lichess.org/api/games/user/${encodeURIComponent(user)}?max=${max}&opening=true&finished=true&clocks=true${until}`, { headers: { Accept: 'application/x-chess-pgn' } })
-  if (r.status === 404) throw new Error(`No Lichess player called “${user}”.`)
-  if (r.status === 429) throw new Error('Lichess is rate-limiting requests; wait a minute and try again.')
-  if (!r.ok) throw new Error(`Lichess answered ${r.status}.`)
-  return splitPgn(await r.text()).map(pgn => fromPgn(pgn, 'lichess', { user })).filter(Boolean)
-}
-/** chess.com keeps finished games in monthly archives; we walk them newest first. */
-async function fetchChesscom(user, { max = FETCH_GAMES, before } = {}) {
-  const a = await fetch(`https://api.chess.com/pub/player/${encodeURIComponent(user.toLowerCase())}/games/archives`)
-  if (a.status === 404) throw new Error(`No chess.com player called “${user}”.`)
-  if (!a.ok) throw new Error(`chess.com answered ${a.status}.`)
-  const { archives } = await a.json()
-  const out = []
-  for (const url of archives.slice().reverse()) {
-    if (before && monthAfter(url, before)) continue // this month is newer than the games we already hold
-    const r = await fetch(url); if (!r.ok) break
-    const j = await r.json()
-    const games = j.games.filter(g => g.rules === 'chess' && g.pgn && (!before || g.end_time < before))
-    out.push(...games.sort((x, y) => y.end_time - x.end_time))
-    if (out.length >= max) break
-  }
-  return out.slice(0, max).map(g => fromPgn(g.pgn, 'chesscom', { user, url: g.url, timeClass: g.time_class, time: g.end_time, rated: g.rated })).filter(Boolean)
-}
-/** True when an archive URL (…/games/2026/09) is for a month after the given epoch-second timestamp. */
-function monthAfter(url, time) {
-  const [y, m] = url.split('/').slice(-2).map(Number)
-  const d = new Date(time * 1000)
-  return y > d.getFullYear() || (y === d.getFullYear() && m > d.getMonth() + 1)
-}
-/** The ratings shown above the games; one request, and only for context. */
-async function fetchStats(site, user) {
-  const ratings = []
-  if (site === 'chesscom') {
-    const r = await fetch(`https://api.chess.com/pub/player/${encodeURIComponent(user.toLowerCase())}/stats`)
-    if (!r.ok) return null
-    const j = await r.json()
-    for (const [k, name] of [['chess_bullet', 'bullet'], ['chess_blitz', 'blitz'], ['chess_rapid', 'rapid'], ['chess_daily', 'daily']])
-      if (j[k] && j[k].last) ratings.push({ name, value: j[k].last.rating })
-  } else {
-    const r = await fetch(`https://lichess.org/api/user/${encodeURIComponent(user)}`)
-    if (!r.ok) return null
-    const j = await r.json()
-    for (const [k, name] of [['bullet', 'bullet'], ['blitz', 'blitz'], ['rapid', 'rapid'], ['classical', 'classical']])
-      if (j.perfs && j.perfs[k] && j.perfs[k].games) ratings.push({ name, value: j.perfs[k].rating })
-  }
-  return { site, user, ratings }
-}
-
-// ---- parsing ----
-const parsed = new Map() // pgn → { sans, uciMoves, headers }
-export function parse(pgn) {
-  if (parsed.has(pgn)) return parsed.get(pgn)
-  let out = null
-  try {
-    const c = new Chess(); c.loadPgn(pgn)
-    const h = c.history({ verbose: true })
-    if (h.length && (c.getHeaders().Variant || 'Standard') === 'Standard' && !c.getHeaders().FEN) out = { sans: h.map(m => m.san), uciMoves: h.map(m => m.from + m.to + (m.promotion || '')), headers: c.getHeaders() }
-  } catch (_) { out = null }
-  parsed.set(pgn, out)
-  return out
-}
-export function splitPgn(text) { return text.replace(/\r/g, '').split(/\n(?=\[Event )/).map(s => s.trim()).filter(s => s) }
-/** A game record from a PGN: { id, site, url, date, time, names:{w,b}, result, opening, eco, timeClass, userColor, pgn }. */
-export function fromPgn(pgn, site, { user = '', url = '', timeClass = '', time = 0, rated, userColor } = {}) {
-  const p = parse(pgn); if (!p) return null
-  const h = p.headers
-  const names = { w: h.White || '', b: h.Black || '' }
-  const lower = user.toLowerCase()
-  const isMe = c => lower && names[c].toLowerCase() === lower
-  const me = userColor || (isMe('b') && !isMe('w') ? 'b' : 'w')
-  const unknownSide = !userColor && !isMe('w') && !isMe('b') // neither name is the username: assume White, but say so
-  const link = url || (h.Site && /^https?:/.test(h.Site) ? h.Site : '')
-  const date = (h.UTCDate || h.Date || '').replace(/\./g, '-').replace(/-\?\?/g, '')
-  const opening = h.Opening || (h.ECOUrl ? openingFromUrl(h.ECOUrl) : '')
-  const id = link ? link.replace(/^https?:\/\//, '') : `pgn:${hash(p.uciMoves.join(' ') + names.w + names.b + date)}`
-  const stamp = time || Math.round(Date.parse(`${date || '1970-01-01'}T${(h.UTCTime || '00:00:00')}Z`) / 1000) || 0
-  const term = h.Termination || ''
-  const lost = h.Result && h.Result !== '*' && (h.Result === '1-0') !== (me === 'w') && h.Result !== '1/2-1/2'
-  return { id, site, url: link, date, time: stamp, names,
-    tc: h.TimeControl || '', rated: rated === undefined ? /rated/i.test(h.Event || '') : !!rated,
-    lostOnTime: !!lost && /time forfeit|on time|timeout/i.test(term), result: h.Result && h.Result !== '*' ? h.Result : '', opening, eco: h.ECO || '', timeClass: timeClass || ((h.Event || '').match(/bullet|blitz|rapid|classical|correspondence/i) || [''])[0].toLowerCase(), userColor: me, unknownSide, pgn }
-}
-function resultFor(g) {
-  if (!g.result) return ''
-  if (g.result === '1/2-1/2') return 'draw'
-  return (g.result === '1-0') === (g.userColor === 'w') ? 'win' : 'loss'
-}
-/** chess.com's ECOUrl ends with the name and often the moves: ".../Sicilian-Defense-Open-Najdorf-Variation-6.Be3-e5" */
-function openingFromUrl(u) {
-  const words = u.split('/').pop().split('-').map(w => w.split('...')[0]) // "Variation...5.Nce2" → "Variation"
-  const cut = words.findIndex(w => !w || /^\d+\./.test(w))
-  return (cut > 0 ? words.slice(0, cut) : words).join(' ')
-}
-/** The family of an opening name: "Sicilian Defense: Najdorf" → "Sicilian Defense"; "Queens Pawn Opening Zukertort" → "Queens Pawn Opening". */
-export function family(name) {
-  let s = name.split(/[:,(]/)[0].trim()
-  const words = s.split(/\s+/), keys = /^(Defense|Defence|Opening|Game|Gambit|Attack|System|Variation|Countergambit|Counter-Gambit)$/i
-  const k = words.findIndex(w => keys.test(w))
-  if (k > 0) s = words.slice(0, k + 1).join(' ')
-  return s
-}
-/** The opening as named by the site, else the book line the game followed, else its first three moves. */
-function openingName(g, lines) {
-  if (g.opening) return g.opening.split('...')[0].trim()
-  const p = parse(g.pgn); if (!p) return ''
-  const book = bookMatch(lines, p.sans)
-  return book ? book.line.name : firstMoves(p.sans)
-}
-export function firstMoves(sans) { return sans.slice(0, 6).map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}.` : '') + m).join(' ') }
-/** The book line the game followed longest (at least four plies), and how far. */
-export function bookMatch(lines, sans) {
-  let best = null
-  for (const line of lines || []) {
-    let n = 0; while (n < line.moves.length && n < sans.length && line.moves[n] === sans[n]) n++
-    if (n >= 4 && (!best || n > best.plies)) best = { line, plies: n }
-  }
-  return best
-}
-function hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36) }
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])) }

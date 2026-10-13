@@ -141,6 +141,69 @@ export function finalEval(chess) {
 }
 
 /**
+ * Stepping through a reviewed game, shared by the play page and the reviewer below: the step buttons,
+ * ← → (shift for key moves, ↑ ↓ for the ends), clicks on the move list and on the key moves. `root`
+ * holds #controls, #pos, #note, #moves, #keymoves and .play-board; `paint()` repaints whatever the page
+ * draws from the cursor (move list, bar); `active()` gates input on pages where review is a mode.
+ */
+export function reviewNav(root, board, rec, { paint, active = () => true }) {
+  const $ = s => root.querySelector(s)
+  let cursor = 0, shownPly = 0, keyPlies = []
+  const prevKey = () => keyPlies.filter(p => p < cursor).at(-1)
+  const nextKey = () => keyPlies.find(p => p > cursor)
+  function paintControls() {
+    const c = $('#controls'); if (c.hidden) return
+    c.querySelector('[data-nav="prevkey"]').disabled = prevKey() === undefined
+    c.querySelector('[data-nav="nextkey"]').disabled = nextKey() === undefined
+    c.querySelector('[data-nav="prev"]').disabled = cursor === 0
+    c.querySelector('[data-nav="next"]').disabled = cursor === rec.sans.length
+    $('#pos').textContent = cursor ? moveLabel(rec, cursor) : 'Start'
+  }
+  async function goTo(k) {
+    if (!active()) return
+    k = Math.max(0, Math.min(rec.sans.length, k)); cursor = k
+    const arrows = reviewArrows(rec, k)
+    // a marked move is shown on the position before it, with the played move in red and the better one in green
+    const t = arrows.length ? k - 1 : k
+    // the list, the bar and the note are painted before the board moves, so the page never waits on an animation
+    paint(); paintControls()
+    $('#note').textContent = rec.grades.length ? note(rec, k) : k ? moveLabel(rec, k) : 'Starting position.'
+    if (t === shownPly + 1) await board.play(rec.sans[t - 1])
+    else if (t === shownPly - 1) await board.undo({ silent: true })
+    else if (t !== shownPly) await board.setHistory(rec.sans.slice(0, t))
+    shownPly = t
+    board.setArrows(arrows)
+  }
+  const onKey = e => {
+    if (!active() || e.altKey || e.metaKey || e.ctrlKey || /input|select|textarea/i.test(e.target.tagName)) return
+    const k = e.shiftKey ? { ArrowLeft: prevKey(), ArrowRight: nextKey() }[e.key] : { ArrowLeft: cursor - 1, ArrowRight: cursor + 1, ArrowUp: 0, ArrowDown: rec.sans.length }[e.key]
+    if (k === undefined) return
+    e.preventDefault(); goTo(k)
+  }
+  document.addEventListener('keydown', onKey)
+  $('#controls').addEventListener('click', e => {
+    const b = e.target.closest('[data-nav]'); if (!b) return
+    const k = { prevkey: prevKey(), nextkey: nextKey(), prev: cursor - 1, next: cursor + 1 }[b.dataset.nav]
+    if (k !== undefined) goTo(k)
+  })
+  $('#moves').addEventListener('click', e => { const b = e.target.closest('[data-ply]'); if (b) goTo(+b.dataset.ply) })
+  $('#keymoves').addEventListener('click', e => {
+    const b = e.target.closest('[data-ply]'); if (!b || !active()) return
+    goTo(+b.dataset.ply)
+    const r = $('.play-board').getBoundingClientRect()
+    if (r.top < 0 || r.bottom > window.innerHeight) $('.play-board').scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+  return {
+    goTo, paintControls,
+    get cursor() { return cursor },
+    /** The board already shows ply k (a new game, the end of a game): put the cursor there without moving it. */
+    at(k) { cursor = shownPly = k },
+    setKeyPlies(plies) { keyPlies = plies },
+    destroy() { document.removeEventListener('keydown', onKey) },
+  }
+}
+
+/**
  * A reviewer for a finished game: board with evaluation bar, step controls, key moves and move list.
  * `game`: { sans, uciMoves, userColor, names: {w, b}, evals? }. Analysis starts when `analyse()` is
  * called; `onEvals(evals)` reports every finished evaluation so the caller can cache them.
@@ -181,40 +244,18 @@ export function mountReview(container, game, { onEvals, onGraded } = {}) {
   const $ = s => container.querySelector(s)
   const barEl = $('#evalbar'), movesEl = $('#moves'), statusEl = $('#status')
   const board = new Board($('.board'), { fen: DEFAULT_POSITION, orientation: rec.userColor })
-  let cursor = 0, shownPly = 0, keyPlies = [], analysing = false, dead = false
+  let analysing = false, dead = false
   const setStatus = (t, cls = '') => { statusEl.textContent = t; statusEl.className = 'status ' + cls }
 
-  const bar = () => paintBar(barEl, rec.evals[cursor], board.orientation())
-  const paintMoves = () => { movesEl.innerHTML = movesHtml(rec, { current: cursor, clickable: true }); keepCurrentVisible(movesEl) }
-  const prevKey = () => keyPlies.filter(p => p < cursor).at(-1)
-  const nextKey = () => keyPlies.find(p => p > cursor)
-  function paintControls() {
-    const c = $('#controls')
-    c.querySelector('[data-nav="prevkey"]').disabled = prevKey() === undefined
-    c.querySelector('[data-nav="nextkey"]').disabled = nextKey() === undefined
-    c.querySelector('[data-nav="prev"]').disabled = cursor === 0
-    c.querySelector('[data-nav="next"]').disabled = cursor === n
-    $('#pos').textContent = cursor ? moveLabel(rec, cursor) : 'Start'
-  }
-  async function goTo(k) {
-    k = Math.max(0, Math.min(n, k)); cursor = k
-    const arrows = reviewArrows(rec, k)
-    const t = arrows.length ? k - 1 : k
-    // the list, the bar and the note are painted before the board moves, so the page never waits on an animation
-    paintMoves(); bar(); paintControls()
-    $('#note').textContent = rec.grades.length ? note(rec, k) : k ? moveLabel(rec, k) : 'Starting position.'
-    if (t === shownPly + 1) await board.play(rec.sans[t - 1])
-    else if (t === shownPly - 1) await board.undo({ silent: true })
-    else if (t !== shownPly) await board.setHistory(rec.sans.slice(0, t))
-    shownPly = t
-    board.setArrows(arrows)
-  }
+  const bar = () => paintBar(barEl, rec.evals[nav.cursor], board.orientation())
+  const paintMoves = () => { movesEl.innerHTML = movesHtml(rec, { current: nav.cursor, clickable: true }); keepCurrentVisible(movesEl) }
+  const nav = reviewNav(container, board, rec, { paint: () => { paintMoves(); bar() } })
   function paintReview() {
     rec.grades = gradeAll(rec)
-    const km = keyMoves(rec); keyPlies = km.plies
+    const km = keyMoves(rec); nav.setKeyPlies(km.plies)
     $('#summary').innerHTML = summary(rec); $('#keymoves').innerHTML = km.html
     $('#review').hidden = false
-    paintMoves(); bar(); paintControls(); $('#note').textContent = note(rec, cursor)
+    paintMoves(); bar(); nav.paintControls(); $('#note').textContent = note(rec, nav.cursor)
     if (onGraded) onGraded(rec)
   }
   const complete = () => rec.evals.length === n + 1 && rec.evals.every(e => e && (e.final || e.depth >= DEPTH))
@@ -233,7 +274,7 @@ export function mountReview(container, game, { onEvals, onGraded } = {}) {
       setStatus(`Analysing… ${i + 1} / ${n + 1}`)
       const r = await analyst().evaluate({ moves: rec.uciMoves.slice(0, i), depth: DEPTH }).catch(() => null)
       if (dead) return
-      if (r) { rec.evals[i] = r; if (i === cursor) bar() }
+      if (r) { rec.evals[i] = r; if (i === nav.cursor) bar() }
       if (onEvals) onEvals(rec.evals)
     }
     analysing = false; $('#analyse').disabled = false
@@ -242,34 +283,15 @@ export function mountReview(container, game, { onEvals, onGraded } = {}) {
     paintReview()
   }
 
-  const onKey = e => {
-    if (e.altKey || e.metaKey || e.ctrlKey || /input|select|textarea/i.test(e.target.tagName)) return
-    const k = e.shiftKey ? { ArrowLeft: prevKey(), ArrowRight: nextKey() }[e.key] : { ArrowLeft: cursor - 1, ArrowRight: cursor + 1, ArrowUp: 0, ArrowDown: n }[e.key]
-    if (k === undefined) return
-    e.preventDefault(); goTo(k)
-  }
-  document.addEventListener('keydown', onKey)
-  $('#controls').addEventListener('click', e => {
-    const b = e.target.closest('[data-nav]'); if (!b) return
-    const k = { prevkey: prevKey(), nextkey: nextKey(), prev: cursor - 1, next: cursor + 1 }[b.dataset.nav]
-    if (k !== undefined) goTo(k)
-  })
-  movesEl.addEventListener('click', e => { const b = e.target.closest('[data-ply]'); if (b) goTo(+b.dataset.ply) })
-  $('#keymoves').addEventListener('click', e => {
-    const b = e.target.closest('[data-ply]'); if (!b) return
-    goTo(+b.dataset.ply)
-    const r = $('.play-board').getBoundingClientRect()
-    if (r.top < 0 || r.bottom > window.innerHeight) $('.play-board').scrollIntoView({ behavior: 'smooth', block: 'start' })
-  })
   $('#analyse').addEventListener('click', analyse)
   $('#flip').addEventListener('click', () => board.flip().then(bar))
 
-  paintMoves(); paintControls(); bar()
+  paintMoves(); nav.paintControls(); bar()
   if (complete()) { $('#analyse').hidden = true; paintReview() }
 
   return {
-    rec, board, analyse, goTo,
-    destroy() { dead = true; analyst().stop(); document.removeEventListener('keydown', onKey); board.destroy() },
+    rec, board, analyse, goTo: nav.goTo,
+    destroy() { dead = true; analyst().stop(); nav.destroy(); board.destroy() },
   }
 }
 

@@ -5,10 +5,10 @@ import { stockfish, LEVELS, applyLevel } from './engine/stockfish.js'
 import { bot } from './engine/bot.js'
 import { analyst } from './engine/analyst.js'
 import { uciToMove } from './engine/uci.js'
-import { progress, adoptOldKey } from './progress.js'
+import { adoptOldKey } from './progress.js'
 import { sound } from './sound.js'
 import { DEFAULT_POSITION } from '../vendor/chess.js/chess.js'
-import { DEPTH, gradeAll, moveLabel, keyMoves, summary, note, reviewArrows, movesHtml, keepCurrentVisible, paintBar as paintEvalBar, controlsHtml, finalEval } from './review.js'
+import { DEPTH, gradeAll, keyMoves, summary, movesHtml, keepCurrentVisible, paintBar as paintEvalBar, controlsHtml, finalEval, reviewNav } from './review.js'
 
 const KEY = 'chess-master.play.v1'
 const load = () => { try { adoptOldKey(KEY); return JSON.parse(localStorage.getItem(KEY)) || {} } catch (_) { return {} } }
@@ -79,10 +79,10 @@ export function mountPlay(main) {
   let playing = false, thinking = false, reviewing = false, gen = 0, gameId = 0
   // the game record: sans[i] / uciMoves[i] is ply i+1; evals[i] judges the position after i plies
   const sans = [], uciMoves = []
-  let evals = [], grades = [], cursor = 0, shownPly = 0 // shownPly: what the board displays (review)
-  let keyPlies = [] // plies listed as key moves, in game order
+  let evals = [], grades = []
   // the record the shared review functions read; evals/grades/userColor are reassigned, hence getters
   const rec = { sans, uciMoves, get evals() { return evals }, get grades() { return grades }, get userColor() { return userColor }, who: c => c === userColor ? 'You' : opponentName() }
+  const nav = reviewNav(main, board, rec, { paint: () => { paintMoves(); paintBar() }, active: () => reviewing })
 
   const setStatus = (t, cls = '') => { statusEl.textContent = t; statusEl.className = 'status ' + cls }
   const buttons = on => { for (const id of ['takeback', 'hint', 'resign']) $('#' + id).disabled = !on }
@@ -100,7 +100,7 @@ export function mountPlay(main) {
 
   // ---- evaluation bar ----
   barEl.hidden = !prefs.evalbar
-  const paintBar = (ev = evals[reviewing ? cursor : sans.length]) => paintEvalBar(barEl, ev, board.orientation())
+  const paintBar = (ev = evals[reviewing ? nav.cursor : sans.length]) => paintEvalBar(barEl, ev, board.orientation())
   const keyAt = i => uciMoves.slice(0, i).join(' ')
   function analyse(i, { live = true } = {}) {
     const myGame = gameId, key = keyAt(i)
@@ -119,7 +119,7 @@ export function mountPlay(main) {
 
   // ---- move list ----
   function paintMoves() {
-    movesEl.innerHTML = movesHtml(rec, { current: reviewing ? cursor : sans.length, clickable: reviewing })
+    movesEl.innerHTML = movesHtml(rec, { current: reviewing ? nav.cursor : sans.length, clickable: reviewing })
     movesEl.classList.toggle('reviewing', reviewing)
     keepCurrentVisible(movesEl)
   }
@@ -137,7 +137,6 @@ export function mountPlay(main) {
     playing = false; board.disableInput(); buttons(false)
     setStatus(over.text, over.result === 'win' ? 'good' : over.result === 'loss' ? 'bad' : '')
     if (over.result === 'win') sound.play('success')
-    progress.recordPlay({ opponent, level: opponent === 'bot' ? 0 : level.id, color: userColor, result: over.result })
     // the final position needs no engine: mate or a draw by rule
     const fin = finalEval(board.chess); if (fin) evals[sans.length] = fin
     review(over)
@@ -173,7 +172,7 @@ export function mountPlay(main) {
     gen++; gameId++; if (engine && thinking) engine.stop()
     analyst().stop()
     thinking = false; playing = true; reviewing = false
-    sans.length = 0; uciMoves.length = 0; evals = []; grades = []; cursor = 0
+    sans.length = 0; uciMoves.length = 0; evals = []; grades = []; nav.at(0)
     reviewEl.hidden = true; $('#controls').hidden = true; $('#note').hidden = true; board.setArrows([])
     $('#takeback').textContent = 'Take back'
     await board.showPosition(DEFAULT_POSITION)
@@ -201,7 +200,7 @@ export function mountPlay(main) {
     playing = true; setStatus('Your move.'); board.enableInput(userColor); buttons(true)
   }
   async function takeBack() {
-    if (reviewing) return resumeFrom(cursor)
+    if (reviewing) return resumeFrom(nav.cursor)
     if (!sans.length) return
     // undo back to a position where it is the user's turn
     let n = sans.length - 1
@@ -228,7 +227,7 @@ export function mountPlay(main) {
 
   // ---- post-game review ----
   async function review(over) {
-    reviewing = true; cursor = shownPly = sans.length
+    reviewing = true; nav.at(sans.length)
     const myGame = gameId, n = sans.length
     $('#takeback').disabled = false; $('#takeback').textContent = 'Play from here'
     reviewEl.hidden = false
@@ -243,38 +242,12 @@ export function mountPlay(main) {
     grades = gradeAll(rec)
     paintMoves(); paintBar()
     $('#summary').innerHTML = summary(rec)
-    const km = keyMoves(rec); keyPlies = km.plies
+    const km = keyMoves(rec); nav.setKeyPlies(km.plies)
     $('#keymoves').innerHTML = km.html
-    $('#controls').hidden = false; paintControls()
+    $('#controls').hidden = false; nav.paintControls()
     $('#note').hidden = false
     $('#note').textContent = 'Step through with the buttons or ← →; the double arrows jump between key moves.'
   }
-  async function goTo(k) {
-    if (!reviewing) return
-    k = Math.max(0, Math.min(sans.length, k))
-    cursor = k
-    const arrows = reviewArrows(rec, k)
-    // a marked move is shown on the position before it, with the played move in red and the better one in green
-    const t = arrows.length ? k - 1 : k
-    if (t === shownPly + 1) await board.play(sans[t - 1])
-    else if (t === shownPly - 1) await board.undo({ silent: true })
-    else if (t !== shownPly) await board.setHistory(sans.slice(0, t))
-    shownPly = t
-    board.setArrows(arrows)
-    paintMoves(); paintBar(); paintControls()
-    $('#note').textContent = note(rec, k)
-  }
-  const prevKey = () => keyPlies.filter(p => p < cursor).at(-1)
-  const nextKey = () => keyPlies.find(p => p > cursor)
-  function paintControls() {
-    const c = $('#controls'); if (c.hidden) return
-    c.querySelector('[data-nav="prevkey"]').disabled = prevKey() === undefined
-    c.querySelector('[data-nav="nextkey"]').disabled = nextKey() === undefined
-    c.querySelector('[data-nav="prev"]').disabled = cursor === 0
-    c.querySelector('[data-nav="next"]').disabled = cursor === sans.length
-    $('#pos').textContent = cursor ? moveLabel(rec, cursor) : 'Start'
-  }
-
   // ---- wiring ----
   main.querySelector('.play-side').addEventListener('click', e => {
     const b = e.target.closest('[data-opp]'); if (!b || playing) return
@@ -294,25 +267,6 @@ export function mountPlay(main) {
     prefs.evalbar = !prefs.evalbar; save(prefs)
     e.currentTarget.setAttribute('aria-checked', prefs.evalbar); barEl.hidden = !prefs.evalbar; paintBar()
   })
-  movesEl.addEventListener('click', e => { const b = e.target.closest('[data-ply]'); if (b && reviewing) goTo(+b.dataset.ply) })
-  $('#keymoves').addEventListener('click', e => {
-    const b = e.target.closest('[data-ply]'); if (!b || !reviewing) return
-    goTo(+b.dataset.ply)
-    const r = main.querySelector('.play-board').getBoundingClientRect()
-    if (r.top < 0 || r.bottom > window.innerHeight) main.querySelector('.play-board').scrollIntoView({ behavior: 'smooth', block: 'start' })
-  })
-  const onKey = e => {
-    if (!reviewing || e.altKey || e.metaKey || e.ctrlKey || /input|select|textarea/i.test(e.target.tagName)) return
-    const k = e.shiftKey ? { ArrowLeft: prevKey(), ArrowRight: nextKey() }[e.key] : { ArrowLeft: cursor - 1, ArrowRight: cursor + 1, ArrowUp: 0, ArrowDown: sans.length }[e.key]
-    if (k === undefined) return
-    e.preventDefault(); goTo(k)
-  }
-  document.addEventListener('keydown', onKey)
-  $('#controls').addEventListener('click', e => {
-    const b = e.target.closest('[data-nav]'); if (!b || !reviewing) return
-    const k = { prevkey: prevKey(), nextkey: nextKey(), prev: cursor - 1, next: cursor + 1 }[b.dataset.nav]
-    if (k !== undefined) goTo(k)
-  })
   $('#new').addEventListener('click', () => { sound.unlock(); newGame() })
   $('#takeback').addEventListener('click', takeBack)
   $('#hint').addEventListener('click', hint)
@@ -321,7 +275,7 @@ export function mountPlay(main) {
   // warm the engine up in the background so the first game starts quickly
   getEngine().then(() => { if (!playing) setStatus('Engine ready. Press New game.') }).catch(err => setStatus('Could not load the engine: ' + err.message, 'bad'))
 
-  return () => { gen++; gameId++; if (engine && thinking) engine.stop(); analyst().stop(); document.removeEventListener('keydown', onKey); board.destroy() }
+  return () => { gen++; gameId++; if (engine && thinking) engine.stop(); analyst().stop(); nav.destroy(); board.destroy() }
 }
 
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])) }

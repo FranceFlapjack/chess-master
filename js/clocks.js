@@ -83,7 +83,6 @@ export function clockReport(list) {
   return {
     games: games.length,
     perMove: avg(every.map(m => m.spent)),
-    longest: every.length ? Math.max(...every.map(m => m.spent)) : 0,
     phase,
     wonBy15: share('win'), lostBy15: share('loss'),
     endLeft: avg(games.map(x => Math.min(1, x.clock.endLeft / x.clock.base))),

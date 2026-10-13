@@ -1,5 +1,5 @@
-// Local progress store: lessons done, exercises solved, moves played per day (the activity grid), points per day.
-// Everything lives in one localStorage key; export/import as JSON.
+// Local progress store: lessons done, exercises solved, games stepped through, moves played per day (the
+// activity grid). Everything lives in one localStorage key.
 
 const KEY = 'chess-master.progress.v1'
 /** Earlier builds stored under a different prefix: adopt any key with the same suffix once, then remove it. */
@@ -10,25 +10,17 @@ export function adoptOldKey(key) {
     for (const k of Object.keys(localStorage)) if (k !== key && k.endsWith(suffix)) { localStorage.setItem(key, localStorage.getItem(k)); localStorage.removeItem(k); return }
   } catch (_) {}
 }
-export const POINTS = { lesson: 10, tryFirst: 5, tryLater: 2, puzzle: 3, game: 5, win: 15, draw: 5, loss: 2 }
-
-const empty = () => ({ v: 1, lessons: {}, tries: {}, games: {}, plays: [], days: {}, moves: {}, total: 0, beginner: false, lastLesson: null })
+const empty = () => ({ v: 1, lessons: {}, tries: {}, games: {}, moves: {}, beginner: false, lastLesson: null })
 
 class Progress {
   constructor() {
     this.state = load()
     this.listeners = new Set()
+    // another tab saved: take its state, or this tab's next save would overwrite what it recorded
+    addEventListener('storage', e => { if (e.key === KEY && e.newValue) { this.state = Object.assign(empty(), JSON.parse(e.newValue)); this.listeners.forEach(fn => fn(this.state)) } })
   }
   onChange(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn) }
   _save() { try { localStorage.setItem(KEY, JSON.stringify(this.state)) } catch (_) {} ; this.listeners.forEach(fn => fn(this.state)) }
-
-  // --- points & days ---
-  addPoints(n, day = today()) {
-    this.state.days[day] = (this.state.days[day] || 0) + n
-    this.state.total += n
-    this._save()
-  }
-  pointsOn(day) { return this.state.days[day] || 0 }
 
   // --- moves: every move the reader plays on any board, counted per day (what the grid shows) ---
   recordMove(day = today()) {
@@ -44,7 +36,7 @@ class Progress {
   completeLesson(id) {
     if (this.state.lessons[id]) return false
     this.state.lessons[id] = { done: Date.now() }
-    this.addPoints(POINTS.lesson)
+    this._save()
     return true
   }
   setLastLesson(id) { if (this.state.lastLesson !== id) { this.state.lastLesson = id; this._save() } }
@@ -55,53 +47,19 @@ class Progress {
   recordTry(id, firstAttempt) {
     if (this.state.tries[id]) return false
     this.state.tries[id] = { solved: Date.now(), first: !!firstAttempt }
-    this.addPoints(firstAttempt ? POINTS.tryFirst : POINTS.tryLater)
+    this._save()
     return true
-  }
-  recordPlay({ level, color, result }) {
-    this.state.plays.push({ t: Date.now(), level, color, result })
-    this.addPoints(POINTS[result] || 0)
   }
   recordGame(id) {
     if (this.state.games[id]) return false
     this.state.games[id] = { done: Date.now() }
-    this.addPoints(POINTS.game)
+    this._save()
     return true
   }
 
   // --- settings ---
   get beginner() { return !!this.state.beginner }
   set beginner(v) { this.state.beginner = !!v; this._save() }
-
-  // --- streak: consecutive active days ending today (or yesterday if today is untouched),
-  //     with one "rest day" forgiven per rolling 7 days.
-  streak(now = new Date()) {
-    const active = d => (this.state.days[dayKey(d)] || 0) > 0
-    let d = new Date(now); d.setHours(12, 0, 0, 0)
-    if (!active(d)) d = addDays(d, -1)
-    if (!active(d)) return 0
-    let n = 0, lastRest = null
-    while (true) {
-      if (active(d)) { n++; d = addDays(d, -1); continue }
-      // gap: allowed only if no other rest day within the previous 7 days
-      if (lastRest && (lastRest - d) / 86400000 < 7) break
-      // a gap right at the start of history (nothing before it) just ends the streak
-      const before = addDays(d, -1)
-      if (!active(before)) break
-      lastRest = new Date(d); d = before
-    }
-    return n
-  }
-
-  // --- export / import ---
-  exportJSON() { return JSON.stringify(this.state, null, 2) }
-  importJSON(text) {
-    const obj = JSON.parse(text)
-    if (!obj || obj.v !== 1 || typeof obj.days !== 'object') throw new Error('Not a Chess Master progress file')
-    this.state = Object.assign(empty(), obj)
-    this._save()
-  }
-  reset() { this.state = empty(); this._save() }
 }
 
 function load() {
