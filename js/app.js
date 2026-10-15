@@ -9,6 +9,7 @@ import { mountGames } from './games.js'
 import { setActiveViewer } from './pgn-viewer.js'
 import { mountFamily } from './family.js'
 import { mountWelcome } from './welcome.js'
+import { mountTour } from './knight-tour.js'
 import { mascot, catHeadHTML } from './mascot.js'
 
 const $ = s => document.querySelector(s)
@@ -41,7 +42,7 @@ async function boot() {
   progress.onChange(() => renderSidebar())
   window.addEventListener('hashchange', route)
   // the series welcome, the first time this browser opens the app — a curtain over the app, not a route
-  if (location.hash !== '#/welcome') mountWelcome({ app: 'chess', word: 'Chess' })
+  if (location.hash !== '#/welcome') welcome()
   route()
 }
 
@@ -79,10 +80,13 @@ function toggleSidebar(force) {
   s.classList.toggle('open', open); $('#scrim').classList.toggle('open', open)
 }
 
+/** The series welcome, with this app's knight's tour behind it. */
+function welcome(force = false) { const w = mountWelcome({ app: 'chess', word: 'Chess', force }); if (w) mountTour(w.root) }
+
 async function route() {
   if (location.hash === '#/welcome') {
     history.replaceState(null, '', '#/')
-    mountWelcome({ app: 'chess', word: 'Chess', force: true })
+    welcome(true)
   }
   const hash = location.hash || '#/'
   const main = $('#main')

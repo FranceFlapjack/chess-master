@@ -614,3 +614,11 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
 .icon-btn.cat-toggle { width: 32px; }
 .icon-btn.cat-toggle .tip-cat { width: 24px; height: auto; }
 .icon-btn.cat-toggle[aria-pressed="false"] { opacity: 0.4; }
+
+/* the welcome's background on this app only: a knight's tour (js/knight-tour.js), behind the word */
+.wl-tour { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+.wl-tour-grid { fill: none; stroke: var(--wl-ink); stroke-opacity: .14; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.wl-tour-line { fill: none; stroke: var(--wl-ink); stroke-opacity: .38; stroke-width: .022; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.wl-tour-dot { fill: var(--wl-ink); opacity: 0; transition: opacity 300ms; }
+.wl-tour-dot.on { opacity: .5; }
+.wl-tour-head { fill: #e5483c; }
