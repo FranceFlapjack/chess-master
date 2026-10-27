@@ -691,21 +691,23 @@ svg.heat { display: block; width: 100%; height: auto; }
 .story-figure figcaption b { color: var(--signal); font-size: var(--fs-4); font-variant-numeric: tabular-nums; margin-right: 4px; }
 .story-src { font-size: var(--fs-label); color: var(--ink-3); margin: var(--s-6) 0 0; max-width: 52em; line-height: 1.6; }
 .story-count { list-style: none; padding: 0; margin: var(--s-3) 0 0; display: grid; gap: var(--s-4); }
-.story-count li { display: grid; grid-template-columns: minmax(0, 11ch) minmax(0, 1fr); column-gap: var(--s-5); row-gap: 6px; align-items: center; }
+.story-count li { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 6px; }   /* number, then its bar, then the words: nothing can overlap */
 .story-count b { font-size: clamp(26px, 3.6vw, 52px); font-weight: var(--fw-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .story-count li:last-child b { color: var(--signal); }
 .story-count i { display: block; height: 10px; background: var(--ink); width: 0; transition: width 1.4s cubic-bezier(.2, .8, .2, 1); }
 .story-count li:last-child i { background: var(--signal); }
 .story-grow .story-count i { width: calc(var(--w) * 100%); }
-.story-count span { grid-column: 2; color: var(--ink-2); font-size: var(--fs-1); }
-.story-pieces { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6) var(--s-5); margin-top: var(--s-6); }
-@media (max-width: 900px) { .story-pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.story-pieces figure { margin: 0; }
-.story-piece { width: 40px; height: 40px; display: block; margin-bottom: var(--s-2); }
-.story-pieces figcaption { margin-top: var(--s-2); font-size: var(--fs-1); color: var(--ink-2); }
-.story-pieces figcaption b { color: var(--ink); margin-right: 4px; }
+.story-count span { color: var(--ink-2); font-size: var(--fs-1); }
 .story-heat-big { max-width: 480px; width: 100%; }
-.story-filter { flex-wrap: wrap; margin-top: var(--s-4); }
+.story-filter { flex-wrap: wrap; gap: 6px; margin-top: var(--s-4); }
+.story-filter .btn { padding: 6px 10px; margin-right: 0; }
+.story-chips { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-5); }
+.story-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 4px; font: inherit; font-size: var(--fs-1); color: var(--ink-2); background: none; border: 1px solid var(--line-2); border-radius: 999px; cursor: pointer; transition: background 150ms, color 150ms, border-color 150ms; }
+.story-chip .story-piece { width: 28px; height: 28px; margin: 0; opacity: .45; transition: opacity 150ms; }
+.story-chip.on { background: var(--ink); color: var(--story-bg); border-color: var(--ink); }
+.story-chip.on .story-piece { opacity: 1; }
+.story-chip-all { padding-left: 12px; }
+@media (pointer: coarse) { .story-chip { min-height: var(--tap); } }
 .story-moves { font-family: var(--font-mono); font-size: var(--fs-3); color: var(--ink-2); margin-top: var(--s-4); }
 .story-time { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line-2); }
 .story-time li { padding: var(--s-4) var(--s-4) 0 0; position: relative; }
@@ -717,8 +719,6 @@ svg.heat { display: block; width: 100%; height: auto; }
   .story-time { grid-template-columns: minmax(0, 1fr); border-top: 0; border-left: 1px solid var(--line-2); }
   .story-time li { padding: 0 0 var(--s-5) var(--s-5); }
   .story-time li::before { top: 6px; left: -5px; }
-  .story-count li { grid-template-columns: minmax(0, 1fr); }
-  .story-count span { grid-column: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .story-scene > * { opacity: 1; transform: none; transition: none; }
@@ -728,4 +728,17 @@ svg.heat { display: block; width: 100%; height: auto; }
 .games-sample[hidden] { display: none; }
 .games-sample h2 { margin: var(--s-2) 0 var(--s-3); font-size: var(--fs-5); letter-spacing: 0; text-transform: none; color: var(--ink); font-weight: 700; }
 @media (max-width: 760px) { .games-sample { grid-template-columns: minmax(0, 1fr); } }
+
+/* immersive: the story home takes the whole screen; the sidebar becomes the phone's drawer, opened
+   from a slim bar in the story's colours (owner 2026-10-27: "hide the tab on the left… more impact") */
+html.immersive .app { grid-template-columns: minmax(0, 1fr); }
+html.immersive .sidebar { position: fixed; inset: 0 auto 0 0; width: min(var(--sidebar-w), 86vw); transform: translateX(-100%); transition: transform 200ms; z-index: 20; box-shadow: 0 0 40px rgba(0, 0, 0, 0.2); }
+html.immersive .sidebar.open { transform: translateX(0); }
+html.immersive .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); z-index: 15; display: none; }
+html.immersive .scrim.open { display: block; }
+html.immersive .topbar { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--main-pad-x); position: sticky; top: 0; z-index: 10; background: var(--story-bg); color: var(--story-ink); border-bottom: 1px solid var(--story-line); }
+html.immersive .topbar .icon-btn { color: inherit; border-color: var(--story-line); background: none; }
+html.immersive .topbar .brand-text { color: inherit; }
+html.immersive .topbar .logo { background: var(--story-ink); }
+html.immersive .home-course { max-width: 1080px; margin-inline: auto; }   /* no sidebar beside it now: centred, a little wider */   /* the logo keeps its own green and white, on a cream tile */
 

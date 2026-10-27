@@ -92,6 +92,7 @@ async function route() {
   const hash = location.hash || '#/'
   const main = $('#main')
   toggleSidebar(false)
+  document.documentElement.classList.remove('immersive')
   if (unmountPage) { unmountPage(); unmountPage = null }
   setActiveViewer(null) // the previous page's game viewer must not keep the arrow keys
   mascot.hide()         // a hint belongs to the page it was given on
@@ -108,14 +109,15 @@ async function route() {
 
 function showHome(main) {
   document.title = 'Chess Master'
+  document.documentElement.classList.add('immersive')   // the story gets the whole screen; the sidebar waits behind the menu
   const lessons = allLessons()
   const last = progress.state.lastLesson && lessons.find(l => lessonId(l.track, l.slug) === progress.state.lastLesson)
   const next = lessons.find(l => l.ready && !progress.isLessonDone(lessonId(l.track, l.slug)))
   const cont = last && !progress.isLessonDone(progress.state.lastLesson) ? last : next
   // a returning reader continues; a new one picks a door by what they already know
   const cta = last && cont === last
-    ? { href: `#/lesson/${cont.track}/${cont.slug}`, label: `Continue: ${esc(cont.title)}`, secondary: { href: '#/play', label: 'Play a game' } }
-    : { href: '#/lesson/first-steps/the-board-and-the-pieces', label: 'New to chess? Start here', secondary: { href: '#/lesson/thinking/checks-captures-attacks', label: 'I know how the pieces move' } }
+    ? { href: `#/lesson/${cont.track}/${cont.slug}`, label: `Continue: ${esc(cont.title)}`, today: 'Pick up where you left off', secondary: { href: '#/play', label: 'Play a game' } }
+    : { href: '#/lesson/first-steps/the-board-and-the-pieces', label: 'New to chess? Start here', today: 'Your first lesson takes five minutes', secondary: { href: '#/lesson/thinking/checks-captures-attacks', label: 'I know how the pieces move' } }
   main.innerHTML = `
     <div id="story"></div>
     <div class="page home-course" id="course">

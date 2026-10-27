@@ -8,12 +8,13 @@ import { Chess } from '../vendor/chess.js/chess.js'
 import { Board } from './board.js'
 import { heatmap, reach } from './heatmap.js'
 
-const PIECES = [['k', 'King', '3 to 8'], ['q', 'Queen', '21 to 27'], ['r', 'Rook', '14 from every square'], ['b', 'Bishop', '7 to 13'], ['n', 'Knight', '2 to 8'], ['p', 'Pawn', '1 or 2, and never the first or last rank']]
+const PIECES = [['k', 'King'], ['q', 'Queen'], ['r', 'Rook'], ['b', 'Bishop'], ['n', 'Knight'], ['p', 'Pawn']]
 const PIECE_SET = 'vendor/cm-chessboard/assets/pieces/staunty.svg'
 const icon = p => `<svg class="story-piece" viewBox="0 0 40 40" aria-hidden="true"><use href="${PIECE_SET}#w${p}"/></svg>`
 const START = new Chess().fen()
+const cap = t => t.charAt(0).toUpperCase() + t.slice(1)
 
-/** `cta`: { href, label, secondary: { href, label } } — the hero's way in, decided by the app (start or continue). */
+/** `cta`: { href, label, today, secondary: { href, label } } — the hero's way in, decided by the app (start or continue). */
 export function mountStory(el, { cta }) {
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches
   let dead = false
@@ -22,12 +23,12 @@ export function mountStory(el, { cta }) {
   el.innerHTML = `
     <section class="story-scene story-hero">
       <div class="story-copy">
-        <p class="story-kicker">Chess Master</p>
+        <p class="story-kicker">A course built on real games</p>
         <h1 class="story-title">64 squares.<br>32 pieces.<br><em>No two games alike.</em></h1>
-        <p class="story-lead">It began in India more than 1,400 years ago, and people still can’t put it down. Here is why — then pick a way in.</p>
+        <p class="story-lead">It began in India more than 1,400 years ago, and people still can’t put it down. Scroll to see why, or start right now.</p>
         <div class="story-cta"><a class="btn primary" href="${cta.href}">${cta.label}</a>${cta.secondary ? `<a class="btn" href="${cta.secondary.href}">${cta.secondary.label}</a>` : ''}</div>
       </div>
-      <figure class="story-figure"><div class="board-wrap"><div class="board" id="story-first"></div></div><figcaption><b id="story-first-n">0</b> ways to make the first move</figcaption></figure>
+      <figure class="story-figure"><div class="board-wrap"><div class="board" id="story-first"></div></div><figcaption><b id="story-first-n">20</b> ways to make the first move</figcaption></figure>
     </section>
 
     <section class="story-scene">
@@ -38,11 +39,14 @@ export function mountStory(el, { cta }) {
       <p class="story-src">Counted, not looked up: this site’s own engine plays out every legal move (scripts/perft.mjs).</p>
     </section>
 
-    <section class="story-scene">
-      <p class="story-kicker">2 · Every piece</p>
-      <h2 class="story-h">Each piece sees the board <em>differently.</em></h2>
-      <p class="story-body">Every square is coloured by how many squares the piece standing there attacks. The centre gives most pieces more power — except the rook, which sees 14 squares from anywhere.</p>
-      <div class="story-pieces">${PIECES.map(([p, name, range]) => `<figure>${icon(p)}<div class="story-heat" data-reach="${p}"></div><figcaption><b>${name}</b> ${range}</figcaption></figure>`).join('')}</div>
+    <section class="story-scene story-split">
+      <div>
+        <p class="story-kicker">2 · Every piece</p>
+        <h2 class="story-h">All six pieces, <em>one board.</em></h2>
+        <p class="story-body" id="story-reach-text"></p>
+        <div class="story-chips" id="story-reach-chips"><button class="story-chip story-chip-all on" data-all aria-pressed="true"><span>All six</span></button>${PIECES.map(([p, name]) => `<button class="story-chip on" data-p="${p}" aria-pressed="true">${icon(p)}<span>${name}</span></button>`).join('')}</div>
+      </div>
+      <div class="story-heat story-heat-big" id="story-reach"></div>
     </section>
 
     <section class="story-scene story-split">
@@ -50,7 +54,7 @@ export function mountStory(el, { cta }) {
         <p class="story-kicker">3 · Footprints</p>
         <h2 class="story-h" id="story-foot-title">Where the pieces go.</h2>
         <p class="story-body" id="story-foot-text"></p>
-        <div class="seg story-filter" id="story-foot-filter">${[['', 'All'], ...PIECES.map(([p, n]) => [p, n])].map(([p, n], i) => `<button class="btn${i ? '' : ' on'}" data-p="${p}">${n}</button>`).join('')}</div>
+        <div class="story-chips" id="story-foot-filter"><button class="story-chip story-chip-all on" data-p="">All</button>${PIECES.map(([p, n]) => `<button class="story-chip" data-p="${p}">${icon(p)}<span>${n}</span></button>`).join('')}</div>
         <div class="seg story-filter" id="story-foot-kind"><button class="btn on" data-k="go">Where they move</button><button class="btn" data-k="fall">Where they are captured</button></div>
       </div>
       <div class="story-heat story-heat-big" id="story-foot"></div>
@@ -74,7 +78,7 @@ export function mountStory(el, { cta }) {
         <li><b>Late 1400s</b><span>Europe: the queen gets her long, sweeping move.</span></li>
         <li><b>1858</b><span>Paris: Paul Morphy plays the <a href="#/lesson/games/morphy-opera-game">Opera Game</a>, at the opera.</span></li>
         <li><b>1997</b><span>New York: the computer Deep Blue beats world champion Garry Kasparov.</span></li>
-        <li><b>Today</b><span>You. <a href="${cta.href}">${cta.label}</a>.</span></li>
+        <li><b>Today</b><span>You. <a href="${cta.href}">${cta.today}</a>.</span></li>
       </ol>
       <p class="story-src">Sources: game counts from this site’s move generator; piece reach and footprints computed on this page. History from Wikipedia, “History of chess”, “Queen (chess)” and “Deep Blue versus Garry Kasparov” (CC BY-SA). Pieces: Staunty set from lichess, CC BY-NC-SA 4.0.</p>
     </section>`
@@ -112,8 +116,39 @@ export function mountStory(el, { cta }) {
     })
   })
 
-  // 2: every piece's reach, computed
-  el.querySelectorAll('[data-reach]').forEach(d => heatmap(d, reach(d.dataset.reach), { numbers: true, label: `${PIECES.find(p => p[0] === d.dataset.reach)[1]}: squares attacked from each square` }))
+  // 2: every piece's reach on one board — each square scores the squares the switched-on pieces would
+  // attack from there, added together. One piece on shows that piece alone.
+  const maps = Object.fromEntries(PIECES.map(([p]) => [p, reach(p)]))
+  const chips = $('#story-reach-chips')
+  const paintReach = () => {
+    const on = [...chips.querySelectorAll('.story-chip.on[data-p]')].map(b => b.dataset.p)
+    const sum = {}
+    for (const sq of Object.keys(maps.k)) {
+      const vals = on.map(p => maps[p][sq])
+      sum[sq] = on.length === 1 ? vals[0] : vals.reduce((t, v) => t + (v || 0), 0)   // a pawn's "never" only shows when it is alone
+    }
+    const v = Object.values(sum).filter(x => x != null), lo = Math.min(...v), hi = Math.max(...v)
+    const names = on.map(p => PIECES.find(x => x[0] === p)[1].toLowerCase())
+    $('#story-reach-text').textContent =
+      on.length === 6 ? `Every square, scored by how many squares all six pieces would attack from there, added up: ${lo} from a corner, ${hi} from the middle. Tap a piece to see it alone.`
+      : on.length === 1 && on[0] === 'r' ? 'The rook attacks 14 squares from every square on the board — the one piece the centre does not help.'
+      : on.length === 1 && on[0] === 'p' ? 'A pawn attacks 1 square from the edge files and 2 from anywhere else, and can never stand on the first or last rank.'
+      : on.length === 1 ? `The ${names[0]} attacks ${lo} squares from a corner and ${hi} from the middle.`
+      : `${cap(names.slice(0, -1).join(', '))} and ${names.at(-1)} together: ${lo} from a corner, ${hi} from the middle.`
+    heatmap($('#story-reach'), sum, { numbers: true, label: `Squares attacked from each square by: ${names.join(', ')}` })
+  }
+  // with every piece on, a tap shows that piece alone; after that, taps add or remove pieces; "All six" resets
+  chips.addEventListener('click', e => {
+    const b = e.target.closest('.story-chip'); if (!b) return
+    const pieces = [...chips.querySelectorAll('.story-chip[data-p]')], all = pieces.every(c => c.classList.contains('on'))
+    const set = (c, v) => { c.classList.toggle('on', v); c.setAttribute('aria-pressed', v) }
+    if (b.hasAttribute('data-all')) pieces.forEach(c => set(c, true))
+    else if (all) pieces.forEach(c => set(c, c === b))
+    else { set(b, !b.classList.contains('on')); if (!pieces.some(c => c.classList.contains('on'))) pieces.forEach(c => set(c, true)) }
+    set(chips.querySelector('[data-all]'), pieces.every(c => c.classList.contains('on')))
+    paintReach()
+  })
+  paintReach()
 
   // 3: footprints — the visitor's own games if My games has them, else Morphy's Opera Game
   footprints().then(f => {
