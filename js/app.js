@@ -120,7 +120,15 @@ const HALFTONE = (() => {
   return `<span class="halftone" aria-hidden="true"><svg width="800" height="400">${dots}</svg></span>`
 })()
 
-// each track's piece, drawn on its card: the king the whole game is about, the queen that looks every way, the
+// A card that turns over (css .flip-card): a board square with a piece and the title on the front, the description on
+// the back. Text arrives escaped. `under` sits beneath the turning part (My games' halftone).
+const flipCard = ({ href, label, piece, title, blurb, meta = '', go, cls = '', under = '' }) => `<a class="flip-card ${cls}" href="${href}">${under}<div class="flip">
+  <div class="face front"><span class="eyebrow">${label}</span><svg class="flip-piece" viewBox="0 0 40 40" aria-hidden="true"><use href="${PIECE_SET}#${piece}"/></svg><h3>${title}</h3></div>
+  <div class="face back"><b aria-hidden="true">${title}</b><p>${blurb}</p>${meta ? `<span class="meta">${meta}</span>` : ''}<span class="go">${go} →</span></div>
+</div></a>`
+
+// the tools' pieces: the black knight across the board (the computer), the white king (you, in your own games), the
+// opening pawn. Each track's piece, drawn on its card: the king the whole game is about, the queen that looks every way, the
 // knight that forks, the pawn that opens, the good and bad bishop, the rook of the endings, then black for the last two
 const TRACK_PIECE = { 'first-steps': 'wk', thinking: 'wq', tactics: 'wn', openings: 'wp', strategy: 'wb', endgames: 'wr', mates: 'bq', games: 'bk' }
 
@@ -146,10 +154,8 @@ function showHome(main) {
           const done = t.lessons.filter(l => progress.isLessonDone(lessonId(t.id, l.slug))).length
           const first = t.lessons.find(l => l.ready)
           const n = t.beginner ? 0 : i + (progress.beginner ? 0 : 1)
-          return `<a class="track-card" href="${first ? `#/lesson/${t.id}/${first.slug}` : '#/'}"><div class="flip">
-            <div class="face front"><span class="eyebrow">Track ${n}</span><svg class="track-piece" viewBox="0 0 40 40" aria-hidden="true"><use href="${PIECE_SET}#${TRACK_PIECE[t.id] || 'wp'}"/></svg><h3>${esc(t.title)}</h3></div>
-            <div class="face back"><b aria-hidden="true">${esc(t.title)}</b><p>${esc(t.blurb || '')}</p><span class="meta">${t.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}</span><span class="go">${done === t.lessons.length ? 'Review' : done ? 'Continue' : 'Start'} →</span></div>
-          </div></a>`
+          return flipCard({ href: first ? `#/lesson/${t.id}/${first.slug}` : '#/', label: `Track ${n}`, piece: TRACK_PIECE[t.id] || 'wp', title: esc(t.title), blurb: esc(t.blurb || ''),
+            meta: `${t.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}`, go: done === t.lessons.length ? 'Review' : done ? 'Continue' : 'Start' })
         }).join('')}
       </div>
       <div class="switch-row">
@@ -158,9 +164,9 @@ function showHome(main) {
       </div>
       <h2>Tools</h2>
       <div class="tool-row">
-        <a class="card" href="#/play"><span class="eyebrow">Play</span><h3>Against the computer</h3><span class="small">Stockfish at seven strengths, then your game reviewed move by move.</span></a>
-        <a class="card feature" href="#/games">${HALFTONE}<span class="eyebrow">For chess.com players</span><h3>My games</h3><span class="small">Your chess.com games: openings, clock, the mistakes you repeat.</span></a>
-        <a class="card" href="#/openings"><span class="eyebrow">Reference</span><h3>Openings book</h3><span class="small">84 lines with the idea behind each, drillable from either side.</span></a>
+        ${flipCard({ href: '#/play', label: 'Play', piece: 'bn', title: 'Against the computer', blurb: 'Stockfish at seven strengths, or our own young bot. When the game ends, it is reviewed with you move by move.', go: 'Play' })}
+        ${flipCard({ href: '#/games', label: 'For chess.com players', piece: 'wk', title: 'My games', blurb: 'Your chess.com games: the openings you play, your clock, the mistakes you repeat, and drills made from them.', go: 'Open', cls: 'feature', under: HALFTONE })}
+        ${flipCard({ href: '#/openings', label: 'Reference', piece: 'wp', title: 'Openings book', blurb: '84 lines with the idea behind each, drillable from either side.', go: 'Open' })}
       </div>
     </div>`
   const stopStory = mountStory(main.querySelector('#story'), { cta })
