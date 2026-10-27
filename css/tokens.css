@@ -104,6 +104,7 @@
   --main-pad-y: var(--s-8);   /* the main column's padding; a full-bleed block cancels exactly this */
   --main-pad-x: var(--s-7);
   --tap: 44px;                /* the smallest tap target on a touch screen */
+  --bar-h: 44px;              /* the slim top bar (phones, and the full-screen home): one tap target tall */
   --page-w: 900px;
 
   /* activity grid levels: paper to theme green */

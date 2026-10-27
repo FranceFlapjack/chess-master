@@ -67,8 +67,10 @@ button { font: inherit; color: inherit; }
 .brand .logo-btn { display: block; padding: 0; border: 0; background: none; cursor: pointer; color: var(--accent); border-radius: var(--bubble-tile-radius); }
 .brand .logo-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 .brand .logo { width: 40px; height: 40px; margin: -4px 0 0 -4px; display: block; }
-.topbar .brand { flex-direction: row; align-items: center; gap: var(--s-3); }
-.topbar .brand .logo { width: 28px; height: 28px; margin: 0; }
+.topbar .brand { flex-direction: row; align-items: center; gap: 8px; padding: 0; font-size: 11px; letter-spacing: 0.16em; }
+.topbar .brand .logo { width: 22px; height: 22px; margin: 0; }
+.topbar #menu { border: 0; margin-left: -8px; }   /* borderless, the icon on the content's left edge */
+.topbar #menu svg { width: 18px; height: 18px; }
 
 /* the family bubble: liquid glass just below the logo, its left edge on the logo's own left grid line */
 .brand .logo-wrap { position: relative; display: block; }
@@ -87,7 +89,7 @@ button { font: inherit; color: inherit; }
   .family { background: var(--bubble-bg); -webkit-backdrop-filter: blur(var(--bubble-blur)) saturate(var(--bubble-saturate)); backdrop-filter: blur(var(--bubble-blur)) saturate(var(--bubble-saturate)); }
 }
 .family.open { transform: none; opacity: 1; }
-.topbar .family { left: 3.5px; top: calc(100% - 3.5px + var(--bubble-gap)); }
+.topbar .family { left: 2.75px; top: calc(100% - 2.75px + var(--bubble-gap)); }   /* the board's corner inside the 22px logo */
 .family-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); padding: 6px 12px; }
 .family-item {
   display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: var(--bubble-row-radius);
@@ -389,8 +391,7 @@ svg.cm-chessboard .promotion-dialog-group .promotion-dialog { fill: var(--surfac
   .sidebar.open { transform: translateX(0); }
   .scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 15; display: none; }
   .scrim.open { display: block; }
-  .topbar { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 10; }
-  .topbar .brand { padding: 0; }
+  .topbar { display: flex; align-items: center; gap: 10px; height: var(--bar-h); padding: 0 var(--s-4); border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 10; }
   :root { --main-pad-y: var(--s-5); --main-pad-x: var(--s-4); }
   h1 { font-size: var(--fs-3); }
 }
@@ -736,8 +737,8 @@ html.immersive .sidebar { position: fixed; inset: 0 auto 0 0; width: min(var(--s
 html.immersive .sidebar.open { transform: translateX(0); }
 html.immersive .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); z-index: 15; display: none; }
 html.immersive .scrim.open { display: block; }
-html.immersive .topbar { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--main-pad-x); position: sticky; top: 0; z-index: 10; background: var(--story-bg); color: var(--story-ink); border-bottom: 1px solid var(--story-line); }
-html.immersive .topbar .icon-btn { color: inherit; border-color: var(--story-line); background: none; }
+html.immersive .topbar { display: flex; align-items: center; gap: 10px; height: var(--bar-h); padding: 0 var(--main-pad-x); position: sticky; top: 0; z-index: 10; background: var(--story-bg); color: var(--story-ink); border-bottom: 1px solid var(--story-line); }
+html.immersive .topbar .icon-btn { color: inherit; background: none; }
 html.immersive .topbar .brand-text { color: inherit; }
 html.immersive .topbar .logo { background: var(--story-ink); }
 html.immersive .home-course { max-width: 1080px; margin-inline: auto; }   /* no sidebar beside it now: centred, a little wider */   /* the logo keeps its own green and white, on a cream tile */
