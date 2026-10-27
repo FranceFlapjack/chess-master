@@ -679,14 +679,7 @@ svg.heat { display: block; width: 100%; height: auto; }
 /* home: the course under the story */
 .home-course > h2 { font-size: var(--fs-5); font-weight: 800; letter-spacing: -0.01em; text-transform: none; color: var(--ink); margin: var(--s-7) 0 var(--s-4); }
 .home-course > h2:first-child { margin-top: 0; }
-.tool-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); margin: var(--s-4) 0 var(--s-6); isolation: isolate; }
-/* My games, the feature for chess.com players: an offset shadow in red halftone (js/app.js HALFTONE), shifted 12px
-   left and down. The row's 24px gap leaves 12px clear of the next card. It is outside the turning part, so it stays on
-   the page like a printed shadow while the card turns over it; the card's own stacking context (perspective) keeps it
-   under the faces. */
-.tool-row .feature { position: relative; }
-.tool-row .feature .halftone { position: absolute; inset: 0; transform: translate(-12px, 12px); overflow: hidden; z-index: -1; pointer-events: none; }
-.tool-row .feature .halftone svg { position: absolute; left: 0; bottom: 0; fill: var(--signal); }
+.tool-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); margin: var(--s-4) 0 var(--s-6); }
 @media (max-width: 760px) { .tool-row { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- the story (js/story.js): the home's dark entry. It re-points the ordinary tokens, so the

@@ -107,22 +107,9 @@ async function route() {
   showHome(main)
 }
 
-// My games' offset shadow, printed in halftone: dots swell toward the card's bottom-left corner and shrink away
-// from it. Only the strips the card does not cover (12px left, 12px below) are drawn; the svg is anchored bottom-left.
-const HALFTONE = (() => {
-  let dots = ''
-  for (let row = 0; row * 4.33 <= 400; row++) for (let col = 0; col * 5 <= 800; col++) {
-    const x = col * 5 + (row % 2) * 2.5, y = row * 4.33
-    if (x > 15 && y < 385) continue
-    const r = 2.3 * Math.max(0, 1 - Math.hypot(x, 400 - y) / 280)
-    if (r > 0.35) dots += `<circle cx="${x}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}"/>`
-  }
-  return `<span class="halftone" aria-hidden="true"><svg width="800" height="400">${dots}</svg></span>`
-})()
-
 // A card that turns over (css .flip-card): a board square with a piece and the title on the front, the description on
-// the back. Text arrives escaped. `under` sits beneath the turning part (My games' halftone).
-const flipCard = ({ href, label, piece, title, blurb, meta = '', go, cls = '', under = '' }) => `<a class="flip-card ${cls}" href="${href}">${under}<div class="flip">
+// the back. Text arrives escaped.
+const flipCard = ({ href, label, piece, title, blurb, meta = '', go }) => `<a class="flip-card" href="${href}"><div class="flip">
   <div class="face front"><span class="eyebrow">${label}</span><svg class="flip-piece" viewBox="0 0 40 40" aria-hidden="true"><use href="${PIECE_SET}#${piece}"/></svg><h3>${title}</h3></div>
   <div class="face back"><b aria-hidden="true">${title}</b><p>${blurb}</p>${meta ? `<span class="meta">${meta}</span>` : ''}<span class="go">${go} →</span></div>
 </div></a>`
@@ -165,7 +152,7 @@ function showHome(main) {
       <h2>Tools</h2>
       <div class="tool-row">
         ${flipCard({ href: '#/play', label: 'Play', piece: 'bn', title: 'Against the computer', blurb: 'Stockfish at seven strengths, or our own young bot. When the game ends, it is reviewed with you move by move.', go: 'Play' })}
-        ${flipCard({ href: '#/games', label: 'For chess.com players', piece: 'wk', title: 'My games', blurb: 'Your chess.com games: the openings you play, your clock, the mistakes you repeat, and drills made from them.', go: 'Open', cls: 'feature', under: HALFTONE })}
+        ${flipCard({ href: '#/games', label: 'For chess.com players', piece: 'wk', title: 'My games', blurb: 'Your chess.com games: the openings you play, your clock, the mistakes you repeat, and drills made from them.', go: 'Open' })}
         ${flipCard({ href: '#/openings', label: 'Reference', piece: 'wp', title: 'Openings book', blurb: '84 lines with the idea behind each, drillable from either side.', go: 'Open' })}
       </div>
     </div>`
