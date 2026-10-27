@@ -107,6 +107,19 @@ async function route() {
   showHome(main)
 }
 
+// My games' offset shadow, printed in halftone: dots swell toward the card's bottom-left corner and shrink away
+// from it. Only the strips the card does not cover (12px left, 12px below) are drawn; the svg is anchored bottom-left.
+const HALFTONE = (() => {
+  let dots = ''
+  for (let row = 0; row * 4.33 <= 400; row++) for (let col = 0; col * 5 <= 800; col++) {
+    const x = col * 5 + (row % 2) * 2.5, y = row * 4.33
+    if (x > 15 && y < 385) continue
+    const r = 2.3 * Math.max(0, 1 - Math.hypot(x, 400 - y) / 280)
+    if (r > 0.35) dots += `<circle cx="${x}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}"/>`
+  }
+  return `<span class="halftone" aria-hidden="true"><svg width="800" height="400">${dots}</svg></span>`
+})()
+
 function showHome(main) {
   document.title = 'Chess Master'
   document.documentElement.classList.add('immersive')   // the story gets the whole screen; the sidebar waits behind the menu
@@ -138,7 +151,7 @@ function showHome(main) {
       <h2>Tools</h2>
       <div class="tool-row">
         <a class="card" href="#/play"><span class="eyebrow">Play</span><h3>Against the computer</h3><span class="small">Stockfish at seven strengths, then your game reviewed move by move.</span></a>
-        <a class="card feature" href="#/games"><span class="eyebrow">For chess.com players</span><h3>My games</h3><span class="small">Your chess.com games: openings, clock, the mistakes you repeat.</span></a>
+        <a class="card feature" href="#/games">${HALFTONE}<span class="eyebrow">For chess.com players</span><h3>My games</h3><span class="small">Your chess.com games: openings, clock, the mistakes you repeat.</span></a>
         <a class="card" href="#/openings"><span class="eyebrow">Reference</span><h3>Openings book</h3><span class="small">84 lines with the idea behind each, drillable from either side.</span></a>
       </div>
     </div>`
