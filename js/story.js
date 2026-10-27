@@ -9,7 +9,7 @@ import { Board } from './board.js'
 import { heatmap, reach } from './heatmap.js'
 
 const PIECES = [['k', 'King'], ['q', 'Queen'], ['r', 'Rook'], ['b', 'Bishop'], ['n', 'Knight'], ['p', 'Pawn']]
-const PIECE_SET = 'vendor/cm-chessboard/assets/pieces/staunty.svg'
+export const PIECE_SET = 'vendor/cm-chessboard/assets/pieces/staunty.svg'
 const icon = p => `<svg class="story-piece" viewBox="0 0 40 40" aria-hidden="true"><use href="${PIECE_SET}#w${p}"/></svg>`
 const START = new Chess().fen()
 const cap = t => t.charAt(0).toUpperCase() + t.slice(1)

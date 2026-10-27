@@ -10,7 +10,7 @@ import { setActiveViewer } from './pgn-viewer.js'
 import { mountFamily } from './family.js'
 import { mountWelcome } from './welcome.js'
 import { mountTour } from './knight-tour.js'
-import { mountStory } from './story.js'
+import { mountStory, PIECE_SET } from './story.js'
 import { mascot, catHeadHTML } from './mascot.js'
 
 const $ = s => document.querySelector(s)
@@ -120,6 +120,10 @@ const HALFTONE = (() => {
   return `<span class="halftone" aria-hidden="true"><svg width="800" height="400">${dots}</svg></span>`
 })()
 
+// each track's piece, drawn on its card: the king the whole game is about, the queen that looks every way, the
+// knight that forks, the pawn that opens, the good and bad bishop, the rook of the endings, then black for the last two
+const TRACK_PIECE = { 'first-steps': 'wk', thinking: 'wq', tactics: 'wn', openings: 'wp', strategy: 'wb', endgames: 'wr', mates: 'bq', games: 'bk' }
+
 function showHome(main) {
   document.title = 'Chess Master'
   document.documentElement.classList.add('immersive')   // the story gets the whole screen; the sidebar waits behind the menu
@@ -141,7 +145,11 @@ function showHome(main) {
           const ready = t.lessons.filter(l => l.ready).length
           const done = t.lessons.filter(l => progress.isLessonDone(lessonId(t.id, l.slug))).length
           const first = t.lessons.find(l => l.ready)
-          return `<a class="card track-card" href="${first ? `#/lesson/${t.id}/${first.slug}` : '#/'}"><span class="eyebrow">Track ${t.beginner ? 0 : i + (progress.beginner ? 0 : 1)}</span><h3>${esc(t.title)}</h3><p>${esc(t.blurb || '')}</p><span class="meta">${t.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}</span></a>`
+          const n = t.beginner ? 0 : i + (progress.beginner ? 0 : 1)
+          return `<a class="track-card" href="${first ? `#/lesson/${t.id}/${first.slug}` : '#/'}"><div class="flip">
+            <div class="face front"><span class="eyebrow">Track ${n}</span><svg class="track-piece" viewBox="0 0 40 40" aria-hidden="true"><use href="${PIECE_SET}#${TRACK_PIECE[t.id] || 'wp'}"/></svg><h3>${esc(t.title)}</h3></div>
+            <div class="face back"><b aria-hidden="true">${esc(t.title)}</b><p>${esc(t.blurb || '')}</p><span class="meta">${t.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}</span><span class="go">${done === t.lessons.length ? 'Review' : done ? 'Continue' : 'Start'} →</span></div>
+          </div></a>`
         }).join('')}
       </div>
       <div class="switch-row">

@@ -155,12 +155,38 @@ button { font: inherit; color: inherit; }
 .card { border: 1px solid var(--line); padding: var(--s-5); background: var(--surface); }
 .continue { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); margin-bottom: var(--s-6); }
 .continue h3 { margin: var(--s-1) 0 0; }
-.track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--s-4); }
-.track-card { text-decoration: none; display: flex; flex-direction: column; gap: var(--s-2); min-height: 140px; transition: border-color 150ms; }
-.track-card:hover { border-color: var(--accent); }
-.track-card h3 { margin: 0; }
-.track-card p { color: var(--ink-2); font-size: var(--fs-1); margin: 0; flex: 1; }
-.track-card .meta { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+/* track cards: the front is a board square with the track's piece; on hover (or keyboard focus) the card turns over to
+   its description. Three wide, so alternate squares make a checkerboard (one wide on phones). The link itself never
+   moves, so the pointer cannot fall off a card mid-turn. */
+.track-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-4); }
+@media (max-width: 760px) { .track-grid { grid-template-columns: minmax(0, 1fr); } }
+.track-card, .track-card:hover { display: grid; text-decoration: none; color: var(--ink); perspective: 1400px; }
+.track-card .flip { display: grid; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.2, .75, .25, 1); }
+.track-card .face { grid-area: 1 / 1; display: flex; flex-direction: column; gap: var(--s-2); min-height: 236px; padding: var(--s-5); box-sizing: border-box; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.track-card .front { background: var(--sq-light); }
+.track-grid > :nth-child(even) .front { background: var(--sq-dark); }
+.track-card .front .eyebrow { color: var(--ink); }
+.track-piece { display: block; width: 108px; height: 108px; margin: auto; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .22)); }
+.track-card .front h3 { margin: 0; font-size: var(--fs-4); font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; }
+.track-card .back { transform: rotateY(180deg); background: var(--accent); color: var(--accent-ink); }
+.track-card .back b { font-size: var(--fs-3); font-weight: 800; letter-spacing: -0.01em; }
+.track-card .back p { margin: 0; flex: 1; font-size: var(--fs-2); line-height: 1.5; opacity: .9; }
+.track-card .back .meta { font-size: var(--fs-label); letter-spacing: 0.1em; text-transform: uppercase; opacity: .75; }
+.track-card .back .go { font-weight: 700; letter-spacing: 0.04em; }
+.track-card:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+@media (hover: hover) {
+  .track-card:hover .flip, .track-card:focus-visible .flip { transform: rotateY(180deg); transition-delay: 60ms; }   /* the short delay: a pointer passing over does not set off a row of turns */
+}
+@media (hover: none) {   /* touch: nothing turns over; a short square (title beside the piece) with the description under it */
+  .track-card .face { grid-area: auto; min-height: 0; padding: var(--s-4) var(--s-5); }
+  .track-card .front { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s-4); align-items: center; }
+  .track-card .front .eyebrow { grid-area: 1 / 1; align-self: end; }
+  .track-card .front h3 { grid-area: 2 / 1; align-self: start; }
+  .track-piece { grid-area: 1 / 2 / 3 / 3; width: 76px; height: 76px; margin: 0; }
+  .track-card .back { transform: none; }
+  .track-card .back b { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .track-card .flip { transition: none; } }
 .switch-row { display: flex; align-items: center; gap: var(--s-3); margin: var(--s-6) 0 var(--s-4); font-size: var(--fs-1); color: var(--ink-2); }
 .switch { position: relative; width: 34px; height: 18px; border-radius: 9px; background: var(--line-2); border: 0; cursor: pointer; padding: 0; transition: background 150ms; }
 .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 150ms; }
