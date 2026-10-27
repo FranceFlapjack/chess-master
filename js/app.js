@@ -120,17 +120,25 @@ const HALFTONE = (() => {
   return `<span class="halftone" aria-hidden="true"><svg width="800" height="400">${dots}</svg></span>`
 })()
 
-// The magnet, modelled on React Bits' Magnet: while the pointer is within `padding` of the element, its children lean
-// toward it by distance / strength. Capped at 8px here, so the card and its halftone never reach the next card.
-function magnet(el, { padding = 40, strength = 20, max = 8 } = {}) {
+// The magnet, modelled on React Bits' Magnet: the card nearest the pointer, within `padding` of it, leans toward the
+// pointer by distance / strength, capped at `max` px. Only one card leans at a time, so neighbours never lean into each
+// other: the gaps are 16-24px, and the My games halftone keeps at least 4px clear.
+function magnets(els, { padding = 40, strength = 20, max = 8 } = {}) {
   if (!matchMedia('(hover: hover) and (pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {}
   const lean = d => Math.max(-max, Math.min(max, d / strength)) + 'px'
   const move = e => {
-    const r = el.getBoundingClientRect(), x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2
-    const on = Math.abs(x) < r.width / 2 + padding && Math.abs(y) < r.height / 2 + padding
-    el.classList.toggle('on', on)
-    el.style.setProperty('--mx', on ? lean(x) : '0px')
-    el.style.setProperty('--my', on ? lean(y) : '0px')
+    const rects = els.map(el => el.getBoundingClientRect())   // all reads before any write
+    let near = -1, nearD = padding
+    rects.forEach((r, i) => {
+      const d = Math.hypot(Math.max(r.left - e.clientX, 0, e.clientX - r.right), Math.max(r.top - e.clientY, 0, e.clientY - r.bottom))
+      if (d < nearD) { near = i; nearD = d }
+    })
+    els.forEach((el, i) => {
+      const r = rects[i], on = i === near
+      el.classList.toggle('on', on)
+      el.style.setProperty('--mx', on ? lean(e.clientX - r.left - r.width / 2) : '0px')
+      el.style.setProperty('--my', on ? lean(e.clientY - r.top - r.height / 2) : '0px')
+    })
   }
   addEventListener('mousemove', move)
   return () => removeEventListener('mousemove', move)
@@ -151,13 +159,13 @@ function showHome(main) {
     <div id="story"></div>
     <div class="page home-course" id="course">
       <h2>The course</h2>
-      ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.trackTitle)}</div></div><a class="btn primary" href="#/lesson/${cont.track}/${cont.slug}">Open lesson</a></div>` : ''}
+      ${cont ? `<div class="card continue magnet"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.trackTitle)}</div></div><a class="btn primary" href="#/lesson/${cont.track}/${cont.slug}">Open lesson</a></div>` : ''}
       <div class="track-grid">
         ${visibleTracks().map((t, i) => {
           const ready = t.lessons.filter(l => l.ready).length
           const done = t.lessons.filter(l => progress.isLessonDone(lessonId(t.id, l.slug))).length
           const first = t.lessons.find(l => l.ready)
-          return `<a class="card track-card" href="${first ? `#/lesson/${t.id}/${first.slug}` : '#/'}"><span class="eyebrow">Track ${t.beginner ? 0 : i + (progress.beginner ? 0 : 1)}</span><h3>${esc(t.title)}</h3><p>${esc(t.blurb || '')}</p><span class="meta">${t.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}</span></a>`
+          return `<a class="card track-card magnet" href="${first ? `#/lesson/${t.id}/${first.slug}` : '#/'}"><span class="eyebrow">Track ${t.beginner ? 0 : i + (progress.beginner ? 0 : 1)}</span><h3>${esc(t.title)}</h3><p>${esc(t.blurb || '')}</p><span class="meta">${t.lessons.length} lessons · ${ready} ready${done ? ` · ${done} done` : ''}</span></a>`
         }).join('')}
       </div>
       <div class="switch-row">
@@ -166,12 +174,12 @@ function showHome(main) {
       </div>
       <h2>Tools</h2>
       <div class="tool-row">
-        <a class="card" href="#/play"><span class="eyebrow">Play</span><h3>Against the computer</h3><span class="small">Stockfish at seven strengths, then your game reviewed move by move.</span></a>
+        <a class="card magnet" href="#/play"><span class="eyebrow">Play</span><h3>Against the computer</h3><span class="small">Stockfish at seven strengths, then your game reviewed move by move.</span></a>
         <div class="feature magnet">${HALFTONE}<a class="card" href="#/games"><span class="eyebrow">For chess.com players</span><h3>My games</h3><span class="small">Your chess.com games: openings, clock, the mistakes you repeat.</span></a></div>
-        <a class="card" href="#/openings"><span class="eyebrow">Reference</span><h3>Openings book</h3><span class="small">84 lines with the idea behind each, drillable from either side.</span></a>
+        <a class="card magnet" href="#/openings"><span class="eyebrow">Reference</span><h3>Openings book</h3><span class="small">84 lines with the idea behind each, drillable from either side.</span></a>
       </div>
     </div>`
-  const stopStory = mountStory(main.querySelector('#story'), { cta }), stopMagnet = magnet(main.querySelector('.magnet'))
+  const stopStory = mountStory(main.querySelector('#story'), { cta }), stopMagnet = magnets([...main.querySelectorAll('.magnet')])
   const stop = () => { stopStory(); stopMagnet() }
   unmountPage = stop   // the story's boards and loops, and the magnet's listener, stop when the page changes
   $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; stop(); showHome(main); renderSidebar(); main.querySelector('#course').scrollIntoView() })

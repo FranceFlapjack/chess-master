@@ -663,9 +663,10 @@ svg.heat { display: block; width: 100%; height: auto; }
 .tool-row .feature { position: relative; display: grid; }
 .tool-row .feature .halftone { position: absolute; inset: 0; translate: -12px 12px; overflow: hidden; z-index: -1; pointer-events: none; }
 .tool-row .feature .halftone svg { position: absolute; left: 0; bottom: 0; fill: var(--signal); }
-/* the magnet (magnet() in js/app.js): the wrapper stays put and is measured; its children lean by --mx/--my */
-.tool-row .magnet > * { transform: translate(var(--mx, 0px), var(--my, 0px)); transition: border-color 150ms, transform .5s ease-in-out; }
-.tool-row .magnet.on > * { transition: border-color 150ms, transform .3s ease-out; }
+/* the magnet (magnets() in js/app.js): the card nearest the pointer leans toward it by --mx/--my. My games moves as
+   its wrapper, so the halftone travels with the card and stays under it. */
+.home-course .magnet { translate: var(--mx, 0px) var(--my, 0px); transition: border-color 150ms, translate .5s ease-in-out; }
+.home-course .magnet.on { transition: border-color 150ms, translate .3s ease-out; }
 @media (max-width: 760px) { .tool-row { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- the story (js/story.js): the home's dark entry. It re-points the ordinary tokens, so the
