@@ -35,7 +35,7 @@ async function boot() {
   cat.innerHTML = catHeadHTML(20)
   const paintCat = () => { cat.setAttribute('aria-pressed', String(mascot.enabled)); cat.title = mascot.enabled ? 'Tips from the cat: on' : 'Tips from the cat: off' }
   paintCat(); cat.addEventListener('click', () => { mascot.enabled = !mascot.enabled })
-  mascot.mount()   // the cat lives in its corner (lesson pages only, see route), quiet until it has something to say
+  mascot.mount()   // the cat lives in its corner from the start, quiet until it has something to say
   document.addEventListener('mascot-toggle', paintCat)
   $('#menu').addEventListener('click', () => toggleSidebar())
   $('#scrim').addEventListener('click', () => toggleSidebar(false))
@@ -97,7 +97,6 @@ async function route() {
   setActiveViewer(null) // the previous page's game viewer must not keep the arrow keys
   mascot.hide()         // a hint belongs to the page it was given on
   const m = hash.match(/^#\/lesson\/([\w-]+)\/([\w-]+)/)
-  document.documentElement.classList.toggle('lesson-page', !!m)   // the cat shows itself only inside a lesson (owner 2026-10-27)
   if (m) return showLesson(main, m[1], m[2])
   current = null
   renderSidebar()

@@ -87,14 +87,13 @@ export function mountExercise(container, o, ctx = {}) {
   }
   /**
    * `asked`: the reader pressed Hint, so the cat opens it now; otherwise it only meows that it has one.
-   * With the cat switched off, or outside a lesson (My games, the openings book: no cat there), the hint goes inline.
+   * With the cat switched off the hint goes inline, as it always did.
    */
   function showHint(asked) {
     const text = o.hint || (asked ? NO_HINT : '')
     if (!text) return
     const msg = { kind: 'hint', text, owner: container }
-    const cat = document.documentElement.classList.contains('lesson-page')
-    if (cat && (asked ? mascot.say(msg) : mascot.notify(msg))) return
+    if (asked ? mascot.say(msg) : mascot.notify(msg)) return
     if (o.hint) { hintEl.textContent = o.hint; hintEl.hidden = false }
     else setStatus('No hint for this one — think about checks first.')
   }
