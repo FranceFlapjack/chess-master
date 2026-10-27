@@ -30,12 +30,13 @@ async function boot() {
   const paintMute = () => { mute.innerHTML = sound.muted ? ICON_SOUND_OFF : ICON_SOUND_ON; mute.setAttribute('aria-pressed', String(sound.muted)); mute.title = sound.muted ? 'Sound off' : 'Sound on' }
   paintMute(); mute.addEventListener('click', () => { sound.toggle(); paintMute() })
   mountFamily('chess')
-  // The logo replays the welcome; the series bubble still opens on hover (owner 2026-10-27). Caught on the way down,
-  // at .brand, so family.js's own click on the logo (which toggles the bubble) never runs. family.js stays as shared.
+  // The logo replays the whole welcome: the curtain, then the story from its top as you scroll on (#/welcome does both).
+  // The series bubble still opens on hover (owner 2026-10-27). Caught on the way down, at .brand, so family.js's own
+  // click on the logo (which toggles the bubble) never runs. family.js stays as shared.
   document.querySelectorAll('.brand').forEach(brand => {
     const logo = brand.querySelector('.logo-btn')
     logo.setAttribute('aria-label', 'Chess Master: replay the welcome'); logo.removeAttribute('aria-haspopup')
-    brand.addEventListener('click', e => { if (logo.contains(e.target)) { e.stopPropagation(); welcome(true) } }, true)
+    brand.addEventListener('click', e => { if (logo.contains(e.target)) { e.stopPropagation(); location.hash = '#/welcome' } }, true)
     // the name goes to the course cards (#/course); clicked while already there, it scrolls back to them
     brand.querySelector('.brand-text').addEventListener('click', e => {
       if (location.hash !== '#/course') return
@@ -118,6 +119,7 @@ async function route() {
   if (hash.startsWith('#/games')) { document.title = 'My games · Chess Master'; unmountPage = mountGames(main); window.scrollTo({ top: 0 }); return }
   showHome(main)
   if (hash === '#/course') $('#course').scrollIntoView()   // the name in the top bar lands on the cards, past the story
+  else window.scrollTo({ top: 0 })                         // the home (and the welcome) start at the top of the story
 }
 
 // A card that turns over (css .flip-card): a board square with a piece and the title on the front, the description on
