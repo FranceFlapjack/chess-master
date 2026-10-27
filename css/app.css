@@ -765,5 +765,6 @@ html.immersive .topbar { display: flex; align-items: center; gap: 10px; height: 
 html.immersive .topbar .icon-btn { color: inherit; background: none; }
 html.immersive .topbar .brand-text { color: inherit; }
 html.immersive .topbar .logo { background: var(--story-ink); }
-html.immersive .home-course { max-width: 1080px; margin-inline: auto; }   /* no sidebar beside it now: centred, a little wider */   /* the logo keeps its own green and white, on a cream tile */
+html.immersive .home-course { max-width: 1080px; margin-inline: auto; }
+html.immersive #course { scroll-margin-top: calc(var(--bar-h) + var(--s-6)); }   /* landing on the cards: the heading clears the sticky bar */   /* no sidebar beside it now: centred, a little wider */   /* the logo keeps its own green and white, on a cream tile */
 

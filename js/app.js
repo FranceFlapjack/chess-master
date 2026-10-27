@@ -30,6 +30,18 @@ async function boot() {
   const paintMute = () => { mute.innerHTML = sound.muted ? ICON_SOUND_OFF : ICON_SOUND_ON; mute.setAttribute('aria-pressed', String(sound.muted)); mute.title = sound.muted ? 'Sound off' : 'Sound on' }
   paintMute(); mute.addEventListener('click', () => { sound.toggle(); paintMute() })
   mountFamily('chess')
+  // The logo replays the welcome; the series bubble still opens on hover (owner 2026-10-27). Caught on the way down,
+  // at .brand, so family.js's own click on the logo (which toggles the bubble) never runs. family.js stays as shared.
+  document.querySelectorAll('.brand').forEach(brand => {
+    const logo = brand.querySelector('.logo-btn')
+    logo.setAttribute('aria-label', 'Chess Master: replay the welcome'); logo.removeAttribute('aria-haspopup')
+    brand.addEventListener('click', e => { if (logo.contains(e.target)) { e.stopPropagation(); welcome(true) } }, true)
+    // the name goes to the course cards (#/course); clicked while already there, it scrolls back to them
+    brand.querySelector('.brand-text').addEventListener('click', e => {
+      if (location.hash !== '#/course') return
+      e.preventDefault(); toggleSidebar(false); $('#course')?.scrollIntoView({ behavior: 'smooth' })
+    })
+  })
   // the cat's own switch, beside the sound: hints and tips go inline when it is off
   const cat = $('#cat')
   cat.innerHTML = catHeadHTML(20)
@@ -105,6 +117,7 @@ async function route() {
   if (om) { document.title = 'Openings book · Chess Master'; unmountPage = mountOpenings(main, om[1]); return }
   if (hash.startsWith('#/games')) { document.title = 'My games · Chess Master'; unmountPage = mountGames(main); window.scrollTo({ top: 0 }); return }
   showHome(main)
+  if (hash === '#/course') $('#course').scrollIntoView()   // the name in the top bar lands on the cards, past the story
 }
 
 // A card that turns over (css .flip-card): a board square with a piece and the title on the front, the description on
