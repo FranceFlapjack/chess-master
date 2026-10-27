@@ -657,8 +657,8 @@ svg.heat { display: block; width: 100%; height: auto; }
 .tool-row .card { text-decoration: none; display: flex; flex-direction: column; gap: var(--s-2); transition: border-color 150ms; }
 .tool-row .card:hover { border-color: var(--accent); }
 .tool-row .card h3 { margin: 0; }
-/* My games, the feature for chess.com players: a soft red glow on the card's left */
-.tool-row .feature { background: radial-gradient(80% 140% at 0% 50%, color-mix(in srgb, var(--signal) 26%, transparent), transparent 75%), var(--surface); }
+/* My games, the feature for chess.com players: a soft red glow behind the card, spilling out on its left */
+.tool-row .feature { box-shadow: -18px 6px 48px -8px color-mix(in srgb, var(--signal) 50%, transparent); }
 @media (max-width: 760px) { .tool-row { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- the story (js/story.js): the home's dark entry. It re-points the ordinary tokens, so the
