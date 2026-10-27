@@ -70,6 +70,7 @@ export async function renderLesson(container, md, { lessonId, contentBase = 'con
   const mounted = []
   const tryIds = []
   let tryIndex = 0
+  const tryTotal = container.querySelectorAll('.blk[data-kind="try"]').length
   for (const blk of container.querySelectorAll('.blk')) {
     const kind = blk.dataset.kind
     const src = decodeURIComponent(blk.dataset.src)
@@ -91,7 +92,7 @@ export async function renderLesson(container, md, { lessonId, contentBase = 'con
       mounted.push(mountPgnViewer(fig, pgn, { orientation: p.orientation, start: +p.start || 0, id: gameId, onEnd: id => progress.recordGame(id) }))
     } else if (kind === 'try') {
       const fig = document.createElement('figure'); blk.replaceWith(fig)
-      const ex = mountExercise(fig, p, { lessonId, index: tryIndex++, onSolved })
+      const ex = mountExercise(fig, p, { lessonId, index: tryIndex++, total: tryTotal, onSolved })
       tryIds.push(ex.id)
       mounted.push(ex)
     } else if (kind === 'tip') {

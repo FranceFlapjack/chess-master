@@ -8,7 +8,7 @@
   --surface-2: #f5f5f5;
   --ink: #111111;
   --ink-2: #555555;
-  --ink-3: #aaaaaa;
+  --ink-3: #767676;   /* was #aaa (2.3:1, failed); 4.5:1 on white — design-system audit 2026-10-27 */
   --line: #e6e6e6;
   --line-2: #cccccc;
 
@@ -32,6 +32,21 @@
   --bubble-fallback: #ffffff;     /* where backdrop-filter is not supported */
   --bubble-gap: 8px;              /* space between the logo and the bubble */
   --bubble-anim: 180ms;
+
+  /* signal: the ONE red, for "look here" — the tour's lead dot, the hot end of a heatmap, a story highlight.
+     Never for a wrong answer (that is --bad). Owner's palette 2026-10-27: light site, dark entry page, one red. */
+  --signal: #e5483c;
+
+  /* the story: the entry page's dark ground in the brand green, cream ink. A .story block re-points the
+     ordinary tokens at these, so buttons, cards and boards inside it need no styles of their own. */
+  --story-bg: #0a3629;
+  --story-ink: #f6f1e7;
+  --story-dim: rgba(246, 241, 231, 0.72);
+  --story-line: rgba(246, 241, 231, 0.16);
+
+  /* heatmaps: a square's share of the hottest square, mixed from cold to hot */
+  --heat-cold: #f1ece2;
+  --heat-hot: var(--signal);
 
   /* semantic (used only on the board and puzzle states) */
   --good: #0f4c3a;
@@ -65,6 +80,12 @@
   --fs-4: 22px;
   --fs-5: 28px;
   --lh: 1.6;
+  --fs-label: 11px;                         /* small uppercase labels: the smallest size text may be */
+  --fs-display: clamp(44px, 8vw, 120px);    /* the story's headline */
+  --fs-display-2: clamp(32px, 5vw, 72px);   /* a chapter headline, a big number */
+  --fw-display: 900;
+  --track-display: -0.035em;
+  --lh-display: 0.95;
   --measure: 640px;
   --track: 0.1em;   /* letter-spacing for uppercase labels */
 
@@ -80,6 +101,9 @@
   --radius: 0;
   --radius-lg: 0;
   --sidebar-w: 260px;
+  --main-pad-y: var(--s-8);   /* the main column's padding; a full-bleed block cancels exactly this */
+  --main-pad-x: var(--s-7);
+  --tap: 44px;                /* the smallest tap target on a touch screen */
   --page-w: 900px;
 
   /* activity grid levels: paper to theme green */

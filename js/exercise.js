@@ -22,7 +22,7 @@ export function mountExercise(container, o, ctx = {}) {
   container.innerHTML = `
     <div class="exercise-board"><div class="board-wrap"><div class="board"></div></div></div>
     <div class="exercise-side">
-      <div class="turn"><span class="turn-dot ${side}"></span><span>${side === 'w' ? 'White' : 'Black'} to move</span></div>
+      <div class="turn"><span class="turn-dot ${side}"></span><span>${side === 'w' ? 'White' : 'Black'} to move</span>${ctx.total > 1 ? `<span class="of">Puzzle ${ctx.index + 1} of ${ctx.total}</span>` : ''}</div>
       <div class="prompt">${esc(o.prompt || 'Find the best continuation.')}</div>
       <div class="status" aria-live="polite"></div>
       <div class="hint" hidden></div>

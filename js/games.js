@@ -16,6 +16,7 @@ import { mountExercise } from './exercise.js'
 import { analyst } from './engine/analyst.js'
 import { adoptOldKey } from './progress.js'
 import { Chess } from '../vendor/chess.js/chess.js'
+import { heatmap } from './heatmap.js'
 import { fetchLichess, fetchChesscom, fetchStats, parse, splitPgn, fromPgn, resultFor, family, openingName, bookMatch } from './games-data.js'
 
 const KEY = 'chess-master.games.v1'
@@ -70,6 +71,11 @@ export function mountGames(main) {
         <p class="small fairplay">Only games you have finished. A game still in progress is never fetched, and never should be: asking an engine about a running game is cheating, and both sites close accounts for it.</p>
       </section>
       <div class="games-filters" id="filters" hidden></div>
+      <section id="sample" class="games-sample" hidden>
+        <div><span class="eyebrow">What you will see</span><h2>Where your pieces live.</h2>
+        <p class="small">Every square your pieces moved to, the busiest in red. This one is Morphy’s Opera Game, Paris 1858 — fetch your games and the map becomes yours, along with your opening report, your clock and drills made from your own mistakes.</p></div>
+        <div class="games-sample-map" id="sample-map"></div>
+      </section>
       <section id="report" class="games-report" hidden></section>
       <section id="clock" class="games-clock" hidden></section>
       <figure id="linedrill" hidden></figure>
@@ -247,8 +253,18 @@ export function mountGames(main) {
   }
 
   // ---- the opening report ----
+  let sampled = false
   function paint() {
     const games = shown()
+    $('#sample').hidden = !!store.games.length
+    if (!store.games.length && !sampled) {   // nothing fetched yet: show what the page will do, with a real game
+      sampled = true
+      fetch('content/games/morphy-opera-1858.pgn').then(r => r.text()).then(pgn => {
+        const c = new Chess(); c.loadPgn(pgn); const go = {}
+        for (const m of c.history({ verbose: true })) if (m.color === 'w') go[m.to] = (go[m.to] || 0) + 1
+        if (!dead) heatmap($('#sample-map'), go, { label: 'Where Morphy’s pieces moved in the Opera Game' })
+      }).catch(() => {})
+    }
     $('#filters').hidden = !store.games.length
     $('#list').hidden = $('#report').hidden = !games.length
     paintFilters(); paintDrills(); paintClock()

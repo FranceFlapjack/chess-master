@@ -22,7 +22,7 @@ export function mountPlay(main) {
       <header class="lesson-head">
         <span class="eyebrow">Play</span>
         <h1>Against the computer</h1>
-        <p class="lede">Two opponents live inside this page: Stockfish 18 at seven strengths, up to the Boss that nobody beats, and the Chess Master Bot, our own engine, still young. A third Stockfish watches the game at full strength and reviews it with you when it ends.</p>
+        <p class="lede">Stockfish at seven strengths, or our own young bot. When the game ends, it is reviewed with you move by move.</p>
       </header>
       <div class="play">
         <div class="play-left">

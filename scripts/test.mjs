@@ -5,6 +5,7 @@ import { grade, toWhite, winChance } from '../js/analysis.js'
 import { parseTimeControl, spentPerPly } from '../js/clocks.js'
 import { fromPgn, bookMatch, monthAfter, family } from '../js/games-data.js'
 import { knightsTour } from '../js/knight-tour.js'
+import { reach } from '../js/heatmap.js'
 
 // grading: the Lichess thresholds on the mover's fall in winning chances
 const g = (cp0, cp1, mover = 'w') => grade({ cp: cp0, mate: null }, { cp: cp1, mate: null }, mover).label
@@ -53,5 +54,11 @@ for (let i = 1; i < 64; i++) {
   const dx = Math.abs(tour[i] % 8 - tour[i - 1] % 8), dy = Math.abs((tour[i] >> 3) - (tour[i - 1] >> 3))
   assert.ok(dx * dy === 2, `step ${i} is not a knight's jump`)
 }
+
+// the story's piece captions: each piece's reach on an empty board
+const range = p => { const v = Object.values(reach(p)).filter(x => x != null); return [Math.min(...v), Math.max(...v)] }
+assert.deepEqual(range('k'), [3, 8]); assert.deepEqual(range('q'), [21, 27]); assert.deepEqual(range('r'), [14, 14])
+assert.deepEqual(range('b'), [7, 13]); assert.deepEqual(range('n'), [2, 8]); assert.deepEqual(range('p'), [1, 2])
+assert.equal(Object.values(reach('p')).filter(x => x == null).length, 16)   // no pawn on the first or last rank
 
 console.log('✓ all tests pass')

@@ -10,6 +10,7 @@ import { setActiveViewer } from './pgn-viewer.js'
 import { mountFamily } from './family.js'
 import { mountWelcome } from './welcome.js'
 import { mountTour } from './knight-tour.js'
+import { mountStory } from './story.js'
 import { mascot, catHeadHTML } from './mascot.js'
 
 const $ = s => document.querySelector(s)
@@ -55,7 +56,7 @@ function renderSidebar() {
   const open = new Set([...nav.querySelectorAll('.track.open')].map(t => t.dataset.track))
   if (current) open.add(current.track)
   const playLink = `<a class="nav-play${location.hash.startsWith('#/play') ? ' current' : ''}" href="#/play"><span class="num">▶</span><span class="name">Play vs computer</span></a><a class="nav-play${location.hash.startsWith('#/openings') ? ' current' : ''}" href="#/openings"><span class="num">≡</span><span class="name">Openings book</span></a><a class="nav-play${location.hash.startsWith('#/games') ? ' current' : ''}" href="#/games"><span class="num">↺</span><span class="name">My games</span></a>`
-  nav.innerHTML = playLink + visibleTracks().map((t, i) => {
+  nav.innerHTML = '<div class="nav-label">Tools</div>' + playLink + '<div class="nav-label">Learn</div>' + visibleTracks().map((t, i) => {
     const ready = t.lessons.filter(l => l.ready)
     const done = ready.filter(l => progress.isLessonDone(lessonId(t.id, l.slug))).length
     const pct = ready.length ? Math.round(100 * done / ready.length) : 0
@@ -111,17 +112,14 @@ function showHome(main) {
   const last = progress.state.lastLesson && lessons.find(l => lessonId(l.track, l.slug) === progress.state.lastLesson)
   const next = lessons.find(l => l.ready && !progress.isLessonDone(lessonId(l.track, l.slug)))
   const cont = last && !progress.isLessonDone(progress.state.lastLesson) ? last : next
+  // a returning reader continues; a new one picks a door by what they already know
+  const cta = last && cont === last
+    ? { href: `#/lesson/${cont.track}/${cont.slug}`, label: `Continue: ${esc(cont.title)}`, secondary: { href: '#/play', label: 'Play a game' } }
+    : { href: '#/lesson/first-steps/the-board-and-the-pieces', label: 'New to chess? Start here', secondary: { href: '#/lesson/thinking/checks-captures-attacks', label: 'I know how the pieces move' } }
   main.innerHTML = `
-    <div class="page">
-      <section class="hero">
-        <span class="eyebrow">A course, not a feed</span>
-        <h1 class="quote">“Chess isn’t always competitive. Chess can also be beautiful.”</h1>
-        <span class="attrib">Beth Harmon, The Queen’s Gambit</span>
-        <p>Every lesson is built on a real game or a real book, with the board right there in the text so you can play through it and then try it yourself.</p>
-      </section>
-      <div class="card continue play-card"><div><span class="eyebrow">Play</span><h3>Against the computer</h3><div class="small">Stockfish 18, seven strengths, from beginner to the Boss, or the Chess Master Bot.</div></div><a class="btn" href="#/play">Play</a></div>
-      <div class="card continue play-card"><div><span class="eyebrow">Reference</span><h3>Openings book</h3><div class="small">All 84 lines the bot plays, each with its idea, playable and drillable from either side.</div></div><a class="btn" href="#/openings">Open</a></div>
-      <div class="card continue play-card"><div><span class="eyebrow">Your games</span><h3>My games</h3><div class="small">Pull your last games from Lichess or chess.com, review them, see your real openings and drill the traps you fell for.</div></div><a class="btn" href="#/games">Open</a></div>
+    <div id="story"></div>
+    <div class="page home-course" id="course">
+      <h2>The course</h2>
       ${cont ? `<div class="card continue"><div><span class="eyebrow">${last && cont === last ? 'Continue' : 'Start here'}</span><h3>${esc(cont.title)}</h3><div class="small">${esc(cont.trackTitle)}</div></div><a class="btn primary" href="#/lesson/${cont.track}/${cont.slug}">Open lesson</a></div>` : ''}
       <div class="track-grid">
         ${visibleTracks().map((t, i) => {
@@ -135,8 +133,16 @@ function showHome(main) {
         <button class="switch" id="beginner" role="switch" aria-checked="${progress.beginner}" aria-label="Show the beginner track"></button>
         <span>New to chess? Show the <em>First steps</em> track (how the pieces move, checkmate, notation).</span>
       </div>
+      <h2>Tools</h2>
+      <div class="tool-row">
+        <a class="card" href="#/play"><span class="eyebrow">Play</span><h3>Against the computer</h3><span class="small">Stockfish at seven strengths, then your game reviewed move by move.</span></a>
+        <a class="card" href="#/games"><span class="eyebrow">Your games</span><h3>My games</h3><span class="small">Your chess.com games: openings, clock, the mistakes you repeat.</span></a>
+        <a class="card" href="#/openings"><span class="eyebrow">Reference</span><h3>Openings book</h3><span class="small">84 lines with the idea behind each, drillable from either side.</span></a>
+      </div>
     </div>`
-  $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; showHome(main); renderSidebar() })
+  const stopStory = mountStory(main.querySelector('#story'), { cta })
+  unmountPage = stopStory   // the story's boards and loops stop when the page changes
+  $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; stopStory(); showHome(main); renderSidebar(); main.querySelector('#course').scrollIntoView() })
 }
 
 async function showLesson(main, track, slug) {
@@ -162,8 +168,13 @@ async function showLesson(main, track, slug) {
   const prev = lessons.slice(0, idx).reverse().find(x => x.ready), next = lessons.slice(idx + 1).find(x => x.ready)
   const row = document.createElement('div'); row.className = 'complete-row'
   const solvedCount = () => tryIds.filter(t => progress.isTryDone(t)).length
+  // once every puzzle is solved, the way on sits right under the last one rather than at the bottom of the page
+  const nextUp = document.createElement('a'); nextUp.className = 'next-up'
+  if (next) { nextUp.href = `#/lesson/${next.track}/${next.slug}`; nextUp.innerHTML = `<span><span class="eyebrow">Lesson complete · Next</span><b>${esc(next.title)}</b></span><span class="go" aria-hidden="true">→</span>` }
   const paintRow = () => {
     const done = progress.isLessonDone(id); row.classList.toggle('done', done)
+    const lastTry = [...page.querySelectorAll('figure.exercise')].pop()
+    if (done && next && lastTry && tryIds.length && solvedCount() === tryIds.length) lastTry.after(nextUp); else nextUp.remove()
     if (done) row.innerHTML = `<span class="msg">Lesson complete.</span>${tryIds.length ? `<span class="count">${solvedCount()}/${tryIds.length} puzzles</span>` : ''}`
     else if (tryIds.length) row.innerHTML = `<span class="msg">Solve the puzzles to complete this lesson.</span><span class="count">${solvedCount()}/${tryIds.length}</span><button class="btn quiet" id="complete">Mark as read instead</button>`
     else row.innerHTML = `<button class="btn primary" id="complete">Mark as read</button><span class="msg">Ticks the lesson in the sidebar.</span>`
