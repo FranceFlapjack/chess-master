@@ -120,6 +120,22 @@ const HALFTONE = (() => {
   return `<span class="halftone" aria-hidden="true"><svg width="800" height="400">${dots}</svg></span>`
 })()
 
+// The magnet, modelled on React Bits' Magnet: while the pointer is within `padding` of the element, its children lean
+// toward it by distance / strength. Capped at 8px here, so the card and its halftone never reach the next card.
+function magnet(el, { padding = 40, strength = 20, max = 8 } = {}) {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {}
+  const lean = d => Math.max(-max, Math.min(max, d / strength)) + 'px'
+  const move = e => {
+    const r = el.getBoundingClientRect(), x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2
+    const on = Math.abs(x) < r.width / 2 + padding && Math.abs(y) < r.height / 2 + padding
+    el.classList.toggle('on', on)
+    el.style.setProperty('--mx', on ? lean(x) : '0px')
+    el.style.setProperty('--my', on ? lean(y) : '0px')
+  }
+  addEventListener('mousemove', move)
+  return () => removeEventListener('mousemove', move)
+}
+
 function showHome(main) {
   document.title = 'Chess Master'
   document.documentElement.classList.add('immersive')   // the story gets the whole screen; the sidebar waits behind the menu
@@ -151,13 +167,14 @@ function showHome(main) {
       <h2>Tools</h2>
       <div class="tool-row">
         <a class="card" href="#/play"><span class="eyebrow">Play</span><h3>Against the computer</h3><span class="small">Stockfish at seven strengths, then your game reviewed move by move.</span></a>
-        <a class="card feature" href="#/games">${HALFTONE}<span class="eyebrow">For chess.com players</span><h3>My games</h3><span class="small">Your chess.com games: openings, clock, the mistakes you repeat.</span></a>
+        <div class="feature magnet">${HALFTONE}<a class="card" href="#/games"><span class="eyebrow">For chess.com players</span><h3>My games</h3><span class="small">Your chess.com games: openings, clock, the mistakes you repeat.</span></a></div>
         <a class="card" href="#/openings"><span class="eyebrow">Reference</span><h3>Openings book</h3><span class="small">84 lines with the idea behind each, drillable from either side.</span></a>
       </div>
     </div>`
-  const stopStory = mountStory(main.querySelector('#story'), { cta })
-  unmountPage = stopStory   // the story's boards and loops stop when the page changes
-  $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; stopStory(); showHome(main); renderSidebar(); main.querySelector('#course').scrollIntoView() })
+  const stopStory = mountStory(main.querySelector('#story'), { cta }), stopMagnet = magnet(main.querySelector('.magnet'))
+  const stop = () => { stopStory(); stopMagnet() }
+  unmountPage = stop   // the story's boards and loops, and the magnet's listener, stop when the page changes
+  $('#beginner').addEventListener('click', () => { progress.beginner = !progress.beginner; stop(); showHome(main); renderSidebar(); main.querySelector('#course').scrollIntoView() })
 }
 
 async function showLesson(main, track, slug) {

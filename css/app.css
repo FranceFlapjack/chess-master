@@ -657,12 +657,15 @@ svg.heat { display: block; width: 100%; height: auto; }
 .tool-row .card { text-decoration: none; display: flex; flex-direction: column; gap: var(--s-2); transition: border-color 150ms; }
 .tool-row .card:hover { border-color: var(--accent); }
 .tool-row .card h3 { margin: 0; }
-/* My games, the feature for chess.com players: an offset shadow in red halftone (js/app.js HALFTONE), shifted 12px
+/* My games, the feature for chess.com players: an offset shadow in red halftone (HALFTONE in js/app.js), shifted 12px
    left and down. The row's 24px gap leaves 12px clear of the next card; the row's own stacking context keeps the
-   dots above the page and under the card. */
-.tool-row .feature { position: relative; }
-.tool-row .feature .halftone { position: absolute; inset: -1px; transform: translate(-12px, 12px); overflow: hidden; z-index: -1; pointer-events: none; }
+   dots above the page and under the card. The wrapper is the grid cell; the card fills it. */
+.tool-row .feature { position: relative; display: grid; }
+.tool-row .feature .halftone { position: absolute; inset: 0; translate: -12px 12px; overflow: hidden; z-index: -1; pointer-events: none; }
 .tool-row .feature .halftone svg { position: absolute; left: 0; bottom: 0; fill: var(--signal); }
+/* the magnet (magnet() in js/app.js): the wrapper stays put and is measured; its children lean by --mx/--my */
+.tool-row .magnet > * { transform: translate(var(--mx, 0px), var(--my, 0px)); transition: border-color 150ms, transform .5s ease-in-out; }
+.tool-row .magnet.on > * { transition: border-color 150ms, transform .3s ease-out; }
 @media (max-width: 760px) { .tool-row { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- the story (js/story.js): the home's dark entry. It re-points the ordinary tokens, so the
