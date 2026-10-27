@@ -81,6 +81,7 @@
   --fs-5: 28px;
   --lh: 1.6;
   --fs-label: 11px;                         /* small uppercase labels: the smallest size text may be */
+  --fs-title: clamp(28px, 3.2vw, 40px);     /* a page's own title (lesson, Play, My games, Openings book): the display style, one step down */
   --fs-display: clamp(44px, 8vw, 120px);    /* the story's headline */
   --fs-display-2: clamp(32px, 5vw, 72px);   /* a chapter headline, a big number */
   --fw-display: 900;
@@ -105,6 +106,7 @@
   --main-pad-x: var(--s-7);
   --tap: 44px;                /* the smallest tap target on a touch screen */
   --bar-h: 44px;              /* the slim top bar (phones, and the full-screen home): one tap target tall */
+  --home-w: 1080px;           /* the home's content width: the story's scenes and the course line up on it */
   --page-w: 900px;
 
   /* activity grid levels: paper to theme green */
